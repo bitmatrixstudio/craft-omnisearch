@@ -1,0 +1,46 @@
+{
+    "name": "pohnean/craft-omnisearch",
+    "description": "A powerful control panel search filter replacement for CraftCMS",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "omnisearch",
+        "search",
+        "cp",
+        "query"
+    ],
+    "support": {
+        "docs": "https://github.com/pohnean/omni-search/blob/master/README.md",
+        "issues": "https://github.com/pohnean/omni-search/issues"
+    },
+    "license": "Craft",
+    "authors": [
+        {
+            "name": "Tai Poh Nean",
+            "homepage": "https://github.com/pohnean"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "pohnean\\omnisearch\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "OmniSearch",
+        "handle": "omni-search",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/pohnean/omni-search/master/CHANGELOG.md",
+        "components": {
+            "omniSearchService": "pohnean\\omnisearch\\services\\OmniSearchService"
+        },
+        "class": "pohnean\\omnisearch\\OmniSearch"
+    }
+}
