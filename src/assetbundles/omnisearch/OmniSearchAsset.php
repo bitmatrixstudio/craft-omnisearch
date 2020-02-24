@@ -36,11 +36,11 @@ class OmniSearchAsset extends AssetBundle
         ];
 
         $this->js = [
-            'js/OmniSearch.js',
+            'omnisearch.umd.js',
         ];
 
         $this->css = [
-            'css/OmniSearch.css',
+//            'css/OmniSearch.css',
         ];
 
         parent::init();

@@ -10,17 +10,11 @@
 
 namespace pohnean\omnisearch;
 
-use pohnean\omnisearch\services\OmniSearchService as OmniSearchServiceService;
-use pohnean\omnisearch\models\Settings;
-
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
-use craft\web\UrlManager;
-use craft\events\RegisterUrlRulesEvent;
-
-use yii\base\Event;
+use pohnean\omnisearch\assetbundles\OmniSearch\OmniSearchAsset;
+use pohnean\omnisearch\models\Settings;
+use pohnean\omnisearch\services\OmniSearchService as OmniSearchServiceService;
 
 /**
  * Class OmniSearch
@@ -33,89 +27,59 @@ use yii\base\Event;
  */
 class OmniSearch extends Plugin
 {
-    // Static Properties
-    // =========================================================================
+	// Static Properties
+	// =========================================================================
 
-    /**
-     * @var OmniSearch
-     */
-    public static $plugin;
+	/**
+	 * @var OmniSearch
+	 */
+	public static $plugin;
 
-    // Public Properties
-    // =========================================================================
+	// Public Properties
+	// =========================================================================
 
-    /**
-     * @var string
-     */
-    public $schemaVersion = '1.0.0';
+	/**
+	 * @var string
+	 */
+	public $schemaVersion = '1.0.0';
 
-    // Public Methods
-    // =========================================================================
+	// Public Methods
+	// =========================================================================
 
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        parent::init();
-        self::$plugin = $this;
+	/**
+	 * @inheritdoc
+	 */
+	public function init()
+	{
+		parent::init();
+		self::$plugin = $this;
 
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $event->rules['siteActionTrigger1'] = 'omni-search/default';
-            }
-        );
+		if (Craft::$app->getRequest()->isCpRequest) {
+			Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
+		}
+	}
 
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $event->rules['cpActionTrigger1'] = 'omni-search/default/do-something';
-            }
-        );
+	// Protected Methods
+	// =========================================================================
 
-        Event::on(
-            Plugins::class,
-            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
-                }
-            }
-        );
+	/**
+	 * @inheritdoc
+	 */
+	protected function createSettingsModel()
+	{
+		return new Settings();
+	}
 
-        Craft::info(
-            Craft::t(
-                'omni-search',
-                '{name} plugin loaded',
-                ['name' => $this->name]
-            ),
-            __METHOD__
-        );
-    }
-
-    // Protected Methods
-    // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
-    protected function createSettingsModel()
-    {
-        return new Settings();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function settingsHtml(): string
-    {
-        return Craft::$app->view->renderTemplate(
-            'omni-search/settings',
-            [
-                'settings' => $this->getSettings()
-            ]
-        );
-    }
+	/**
+	 * @inheritdoc
+	 */
+	protected function settingsHtml(): string
+	{
+		return Craft::$app->view->renderTemplate(
+			'omni-search/settings',
+			[
+				'settings' => $this->getSettings()
+			]
+		);
+	}
 }
