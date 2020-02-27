@@ -1,6 +1,6 @@
 <template>
-  <div class="omnisearch__filter btn small">
-    <span class="omnisearch__filter-text">{{ fieldName }} {{ operatorText }}</span>
+  <div class="omnisearch__filter btn small" data-test="activeFilter">
+    <span class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorText }}</span>
     <button
       type="button"
       class="omnisearch__remove-filter-btn"

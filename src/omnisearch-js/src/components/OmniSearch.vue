@@ -29,11 +29,23 @@ export default {
       required: true,
       default: () => ([]),
     },
+    initialFilters: {
+      type: Array,
+      default: () => ([]),
+    },
   },
   data() {
     return {
-      activeFilters: [],
+      activeFilters: [...this.initialFilters],
     };
+  },
+  watch: {
+    activeFilters: {
+      deep: true,
+      handler(filters) {
+        this.$emit('search', filters);
+      },
+    },
   },
   methods: {
     addFilter(filter) {
@@ -47,24 +59,39 @@ export default {
 </script>
 
 <style lang="scss">
-  .omnisearch__active-filters {
-    display: inline-block;
-  }
+  .omnisearch {
+    position: relative;
 
-  .omnisearch__filter-panel {
-    padding: 0 !important;
-  }
+    .omnisearch__active-filters {
+      display: inline-block;
+    }
 
-  .omnisearch__field-list-search {
-    padding: 0.5rem;
-  }
+    .omnisearch__filter-panel {
+      display: block;
+      padding: 0 !important;
+    }
 
-  .omnisearch__field-list-search + .omnisearch__filter-panel-body {
-    padding-top: 0;
-  }
+    .omnisearch__field-list-search {
+      padding: 0.5rem;
+    }
 
-  .omnisearch__filter-panel-body,
-  .omnisearch__filter-panel-footer {
-    padding: 0.5rem;
+    .omnisearch__field-list-search + .omnisearch__filter-panel-body {
+      padding-top: 0;
+    }
+
+    .omnisearch__filter-panel-body,
+    .omnisearch__filter-panel-footer {
+      padding: 0.5rem;
+    }
+
+    .omnisearch__list-item {
+      cursor: pointer;
+      padding: 10px 14px;
+      margin: 0 -0.5rem;
+
+      &:hover {
+        background-color: #f3f7fc;
+      }
+    }
   }
 </style>

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OmniSearch.vue with initial filters renders correctly with initial active filters 1`] = `
+<div
+  class="omnisearch"
+>
+  <div
+    class="omnisearch__active-filters"
+  >
+    <filter-button-stub
+      filter="[object Object]"
+    />
+  </div>
+   
+  <add-filter-button-stub
+    fields="[object Object],[object Object]"
+  />
+</div>
+`;
+
+exports[`OmniSearch.vue without initial filters renders correctly with no active filters 1`] = `
+<div
+  class="omnisearch"
+>
+  <!---->
+   
+  <add-filter-button-stub
+    fields="[object Object],[object Object]"
+  />
+</div>
+`;
