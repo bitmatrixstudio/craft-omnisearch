@@ -1,10 +1,28 @@
 import { shallowMount } from '@vue/test-utils';
 import OmniSearch from '../../src/components/OmniSearch.vue';
 import AddFilterButton from '../../src/components/AddFilterButton.vue';
-import FilterButton from '../../src/components/FilterButton';
+import FilterButton from '../../src/components/FilterButton.vue';
 
 describe('OmniSearch.vue', () => {
   let wrapper;
+  let mockUpdateElementsFn;
+
+  beforeEach(() => {
+    mockUpdateElementsFn = jest.fn();
+
+    window.Craft = {
+      elementIndex: {
+        settings: {
+          context: 'index',
+          storageKey: 'elementindex.craft\\elements\\Entry',
+          criteria: {
+            enabledForSite: null,
+          },
+        },
+        updateElements: mockUpdateElementsFn,
+      },
+    };
+  });
 
   describe('without initial filters', () => {
     beforeEach(() => {
@@ -57,26 +75,28 @@ describe('OmniSearch.vue', () => {
       expect(wrapper.findAll('.omnisearch__active-filters').length).toEqual(1);
     });
 
-    it('should add to activeFilters array and performSearch when addFilter event is emitted', async () => {
-      wrapper.find(AddFilterButton).vm.$emit('add-filter', {
-        field: { fieldName: 'Title' },
-        operator: 'equals',
-      });
+    it('should add to activeFilters array and performSearch when addFilter event is emitted',
+      async () => {
+        wrapper.find(AddFilterButton).vm.$emit('add-filter', {
+          field: { fieldName: 'Title' },
+          operator: 'equals',
+        });
 
-      expect(wrapper.vm.activeFilters.length).toBe(2);
-      await wrapper.vm.$nextTick();
-      expect(wrapper.emitted('search').length).toBe(1);
-    });
+        expect(wrapper.vm.activeFilters.length).toBe(2);
+        await wrapper.vm.$nextTick();
+        expect(window.Craft.elementIndex.settings.criteria.filters.length).toBe(2);
+        expect(mockUpdateElementsFn).toHaveBeenCalledTimes(1);
+      });
 
     it('should remove from activeFilters when removeFilter event is emitted', async () => {
       wrapper.find(FilterButton).vm.$emit('remove-filter', 0);
 
       expect(wrapper.vm.activeFilters.length).toBe(0);
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted('search').length).toBe(1);
+      expect(window.Craft.elementIndex.settings.criteria.filters.length).toBe(0);
+      expect(mockUpdateElementsFn).toHaveBeenCalledTimes(1);
     });
   });
-
 
   // it('should perform a search when activeFilters change', () => {
   //

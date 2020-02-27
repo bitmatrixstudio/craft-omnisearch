@@ -4,7 +4,12 @@
             class="btn small icon omnisearch__add-filter-btn"
             @click="toggleMenu"
             ref="button"
-    ><strong>{{ buttonText }}</strong>{{ operatorText }}</button>
+    >
+      <template v-if="selectedField != null">
+        <strong>{{ buttonText }}</strong>{{ operatorText }}
+      </template>
+      <template v-else>{{ buttonText }}</template>
+    </button>
     <div v-if="showFieldMenu"
          class="menu omnisearch__filter-panel omnisearch__choose-fields"
          ref="filterPanel"

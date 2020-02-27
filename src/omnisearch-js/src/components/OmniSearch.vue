@@ -42,8 +42,8 @@ export default {
   watch: {
     activeFilters: {
       deep: true,
-      handler(filters) {
-        this.$emit('search', filters);
+      handler() {
+        this.updateFilterCriteria();
       },
     },
   },
@@ -54,6 +54,17 @@ export default {
     removeFilter(index) {
       this.activeFilters.splice(index, 1);
     },
+    updateFilterCriteria() {
+      const elementIndex = window?.Craft?.elementIndex;
+      const criteria = elementIndex?.settings?.criteria;
+
+      if (criteria == null) {
+        return;
+      }
+
+      criteria.filters = [...this.activeFilters];
+      elementIndex.updateElements();
+    },
   },
 };
 </script>
@@ -61,6 +72,12 @@ export default {
 <style lang="scss">
   .omnisearch {
     position: relative;
+    margin-top: -1em;
+    margin-bottom: 1em;
+
+    .btn:not(.small) {
+      font-size: 1em;
+    }
 
     .omnisearch__active-filters {
       display: inline-block;

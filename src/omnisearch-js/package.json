@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --inline-vue --name omnisearch --entry ./src/entry.js",
+    "build": "vue-cli-service build --target lib --inline-vue --report --name omnisearch --entry ./src/entry.js",
     "build:dev": "vue-cli-service build --mode development --target lib --inline-vue --name omnisearch --entry ./src/entry.js",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",

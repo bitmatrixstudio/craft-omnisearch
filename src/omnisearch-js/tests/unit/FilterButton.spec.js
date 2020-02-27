@@ -63,8 +63,8 @@ describe('FilterButton.vue', () => {
         },
       });
 
-      expect(wrapper.find('.omnisearch__filter-text').text()).
-        toEqual('Title starts with "ABC-123"');
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Title starts with "ABC-123"');
     });
 
     it('renders correctly for "contain" operator', () => {
@@ -92,8 +92,8 @@ describe('FilterButton.vue', () => {
         },
       });
 
-      expect(wrapper.find('.omnisearch__filter-text').text()).
-        toEqual('Title does not contain "Epic"');
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Title does not contain "Epic"');
     });
 
     // equals
