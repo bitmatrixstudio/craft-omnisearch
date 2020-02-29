@@ -14,7 +14,7 @@
  * This file exists only as a template for the OmniSearch settings.
  * It does nothing on its own.
  *
- * Don't edit this file, instead copy it to 'craft/config' as 'omni-search.php'
+ * Don't edit this file, instead copy it to 'craft/config' as 'omnisearch.php'
  * and make your changes there to override default settings.
  *
  * Once copied to 'craft/config', this file will be multi-environment aware as
@@ -25,6 +25,5 @@
 return [
 
     // This controls blah blah blah
-    "someAttribute" => true,
-
+//    "someAttribute" => true,
 ];

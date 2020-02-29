@@ -84,7 +84,7 @@ describe('OmniSearch.vue', () => {
 
         expect(wrapper.vm.activeFilters.length).toBe(2);
         await wrapper.vm.$nextTick();
-        expect(window.Craft.elementIndex.settings.criteria.filters.length).toBe(2);
+        expect(window.Craft.elementIndex.settings.criteria.omnisearchFilters.length).toBe(2);
         expect(mockUpdateElementsFn).toHaveBeenCalledTimes(1);
       });
 
@@ -93,7 +93,7 @@ describe('OmniSearch.vue', () => {
 
       expect(wrapper.vm.activeFilters.length).toBe(0);
       await wrapper.vm.$nextTick();
-      expect(window.Craft.elementIndex.settings.criteria.filters.length).toBe(0);
+      expect(window.Craft.elementIndex.settings.criteria.omnisearchFilters.length).toBe(0);
       expect(mockUpdateElementsFn).toHaveBeenCalledTimes(1);
     });
   });

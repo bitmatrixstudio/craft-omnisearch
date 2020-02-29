@@ -1,0 +1,60 @@
+dateModified: 1582944203
+email:
+  fromEmail: support@craftcms.com
+  fromName: 'Craft test site'
+  transportType: craft\mail\transportadapters\Sendmail
+fieldGroups:
+  106ffcf3-bc41-4008-bf90-bf1a82bbac47:
+    name: Common
+plugins:
+  omnisearch:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+sections:
+  accab6a0-2af0-4658-9656-81ca6d34dd9c:
+    enableVersioning: true
+    entryTypes:
+      ee753f85-2c19-4c0c-94ab-32e15b740e12:
+        handle: blog
+        hasTitleField: true
+        name: Blog
+        sortOrder: 1
+        titleFormat: null
+        titleLabel: Title
+    handle: blog
+    name: Blog
+    previewTargets: null
+    propagationMethod: all
+    siteSettings:
+      38c8516d-ca53-46a9-9586-a5717af2285f:
+        enabledByDefault: true
+        hasUrls: true
+        template: ''
+        uriFormat: 'blog/{slug}'
+    type: channel
+siteGroups:
+  163b9313-17a0-49d3-8d61-bf54523d90f1:
+    name: 'Craft test site'
+sites:
+  38c8516d-ca53-46a9-9586-a5717af2285f:
+    baseUrl: 'https://craftcms.com'
+    handle: default
+    hasUrls: true
+    language: en-US
+    name: 'Craft test site'
+    primary: true
+    siteGroup: 163b9313-17a0-49d3-8d61-bf54523d90f1
+    sortOrder: 1
+system:
+  edition: solo
+  live: true
+  name: 'Craft test site'
+  schemaVersion: 3.4.10
+  timeZone: America/Los_Angeles
+users:
+  allowPublicRegistration: false
+  defaultGroup: null
+  photoSubpath: ''
+  photoVolumeUid: null
+  requireEmailVerification: true

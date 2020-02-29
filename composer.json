@@ -14,8 +14,8 @@
         "query"
     ],
     "support": {
-        "docs": "https://github.com/pohnean/omni-search/blob/master/README.md",
-        "issues": "https://github.com/pohnean/omni-search/issues"
+        "docs": "https://github.com/pohnean/craft-omnisearch/blob/master/README.md",
+        "issues": "https://github.com/pohnean/craft-omnisearch/issues"
     },
     "license": "Craft",
     "authors": [
@@ -29,18 +29,23 @@
     },
     "autoload": {
         "psr-4": {
-          "pohnean\\omnisearch\\": "src/"
+            "pohnean\\omnisearch\\": "src/",
+            "fixtures\\": "tests/fixtures/"
         }
     },
     "extra": {
         "name": "OmniSearch",
-        "handle": "omni-search",
+        "handle": "omnisearch",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/pohnean/omni-search/master/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/pohnean/craft-omnisearch/master/CHANGELOG.md",
         "components": {
             "omniSearchService": "pohnean\\omnisearch\\services\\OmniSearchService"
         },
         "class": "pohnean\\omnisearch\\OmniSearch"
+    },
+    "require-dev": {
+        "codeception/codeception": "3.1.*",
+        "vlucas/phpdotenv": "^3.0"
     }
 }

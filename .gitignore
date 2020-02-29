@@ -2,3 +2,7 @@
 /.idea
 /vendor
 .DS_Store
+
+## Tests
+/tests/_craft/storage
+/tests/.env

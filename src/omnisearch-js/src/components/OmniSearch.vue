@@ -62,7 +62,7 @@ export default {
         return;
       }
 
-      criteria.filters = [...this.activeFilters];
+      criteria.omnisearchFilters = [...this.activeFilters];
       elementIndex.updateElements();
     },
   },

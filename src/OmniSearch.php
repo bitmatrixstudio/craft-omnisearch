@@ -98,7 +98,7 @@ class OmniSearch extends Plugin
 	protected function settingsHtml(): string
 	{
 		return Craft::$app->view->renderTemplate(
-			'omni-search/settings',
+			'omnisearch/settings',
 			[
 				'settings' => $this->getSettings()
 			]

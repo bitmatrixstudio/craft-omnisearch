@@ -1,0 +1,25 @@
+namespace: tests
+actor: Tester
+paths:
+  tests: tests
+  log: tests/_output
+  data: tests/_data
+  support: tests/_support
+  envs: tests/_envs
+  fixtures: tests/fixtures
+bootstrap: _bootstrap.php
+params:
+  - tests/.env
+modules:
+  config:
+    \craft\test\Craft:
+      configFile: "tests/_craft/config/test.php"
+      entryUrl: "http://http://craftcms-demo.localhost//index.php"
+      projectConfig: {}
+      migrations: []
+      plugins:
+        - class: \pohnean\omnisearch\OmniSearch
+          handle: omnisearch
+      cleanup: true
+      transaction: true
+      dbSetup: { clean: true, setupCraft: true }
