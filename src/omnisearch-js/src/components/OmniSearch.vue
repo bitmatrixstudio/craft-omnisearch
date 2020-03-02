@@ -4,7 +4,9 @@
          v-if="activeFilters.length > 0">
       <filter-button
         v-for="(filter, index) in activeFilters"
-        :filter="filter"
+        :field-name="getFieldName(filter.field)"
+        :operator="filter.operator"
+        :value="filter.value"
         :key="index"
         @remove-filter="removeFilter(index)"
       />
@@ -39,6 +41,17 @@ export default {
       activeFilters: [...this.initialFilters],
     };
   },
+  computed: {
+    fieldMap() {
+      return this.fields.reduce((fieldMap, field) => {
+        Object.assign(fieldMap, {
+          [field.handle]: field,
+        });
+
+        return fieldMap;
+      }, {});
+    },
+  },
   watch: {
     activeFilters: {
       deep: true,
@@ -48,6 +61,9 @@ export default {
     },
   },
   methods: {
+    getFieldName(handle) {
+      return this.fieldMap[handle] != null ? this.fieldMap[handle].name : '';
+    },
     addFilter(filter) {
       this.activeFilters.push(filter);
     },

@@ -1,4 +1,4 @@
-dateModified: 1582944203
+dateModified: 1583060190
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -6,6 +6,25 @@ email:
 fieldGroups:
   106ffcf3-bc41-4008-bf90-bf1a82bbac47:
     name: Common
+fields:
+  276434ae-3663-4142-862e-1d8292f1b52b:
+    contentColumnType: text
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: bodyContent
+    instructions: ''
+    name: 'Body Content'
+    searchable: true
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: ''
+      columnType: null
+      initialRows: '10'
+      multiline: '1'
+      placeholder: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
 plugins:
   omnisearch:
     edition: standard
@@ -16,11 +35,21 @@ sections:
     enableVersioning: true
     entryTypes:
       ee753f85-2c19-4c0c-94ab-32e15b740e12:
+        fieldLayouts:
+          098eb41d-05cb-41a8-864e-9966861a7e59:
+            tabs:
+              -
+                fields:
+                  276434ae-3663-4142-862e-1d8292f1b52b:
+                    required: false
+                    sortOrder: 1
+                name: 'Tab 1'
+                sortOrder: 1
         handle: blog
         hasTitleField: true
         name: Blog
         sortOrder: 1
-        titleFormat: null
+        titleFormat: ''
         titleLabel: Title
     handle: blog
     name: Blog

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="margin: 30px 15px;">
     <omni-search :fields="fields"></omni-search>
   </div>
 </template>
@@ -14,13 +14,16 @@ export default {
     return {
       fields: [
         {
-          fieldName: 'Title',
+          handle: 'title',
+          name: 'Title',
         },
         {
-          fieldName: 'Post Date',
+          handle: 'postDate',
+          name: 'Post Date',
         },
         {
-          fieldName: 'Area',
+          handle: 'area',
+          name: 'Area',
         },
       ],
     };

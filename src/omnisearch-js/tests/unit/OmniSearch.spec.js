@@ -30,10 +30,12 @@ describe('OmniSearch.vue', () => {
         propsData: {
           fields: [
             {
-              fieldName: 'Title',
+              name: 'Title',
+              handle: 'title',
             },
             {
-              fieldName: 'Post Date',
+              name: 'Post Date',
+              handle: 'postDate',
             },
           ],
         },
@@ -54,15 +56,17 @@ describe('OmniSearch.vue', () => {
         propsData: {
           fields: [
             {
-              fieldName: 'Title',
+              name: 'Title',
+              handle: 'title',
             },
             {
-              fieldName: 'Post Date',
+              name: 'Post Date',
+              handle: 'postDate',
             },
           ],
           initialFilters: [
             {
-              field: { fieldName: 'Title' },
+              field: 'title',
               operator: 'is_present',
             },
           ],

@@ -13,17 +13,23 @@
 export default {
   name: 'FilterButton',
   props: {
-    filter: {
-      type: Object,
+    fieldName: {
+      type: String,
       required: true,
+    },
+    operator: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: [String, Number, Array],
+      default: null,
     },
   },
   computed: {
-    fieldName() {
-      return this.filter.field.fieldName;
-    },
     operatorText() {
-      const { operator, value } = this.filter;
+      const { operator, value } = this;
+
       switch (operator) {
         case 'is_present': {
           return 'is present';
@@ -53,7 +59,7 @@ export default {
   },
   methods: {
     removeFilter() {
-      this.$emit('remove-filter', this.filter);
+      this.$emit('remove-filter');
     },
   },
 };

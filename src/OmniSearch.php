@@ -12,11 +12,8 @@ namespace pohnean\omnisearch;
 
 use Craft;
 use craft\base\Plugin;
-use craft\controllers\ElementIndexesController;
-use craft\db\Query;
-use craft\elements\db\ElementQuery;
+use craft\controllers\TemplatesController;
 use craft\elements\db\EntryQuery;
-use craft\events\CancelableEvent;
 use craft\events\DefineBehaviorsEvent;
 use craft\helpers\Json;
 use craft\web\Controller;
@@ -25,7 +22,6 @@ use pohnean\omnisearch\assetbundles\OmniSearch\OmniSearchAsset;
 use pohnean\omnisearch\behaviors\OmniSearchFilterBehavior;
 use pohnean\omnisearch\models\Settings;
 use pohnean\omnisearch\services\OmniSearchService as OmniSearchServiceService;
-use yii\base\ActionEvent;
 use yii\base\Event;
 
 /**
@@ -69,16 +65,14 @@ class OmniSearch extends Plugin
 		if (Craft::$app->getRequest()->isCpRequest) {
 			Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
 
-			$this->registerFilters();
+			Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
+				Craft::info('Attach OmniSearch behavior for EntryQuery...', 'omnisearch');
+
+				/** @var EntryQuery $sender */
+				$sender = $event->sender;
+				$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());
+			});
 		}
-
-		Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
-			Craft::info('Attach OmniSearch behavior for EntryQuery...', 'omnisearch');
-
-			/** @var EntryQuery $sender */
-			$sender = $event->sender;
-			$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());
-		});
 	}
 
 	// Protected Methods
@@ -103,19 +97,5 @@ class OmniSearch extends Plugin
 				'settings' => $this->getSettings()
 			]
 		);
-	}
-
-	private function registerFilters()
-	{
-		$filters = [
-			[
-				'fieldName' => 'Title',
-			],
-			[
-				'fieldName' => 'Post Date',
-			],
-		];
-
-		Craft::$app->getView()->registerJs("window.omnisearchFilters = " . Json::encode($filters) . ";", View::POS_HEAD);
 	}
 }

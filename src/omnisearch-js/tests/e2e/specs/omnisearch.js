@@ -99,12 +99,12 @@ describe('Omnisearch.vue', () => {
       describe('Filter method: "contains"', () => {
         beforeEach(() => {
           cy.get('[data-test=filterMethodListItem]').eq(0).click();
+
+          cy.get('@addFilterBtn').contains('Title contains');
+          cy.get('[data-test=activeFilter]').should('have.length', 0);
         });
 
         it('should show text input when "contains" filter method is chosen', () => {
-          cy.get('@addFilterBtn').contains('Title contains');
-          cy.get('[data-test=activeFilter]').should('have.length', 0);
-
           cy.get('[data-test=compareValue]').should('be.visible');
           cy.get('[data-test=compareValueTextInput]').should('have.focus');
 
@@ -112,9 +112,22 @@ describe('Omnisearch.vue', () => {
             .contains('Apply Filter')
             .should('be.disabled')
             .should('have.class', 'disabled');
+        });
 
+        it('should set value when the "apply filter" button is clicked', () => {
           cy.get('[data-test=compareValueTextInput]').type('something');
           cy.get('[data-test=applyFilterBtn]').click().then(() => {
+            cy.get('.omnisearch__choose-fields').should('not.be.visible');
+            cy.get('[data-test=activeFilter]').should('have.length', 1);
+
+            cy.get('[data-test=activeFilter]').eq(0).contains('Title contains "something"');
+
+            cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
+          });
+        });
+
+        it('should set value with "enter" key', () => {
+          cy.get('[data-test=compareValueTextInput]').type('something{enter}').then(() => {
             cy.get('.omnisearch__choose-fields').should('not.be.visible');
             cy.get('[data-test=activeFilter]').should('have.length', 1);
 

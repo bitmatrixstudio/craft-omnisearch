@@ -58,6 +58,36 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 		$this->assertEquals('Chapter 2: A Daily Philosophy of Becoming Legendary', $entries[0]->title);
 	}
 
+	public function testFilterSlugContain()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'slug',
+				'operator' => 'contain',
+				'value'    => 'daily-philosophy'
+			]
+		]);
+
+		$entries = $this->query->all();
+		$this->assertCount(1, $entries);
+		$this->assertEquals('Chapter 2: A Daily Philosophy of Becoming Legendary', $entries[0]->title);
+	}
+
+	public function testFilterCustomTextFieldContain()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'bodyContent',
+				'operator' => 'contain',
+				'value'    => 'Lorem ipsum'
+			]
+		]);
+
+		$entries = $this->query->all();
+		$this->assertCount(1, $entries);
+		$this->assertEquals('Chapter 1: A Dangerous Deed', $entries[0]->title);
+	}
+
 	public function testFilterTitleNotContain()
 	{
 		$this->query->setOmnisearchFilters([

@@ -7,12 +7,8 @@ describe('FilterButton.vue', () => {
   beforeEach(() => {
     wrapper = shallowMount(Filter, {
       propsData: {
-        filter: {
-          field: {
-            fieldName: 'Category',
-          },
-          operator: 'is_present',
-        },
+        fieldName: 'Category',
+        operator: 'is_present',
       },
     });
   });
@@ -27,12 +23,8 @@ describe('FilterButton.vue', () => {
     it('renders correctly for "is_present" operator', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
-          filter: {
-            field: {
-              fieldName: 'Title',
-            },
-            operator: 'is_present',
-          },
+          fieldName: 'Title',
+          operator: 'is_present',
         },
       });
 
@@ -42,10 +34,8 @@ describe('FilterButton.vue', () => {
     it('renders correctly for "is_not_present" operator', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
-          filter: {
-            field: { fieldName: 'Title' },
-            operator: 'is_not_present',
-          },
+          fieldName: 'Title',
+          operator: 'is_not_present',
         },
       });
 
@@ -55,11 +45,9 @@ describe('FilterButton.vue', () => {
     it('renders correctly for "starts_with" operator', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
-          filter: {
-            field: { fieldName: 'Title' },
-            operator: 'starts_with',
-            value: 'ABC-123',
-          },
+          fieldName: 'Title',
+          operator: 'starts_with',
+          value: 'ABC-123',
         },
       });
 
@@ -70,11 +58,9 @@ describe('FilterButton.vue', () => {
     it('renders correctly for "contain" operator', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
-          filter: {
-            field: { fieldName: 'Title' },
-            operator: 'contain',
-            value: 'Epic',
-          },
+          fieldName: 'Title',
+          operator: 'contain',
+          value: 'Epic',
         },
       });
 
@@ -84,11 +70,9 @@ describe('FilterButton.vue', () => {
     it('renders correctly for "not_contain" operator', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
-          filter: {
-            field: { fieldName: 'Title' },
-            operator: 'not_contain',
-            value: 'Epic',
-          },
+          fieldName: 'Title',
+          operator: 'not_contain',
+          value: 'Epic',
         },
       });
 
@@ -112,12 +96,6 @@ describe('FilterButton.vue', () => {
       wrapper.find('.omnisearch__remove-filter-btn').trigger('click');
 
       expect(wrapper.emitted('remove-filter').length).toBe(1);
-      expect(wrapper.emitted('remove-filter')[0]).toEqual([
-        {
-          field: { fieldName: 'Category' },
-          operator: 'is_present',
-        },
-      ]);
     });
   });
 });

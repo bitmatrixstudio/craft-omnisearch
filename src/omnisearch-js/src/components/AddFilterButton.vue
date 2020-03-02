@@ -34,7 +34,7 @@
                v-for="(field, index) in fieldList"
                :key="index"
                @click="setSelectedField(field)">
-            {{ field.fieldName }}
+            {{ field.name }}
           </div>
         </div>
       </template>
@@ -60,6 +60,7 @@
             class="text"
             type="text"
             v-model="compareValue"
+            @keydown.enter="applyFilter"
           />
         </div>
         <div class="omnisearch__filter-panel-footer">
@@ -103,7 +104,7 @@ export default {
   computed: {
     buttonText() {
       if (this.showFieldMenu) {
-        return this.selectedField ? this.selectedField.fieldName : 'Choose Field';
+        return this.selectedField ? this.selectedField.name : 'Choose Field';
       }
 
       return '+ Add Filter';
@@ -117,10 +118,10 @@ export default {
     },
     fieldList() {
       const filteredFields = this.fields.filter(
-        (field) => field.fieldName.toLowerCase().includes(this.keyword.toLowerCase()),
+        (field) => field.name.toLowerCase().includes(this.keyword.toLowerCase()),
       );
 
-      return sortBy(filteredFields, 'fieldName');
+      return sortBy(filteredFields, 'name');
     },
     filterMethods() {
       return [
@@ -179,16 +180,18 @@ export default {
       }
     },
     applyFilter() {
-      this.$emit('add-filter', {
-        field: {
-          ...this.selectedField,
-        },
-        operator: this.selectedFilterMethod.operator,
-        value: this.compareValue,
-      });
+      const { requiresValue = true } = this.selectedFilterMethod;
 
-      this.showFieldMenu = false;
-      this.reset();
+      if (!requiresValue || (this.compareValue !== null && this.compareValue !== '')) {
+        this.$emit('add-filter', {
+          field: this.selectedField.handle,
+          operator: this.selectedFilterMethod.operator,
+          value: this.compareValue,
+        });
+
+        this.showFieldMenu = false;
+        this.reset();
+      }
     },
   },
   beforeDestroy() {

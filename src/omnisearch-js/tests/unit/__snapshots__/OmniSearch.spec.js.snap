@@ -8,7 +8,8 @@ exports[`OmniSearch.vue with initial filters renders correctly with initial acti
     class="omnisearch__active-filters"
   >
     <filter-button-stub
-      filter="[object Object]"
+      fieldname="Title"
+      operator="is_present"
     />
   </div>
    
