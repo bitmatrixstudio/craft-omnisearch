@@ -476,13 +476,6 @@ module.exports = isBuffer;
 
 /***/ }),
 
-/***/ "0ea4":
-/***/ (function(module, exports, __webpack_require__) {
-
-// extracted by mini-css-extract-plugin
-
-/***/ }),
-
 /***/ "0f88":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -867,6 +860,35 @@ $({ target: 'Array', proto: true, forced: !STRICT_METHOD || !USES_TO_LENGTH }, {
     return $reduce(this, callbackfn, arguments.length, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
+
+
+/***/ }),
+
+/***/ "14c3":
+/***/ (function(module, exports, __webpack_require__) {
+
+var classof = __webpack_require__("c6b6");
+var regexpExec = __webpack_require__("9263");
+
+// `RegExpExec` abstract operation
+// https://tc39.github.io/ecma262/#sec-regexpexec
+module.exports = function (R, S) {
+  var exec = R.exec;
+  if (typeof exec === 'function') {
+    var result = exec.call(R, S);
+    if (typeof result !== 'object') {
+      throw TypeError('RegExp exec method returned something other than an Object or null');
+    }
+    return result;
+  }
+
+  if (classof(R) !== 'RegExp') {
+    throw TypeError('RegExp#exec called on incompatible receiver');
+  }
+
+  return regexpExec.call(R, S);
+};
+
 
 
 /***/ }),
@@ -10563,6 +10585,149 @@ module.exports = function (it, key) {
 
 /***/ }),
 
+/***/ "5319":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var fixRegExpWellKnownSymbolLogic = __webpack_require__("d784");
+var anObject = __webpack_require__("825a");
+var toObject = __webpack_require__("7b0b");
+var toLength = __webpack_require__("50c4");
+var toInteger = __webpack_require__("a691");
+var requireObjectCoercible = __webpack_require__("1d80");
+var advanceStringIndex = __webpack_require__("8aa5");
+var regExpExec = __webpack_require__("14c3");
+
+var max = Math.max;
+var min = Math.min;
+var floor = Math.floor;
+var SUBSTITUTION_SYMBOLS = /\$([$&'`]|\d\d?|<[^>]*>)/g;
+var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&'`]|\d\d?)/g;
+
+var maybeToString = function (it) {
+  return it === undefined ? it : String(it);
+};
+
+// @@replace logic
+fixRegExpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative, reason) {
+  var REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE = reason.REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE;
+  var REPLACE_KEEPS_$0 = reason.REPLACE_KEEPS_$0;
+  var UNSAFE_SUBSTITUTE = REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE ? '$' : '$0';
+
+  return [
+    // `String.prototype.replace` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
+    function replace(searchValue, replaceValue) {
+      var O = requireObjectCoercible(this);
+      var replacer = searchValue == undefined ? undefined : searchValue[REPLACE];
+      return replacer !== undefined
+        ? replacer.call(searchValue, O, replaceValue)
+        : nativeReplace.call(String(O), searchValue, replaceValue);
+    },
+    // `RegExp.prototype[@@replace]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
+    function (regexp, replaceValue) {
+      if (
+        (!REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE && REPLACE_KEEPS_$0) ||
+        (typeof replaceValue === 'string' && replaceValue.indexOf(UNSAFE_SUBSTITUTE) === -1)
+      ) {
+        var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
+        if (res.done) return res.value;
+      }
+
+      var rx = anObject(regexp);
+      var S = String(this);
+
+      var functionalReplace = typeof replaceValue === 'function';
+      if (!functionalReplace) replaceValue = String(replaceValue);
+
+      var global = rx.global;
+      if (global) {
+        var fullUnicode = rx.unicode;
+        rx.lastIndex = 0;
+      }
+      var results = [];
+      while (true) {
+        var result = regExpExec(rx, S);
+        if (result === null) break;
+
+        results.push(result);
+        if (!global) break;
+
+        var matchStr = String(result[0]);
+        if (matchStr === '') rx.lastIndex = advanceStringIndex(S, toLength(rx.lastIndex), fullUnicode);
+      }
+
+      var accumulatedResult = '';
+      var nextSourcePosition = 0;
+      for (var i = 0; i < results.length; i++) {
+        result = results[i];
+
+        var matched = String(result[0]);
+        var position = max(min(toInteger(result.index), S.length), 0);
+        var captures = [];
+        // NOTE: This is equivalent to
+        //   captures = result.slice(1).map(maybeToString)
+        // but for some reason `nativeSlice.call(result, 1, result.length)` (called in
+        // the slice polyfill when slicing native arrays) "doesn't work" in safari 9 and
+        // causes a crash (https://pastebin.com/N21QzeQA) when trying to debug it.
+        for (var j = 1; j < result.length; j++) captures.push(maybeToString(result[j]));
+        var namedCaptures = result.groups;
+        if (functionalReplace) {
+          var replacerArgs = [matched].concat(captures, position, S);
+          if (namedCaptures !== undefined) replacerArgs.push(namedCaptures);
+          var replacement = String(replaceValue.apply(undefined, replacerArgs));
+        } else {
+          replacement = getSubstitution(matched, S, position, captures, namedCaptures, replaceValue);
+        }
+        if (position >= nextSourcePosition) {
+          accumulatedResult += S.slice(nextSourcePosition, position) + replacement;
+          nextSourcePosition = position + matched.length;
+        }
+      }
+      return accumulatedResult + S.slice(nextSourcePosition);
+    }
+  ];
+
+  // https://tc39.github.io/ecma262/#sec-getsubstitution
+  function getSubstitution(matched, str, position, captures, namedCaptures, replacement) {
+    var tailPos = position + matched.length;
+    var m = captures.length;
+    var symbols = SUBSTITUTION_SYMBOLS_NO_NAMED;
+    if (namedCaptures !== undefined) {
+      namedCaptures = toObject(namedCaptures);
+      symbols = SUBSTITUTION_SYMBOLS;
+    }
+    return nativeReplace.call(replacement, symbols, function (match, ch) {
+      var capture;
+      switch (ch.charAt(0)) {
+        case '$': return '$';
+        case '&': return matched;
+        case '`': return str.slice(0, position);
+        case "'": return str.slice(tailPos);
+        case '<':
+          capture = namedCaptures[ch.slice(1, -1)];
+          break;
+        default: // \d\d?
+          var n = +ch;
+          if (n === 0) return match;
+          if (n > m) {
+            var f = floor(n / 10);
+            if (f === 0) return match;
+            if (f <= m) return captures[f - 1] === undefined ? ch.charAt(1) : captures[f - 1] + ch.charAt(1);
+            return match;
+          }
+          capture = captures[n - 1];
+      }
+      return capture === undefined ? '' : capture;
+    });
+  }
+});
+
+
+/***/ }),
+
 /***/ "55a3":
 /***/ (function(module, exports) {
 
@@ -11994,6 +12159,38 @@ module.exports = baseGetAllKeys;
 
 /***/ }),
 
+/***/ "7db0":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__("23e7");
+var $find = __webpack_require__("b727").find;
+var addToUnscopables = __webpack_require__("44d2");
+var arrayMethodUsesToLength = __webpack_require__("ae40");
+
+var FIND = 'find';
+var SKIPS_HOLES = true;
+
+var USES_TO_LENGTH = arrayMethodUsesToLength(FIND);
+
+// Shouldn't skip holes
+if (FIND in []) Array(1)[FIND](function () { SKIPS_HOLES = false; });
+
+// `Array.prototype.find` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.find
+$({ target: 'Array', proto: true, forced: SKIPS_HOLES || !USES_TO_LENGTH }, {
+  find: function find(callbackfn /* , that = undefined */) {
+    return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables(FIND);
+
+
+/***/ }),
+
 /***/ "7dd0":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12200,6 +12397,13 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "829c":
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
 /***/ "83ab":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12336,6 +12540,22 @@ module.exports = store.inspectSource;
 
 /***/ }),
 
+/***/ "8aa5":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var charAt = __webpack_require__("6547").charAt;
+
+// `AdvanceStringIndex` abstract operation
+// https://tc39.github.io/ecma262/#sec-advancestringindex
+module.exports = function (S, index, unicode) {
+  return index + (unicode ? charAt(S, index).length : 1);
+};
+
+
+/***/ }),
+
 /***/ "90e3":
 /***/ (function(module, exports) {
 
@@ -12384,6 +12604,101 @@ function overArg(func, transform) {
 }
 
 module.exports = overArg;
+
+
+/***/ }),
+
+/***/ "9263":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var regexpFlags = __webpack_require__("ad6d");
+var stickyHelpers = __webpack_require__("9f7f");
+
+var nativeExec = RegExp.prototype.exec;
+// This always refers to the native implementation, because the
+// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
+// which loads this file before patching the method.
+var nativeReplace = String.prototype.replace;
+
+var patchedExec = nativeExec;
+
+var UPDATES_LAST_INDEX_WRONG = (function () {
+  var re1 = /a/;
+  var re2 = /b*/g;
+  nativeExec.call(re1, 'a');
+  nativeExec.call(re2, 'a');
+  return re1.lastIndex !== 0 || re2.lastIndex !== 0;
+})();
+
+var UNSUPPORTED_Y = stickyHelpers.UNSUPPORTED_Y || stickyHelpers.BROKEN_CARET;
+
+// nonparticipating capturing group, copied from es5-shim's String#split patch.
+var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
+
+var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y;
+
+if (PATCH) {
+  patchedExec = function exec(str) {
+    var re = this;
+    var lastIndex, reCopy, match, i;
+    var sticky = UNSUPPORTED_Y && re.sticky;
+    var flags = regexpFlags.call(re);
+    var source = re.source;
+    var charsAdded = 0;
+    var strCopy = str;
+
+    if (sticky) {
+      flags = flags.replace('y', '');
+      if (flags.indexOf('g') === -1) {
+        flags += 'g';
+      }
+
+      strCopy = String(str).slice(re.lastIndex);
+      // Support anchored sticky behavior.
+      if (re.lastIndex > 0 && (!re.multiline || re.multiline && str[re.lastIndex - 1] !== '\n')) {
+        source = '(?: ' + source + ')';
+        strCopy = ' ' + strCopy;
+        charsAdded++;
+      }
+      // ^(? + rx + ) is needed, in combination with some str slicing, to
+      // simulate the 'y' flag.
+      reCopy = new RegExp('^(?:' + source + ')', flags);
+    }
+
+    if (NPCG_INCLUDED) {
+      reCopy = new RegExp('^' + source + '$(?!\\s)', flags);
+    }
+    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
+
+    match = nativeExec.call(sticky ? reCopy : re, strCopy);
+
+    if (sticky) {
+      if (match) {
+        match.input = match.input.slice(charsAdded);
+        match[0] = match[0].slice(charsAdded);
+        match.index = re.lastIndex;
+        re.lastIndex += match[0].length;
+      } else re.lastIndex = 0;
+    } else if (UPDATES_LAST_INDEX_WRONG && match) {
+      re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
+    }
+    if (NPCG_INCLUDED && match && match.length > 1) {
+      // Fix browsers whose `exec` methods don't consistently return `undefined`
+      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+      nativeReplace.call(match[0], reCopy, function () {
+        for (i = 1; i < arguments.length - 2; i++) {
+          if (arguments[i] === undefined) match[i] = undefined;
+        }
+      });
+    }
+
+    return match;
+  };
+}
+
+module.exports = patchedExec;
 
 
 /***/ }),
@@ -12928,17 +13243,6 @@ exports.f = DESCRIPTORS ? nativeDefineProperty : function defineProperty(O, P, A
 
 /***/ }),
 
-/***/ "9dc3":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FilterButton_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("0ea4");
-/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FilterButton_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FilterButton_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* unused harmony reexport * */
- /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FilterButton_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
 /***/ "9e69":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12972,6 +13276,37 @@ module.exports = function (IteratorConstructor, NAME, next) {
   Iterators[TO_STRING_TAG] = returnThis;
   return IteratorConstructor;
 };
+
+
+/***/ }),
+
+/***/ "9f7f":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var fails = __webpack_require__("d039");
+
+// babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError,
+// so we use an intermediate function.
+function RE(s, f) {
+  return RegExp(s, f);
+}
+
+exports.UNSUPPORTED_Y = fails(function () {
+  // babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError
+  var re = RE('a', 'y');
+  re.lastIndex = 2;
+  return re.exec('abcd') != null;
+});
+
+exports.BROKEN_CARET = fails(function () {
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=773687
+  var re = RE('^r', 'gy');
+  re.lastIndex = 2;
+  return re.exec('str') != null;
+});
 
 
 /***/ }),
@@ -13736,6 +14071,21 @@ module.exports = function (METHOD_NAME) {
 
 /***/ }),
 
+/***/ "ac1f":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__("23e7");
+var exec = __webpack_require__("9263");
+
+$({ target: 'RegExp', proto: true, forced: /./.exec !== exec }, {
+  exec: exec
+});
+
+
+/***/ }),
+
 /***/ "ac41":
 /***/ (function(module, exports) {
 
@@ -13861,6 +14211,17 @@ module.exports = {
   BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
 };
 
+
+/***/ }),
+
+/***/ "b02d":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ActiveFilter_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("829c");
+/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ActiveFilter_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ActiveFilter_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* unused harmony reexport * */
+ /* unused harmony default export */ var _unused_webpack_default_export = (_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_2_node_modules_sass_loader_dist_cjs_js_ref_8_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ActiveFilter_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
@@ -15390,6 +15751,139 @@ module.exports = SetCache;
 
 /***/ }),
 
+/***/ "d784":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// TODO: Remove from `core-js@4` since it's moved to entry points
+__webpack_require__("ac1f");
+var redefine = __webpack_require__("6eeb");
+var fails = __webpack_require__("d039");
+var wellKnownSymbol = __webpack_require__("b622");
+var regexpExec = __webpack_require__("9263");
+var createNonEnumerableProperty = __webpack_require__("9112");
+
+var SPECIES = wellKnownSymbol('species');
+
+var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
+  // #replace needs built-in support for named groups.
+  // #match works fine because it just return the exec results, even if it has
+  // a "grops" property.
+  var re = /./;
+  re.exec = function () {
+    var result = [];
+    result.groups = { a: '7' };
+    return result;
+  };
+  return ''.replace(re, '$<a>') !== '7';
+});
+
+// IE <= 11 replaces $0 with the whole match, as if it was $&
+// https://stackoverflow.com/questions/6024666/getting-ie-to-replace-a-regex-with-the-literal-string-0
+var REPLACE_KEEPS_$0 = (function () {
+  return 'a'.replace(/./, '$0') === '$0';
+})();
+
+var REPLACE = wellKnownSymbol('replace');
+// Safari <= 13.0.3(?) substitutes nth capture where n>m with an empty string
+var REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE = (function () {
+  if (/./[REPLACE]) {
+    return /./[REPLACE]('a', '$0') === '';
+  }
+  return false;
+})();
+
+// Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
+// Weex JS has frozen built-in prototypes, so use try / catch wrapper
+var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = !fails(function () {
+  var re = /(?:)/;
+  var originalExec = re.exec;
+  re.exec = function () { return originalExec.apply(this, arguments); };
+  var result = 'ab'.split(re);
+  return result.length !== 2 || result[0] !== 'a' || result[1] !== 'b';
+});
+
+module.exports = function (KEY, length, exec, sham) {
+  var SYMBOL = wellKnownSymbol(KEY);
+
+  var DELEGATES_TO_SYMBOL = !fails(function () {
+    // String methods call symbol-named RegEp methods
+    var O = {};
+    O[SYMBOL] = function () { return 7; };
+    return ''[KEY](O) != 7;
+  });
+
+  var DELEGATES_TO_EXEC = DELEGATES_TO_SYMBOL && !fails(function () {
+    // Symbol-named RegExp methods call .exec
+    var execCalled = false;
+    var re = /a/;
+
+    if (KEY === 'split') {
+      // We can't use real regex here since it causes deoptimization
+      // and serious performance degradation in V8
+      // https://github.com/zloirock/core-js/issues/306
+      re = {};
+      // RegExp[@@split] doesn't call the regex's exec method, but first creates
+      // a new one. We need to return the patched regex when creating the new one.
+      re.constructor = {};
+      re.constructor[SPECIES] = function () { return re; };
+      re.flags = '';
+      re[SYMBOL] = /./[SYMBOL];
+    }
+
+    re.exec = function () { execCalled = true; return null; };
+
+    re[SYMBOL]('');
+    return !execCalled;
+  });
+
+  if (
+    !DELEGATES_TO_SYMBOL ||
+    !DELEGATES_TO_EXEC ||
+    (KEY === 'replace' && !(
+      REPLACE_SUPPORTS_NAMED_GROUPS &&
+      REPLACE_KEEPS_$0 &&
+      !REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE
+    )) ||
+    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
+  ) {
+    var nativeRegExpMethod = /./[SYMBOL];
+    var methods = exec(SYMBOL, ''[KEY], function (nativeMethod, regexp, str, arg2, forceStringMethod) {
+      if (regexp.exec === regexpExec) {
+        if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
+          // The native String method already delegates to @@method (this
+          // polyfilled function), leasing to infinite recursion.
+          // We avoid it by directly calling the native @@method method.
+          return { done: true, value: nativeRegExpMethod.call(regexp, str, arg2) };
+        }
+        return { done: true, value: nativeMethod.call(str, regexp, arg2) };
+      }
+      return { done: false };
+    }, {
+      REPLACE_KEEPS_$0: REPLACE_KEEPS_$0,
+      REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE: REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE
+    });
+    var stringMethod = methods[0];
+    var regexMethod = methods[1];
+
+    redefine(String.prototype, KEY, stringMethod);
+    redefine(RegExp.prototype, SYMBOL, length == 2
+      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
+      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
+      ? function (string, arg) { return regexMethod.call(string, this, arg); }
+      // 21.2.5.6 RegExp.prototype[@@match](string)
+      // 21.2.5.9 RegExp.prototype[@@search](string)
+      : function (string) { return regexMethod.call(string, this); }
+    );
+  }
+
+  if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
+};
+
+
+/***/ }),
+
 /***/ "da03":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16492,12 +16986,12 @@ var es_array_concat = __webpack_require__("99af");
 // EXTERNAL MODULE: ./node_modules/vue/dist/vue.runtime.esm.js
 var vue_runtime_esm = __webpack_require__("2b0e");
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/OmniSearch.vue?vue&type=template&id=740976f8&
-var OmniSearchvue_type_template_id_740976f8_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch"},[(_vm.activeFilters.length > 0)?_c('div',{staticClass:"omnisearch__active-filters"},_vm._l((_vm.activeFilters),function(filter,index){return _c('filter-button',{key:index,attrs:{"field-name":_vm.getFieldName(filter.field),"operator":filter.operator,"value":filter.value},on:{"remove-filter":function($event){return _vm.removeFilter(index)}}})}),1):_vm._e(),_c('add-filter-button',{attrs:{"fields":_vm.fields},on:{"add-filter":_vm.addFilter}})],1)}
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/OmniSearch.vue?vue&type=template&id=4942d3b0&
+var OmniSearchvue_type_template_id_4942d3b0_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch"},[(_vm.activeFilters.length > 0)?_c('div',{staticClass:"omnisearch__active-filters"},_vm._l((_vm.activeFilters),function(filter,index){return _c('active-filter',{key:index,attrs:{"field-name":_vm.getFieldName(filter.field),"operator":filter.operator,"value":filter.value},on:{"remove-filter":function($event){return _vm.removeFilter(index)}}})}),1):_vm._e(),_c('add-filter-button',{attrs:{"fields":_vm.fields},on:{"add-filter":_vm.addFilter}})],1)}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/OmniSearch.vue?vue&type=template&id=740976f8&
+// CONCATENATED MODULE: ./src/components/OmniSearch.vue?vue&type=template&id=4942d3b0&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.reduce.js
 var es_array_reduce = __webpack_require__("13d5");
@@ -16584,12 +17078,12 @@ function _nonIterableSpread() {
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
 }
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/AddFilterButton.vue?vue&type=template&id=308a0fcb&
-var AddFilterButtonvue_type_template_id_308a0fcb_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch__add-filter"},[_c('button',{ref:"button",staticClass:"btn small icon omnisearch__add-filter-btn",attrs:{"type":"button"},on:{"click":_vm.toggleMenu}},[(_vm.selectedField != null)?[_c('strong',[_vm._v(_vm._s(_vm.buttonText))]),_vm._v(_vm._s(_vm.operatorText)+" ")]:[_vm._v(_vm._s(_vm.buttonText))]],2),(_vm.showFieldMenu)?_c('div',{ref:"filterPanel",staticClass:"menu omnisearch__filter-panel omnisearch__choose-fields",attrs:{"data-test":"filterPanel"}},[(_vm.selectedField == null)?[_c('div',{staticClass:"omnisearch__field-list-search"},[_c('div',{staticClass:"flex-grow texticon search icon"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.keyword),expression:"keyword"}],ref:"searchInput",staticClass:"text",attrs:{"type":"text","placeholder":"Search attributes...","data-test":"fieldSearchInput"},domProps:{"value":(_vm.keyword)},on:{"input":function($event){if($event.target.composing){ return; }_vm.keyword=$event.target.value}}})])]),_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"fieldList"}},_vm._l((_vm.fieldList),function(field,index){return _c('div',{key:index,staticClass:"omnisearch__list-item",attrs:{"data-test":"fieldListItem"},on:{"click":function($event){return _vm.setSelectedField(field)}}},[_vm._v(" "+_vm._s(field.name)+" ")])}),0)]:(_vm.selectedFilterMethod == null)?[_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"filterMethodList"}},_vm._l((_vm.filterMethods),function(filterMethod){return _c('div',{key:filterMethod.operator,staticClass:"omnisearch__list-item",attrs:{"data-test":"filterMethodListItem"},on:{"click":function($event){return _vm.selectFilterMethod(filterMethod)}}},[_vm._v(" "+_vm._s(filterMethod.label)+" ")])}),0)]:[_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"compareValue"}},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.compareValue),expression:"compareValue"}],ref:"compareValueTextInput",staticClass:"text",attrs:{"data-test":"compareValueTextInput","type":"text"},domProps:{"value":(_vm.compareValue)},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }return _vm.applyFilter($event)},"input":function($event){if($event.target.composing){ return; }_vm.compareValue=$event.target.value}}})]),_c('div',{staticClass:"omnisearch__filter-panel-footer"},[_c('button',{staticClass:"btn fullwidth",class:{ disabled: _vm.compareValue == null },attrs:{"type":"button","disabled":_vm.compareValue == null,"data-test":"applyFilterBtn"},on:{"click":_vm.applyFilter}},[_vm._v(" Apply Filter ")])])]],2):_vm._e()])}
-var AddFilterButtonvue_type_template_id_308a0fcb_staticRenderFns = []
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/AddFilterButton.vue?vue&type=template&id=97c730bc&
+var AddFilterButtonvue_type_template_id_97c730bc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch__add-filter"},[_c('button',{ref:"button",staticClass:"btn small icon omnisearch__add-filter-btn",attrs:{"type":"button"},on:{"click":_vm.toggleMenu}},[(_vm.selectedField != null)?[_c('strong',[_vm._v(_vm._s(_vm.buttonText))]),_vm._v(_vm._s(_vm.operatorText)+" ")]:[_vm._v(_vm._s(_vm.buttonText))]],2),(_vm.showFieldMenu)?_c('div',{ref:"filterPanel",staticClass:"menu omnisearch__filter-panel omnisearch__choose-fields",attrs:{"data-test":"filterPanel"}},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.selectedField == null),expression:"selectedField == null"}]},[_c('div',{staticClass:"omnisearch__field-list-search"},[_c('div',{staticClass:"flex-grow texticon search icon"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.keyword),expression:"keyword"}],ref:"searchInput",staticClass:"text",attrs:{"type":"text","placeholder":"Search attributes...","data-test":"fieldSearchInput"},domProps:{"value":(_vm.keyword)},on:{"input":function($event){if($event.target.composing){ return; }_vm.keyword=$event.target.value}}})])]),_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"fieldList"}},_vm._l((_vm.fieldList),function(field,index){return _c('div',{key:index,staticClass:"omnisearch__list-item",attrs:{"data-test":"fieldListItem"},on:{"click":function($event){return _vm.setSelectedField(field)}}},[_vm._v(" "+_vm._s(field.name)+" ")])}),0)]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.selectedField != null && _vm.selectedFilterMethod == null),expression:"selectedField != null && selectedFilterMethod == null"}]},[_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"filterMethodList"}},_vm._l((_vm.filterMethods),function(filterMethod){return _c('div',{key:filterMethod.operator,staticClass:"omnisearch__list-item",attrs:{"data-test":"filterMethodListItem"},on:{"click":function($event){return _vm.selectFilterMethod(filterMethod)}}},[_vm._v(" "+_vm._s(filterMethod.label)+" ")])}),0)]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.selectedField != null && _vm.selectedFilterMethod != null),expression:"selectedField != null && selectedFilterMethod != null"}]},[_c('div',{staticClass:"omnisearch__filter-panel-body",attrs:{"data-test":"compareValue"}},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.compareValue),expression:"compareValue"}],ref:"compareValueTextInput",staticClass:"text",attrs:{"data-test":"compareValueTextInput","type":"text"},domProps:{"value":(_vm.compareValue)},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }return _vm.applyFilter($event)},"input":function($event){if($event.target.composing){ return; }_vm.compareValue=$event.target.value}}})]),_c('div',{staticClass:"omnisearch__filter-panel-footer"},[_c('button',{staticClass:"btn fullwidth",class:{ disabled: _vm.compareValue == null },attrs:{"type":"button","disabled":_vm.compareValue == null,"data-test":"applyFilterBtn"},on:{"click":_vm.applyFilter}},[_vm._v(" Apply Filter ")])])])]):_vm._e()])}
+var AddFilterButtonvue_type_template_id_97c730bc_staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/AddFilterButton.vue?vue&type=template&id=308a0fcb&
+// CONCATENATED MODULE: ./src/components/AddFilterButton.vue?vue&type=template&id=97c730bc&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.filter.js
 var es_array_filter = __webpack_require__("4de4");
@@ -17779,6 +18273,31 @@ Object(lib["popperGenerator"])({
 var sortBy = __webpack_require__("c707");
 var sortBy_default = /*#__PURE__*/__webpack_require__.n(sortBy);
 
+// CONCATENATED MODULE: ./src/operators.js
+/* harmony default export */ var operators = ([{
+  operator: 'contain',
+  label: 'contains'
+}, {
+  operator: 'not_contain',
+  label: 'does not contain'
+}, {
+  operator: 'equals',
+  label: 'equals'
+}, {
+  operator: 'not_equals',
+  label: 'does not equal'
+}, {
+  operator: 'starts_with',
+  label: 'starts with'
+}, {
+  operator: 'is_present',
+  label: 'is present',
+  requiresValue: false
+}, {
+  operator: 'is_not_present',
+  label: 'is not present',
+  requiresValue: false
+}]);
 // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/AddFilterButton.vue?vue&type=script&lang=js&
 
 
@@ -17867,6 +18386,7 @@ var sortBy_default = /*#__PURE__*/__webpack_require__.n(sortBy);
 //
 
 
+
 /* harmony default export */ var AddFilterButtonvue_type_script_lang_js_ = ({
   name: 'AddFilterButton',
   props: {
@@ -17911,30 +18431,7 @@ var sortBy_default = /*#__PURE__*/__webpack_require__.n(sortBy);
       return sortBy_default()(filteredFields, 'name');
     },
     filterMethods: function filterMethods() {
-      return [{
-        operator: 'contain',
-        label: 'contains'
-      }, {
-        operator: 'not_contain',
-        label: 'does not contains'
-      }, {
-        operator: 'equal',
-        label: 'equals'
-      }, {
-        operator: 'not_equal',
-        label: 'not equal to'
-      }, {
-        operator: 'starts_with',
-        label: 'starts with'
-      }, {
-        operator: 'is_present',
-        label: 'is present',
-        requiresValue: false
-      }, {
-        operator: 'is_not_present',
-        label: 'is not present',
-        requiresValue: false
-      }];
+      return operators;
     }
   },
   watch: {
@@ -17997,12 +18494,26 @@ var sortBy_default = /*#__PURE__*/__webpack_require__.n(sortBy);
         this.showFieldMenu = false;
         this.reset();
       }
+    },
+    handleClickOutside: function handleClickOutside(e) {
+      if (this.showFieldMenu === false) {
+        return;
+      }
+
+      if (this.$refs.filterPanel && !this.$refs.filterPanel.contains(e.target) && this.$refs.button && !this.$refs.button.contains(e.target)) {
+        this.showFieldMenu = false;
+      }
     }
+  },
+  mounted: function mounted() {
+    document.addEventListener('click', this.handleClickOutside, false);
   },
   beforeDestroy: function beforeDestroy() {
     if (this.popper) {
       this.popper.destroy();
     }
+
+    document.removeEventListener('click', this.handleClickOutside);
   }
 });
 // CONCATENATED MODULE: ./src/components/AddFilterButton.vue?vue&type=script&lang=js&
@@ -18116,8 +18627,8 @@ function normalizeComponent (
 
 var component = normalizeComponent(
   components_AddFilterButtonvue_type_script_lang_js_,
-  AddFilterButtonvue_type_template_id_308a0fcb_render,
-  AddFilterButtonvue_type_template_id_308a0fcb_staticRenderFns,
+  AddFilterButtonvue_type_template_id_97c730bc_render,
+  AddFilterButtonvue_type_template_id_97c730bc_staticRenderFns,
   false,
   null,
   null,
@@ -18126,17 +18637,29 @@ var component = normalizeComponent(
 )
 
 /* harmony default export */ var AddFilterButton = (component.exports);
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/FilterButton.vue?vue&type=template&id=64c4ff48&
-var FilterButtonvue_type_template_id_64c4ff48_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch__filter btn small",attrs:{"data-test":"activeFilter"}},[_c('span',{staticClass:"omnisearch__filter-text"},[_c('strong',[_vm._v(_vm._s(_vm.fieldName))]),_vm._v(" "+_vm._s(_vm.operatorText))]),_c('button',{staticClass:"omnisearch__remove-filter-btn",attrs:{"type":"button"},on:{"click":_vm.removeFilter}},[_vm._v(" × ")])])}
-var FilterButtonvue_type_template_id_64c4ff48_staticRenderFns = []
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"8667e566-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ActiveFilter.vue?vue&type=template&id=5a6db836&
+var ActiveFiltervue_type_template_id_5a6db836_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch__filter btn small",attrs:{"data-test":"activeFilter"}},[_c('span',{staticClass:"omnisearch__filter-text"},[_c('strong',[_vm._v(_vm._s(_vm.fieldName))]),_vm._v(" "+_vm._s(_vm.operatorLabel))]),_c('button',{staticClass:"omnisearch__remove-filter-btn",attrs:{"type":"button"},on:{"click":_vm.removeFilter}},[_vm._v(" × ")])])}
+var ActiveFiltervue_type_template_id_5a6db836_staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/FilterButton.vue?vue&type=template&id=64c4ff48&
+// CONCATENATED MODULE: ./src/components/ActiveFilter.vue?vue&type=template&id=5a6db836&
+
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.find.js
+var es_array_find = __webpack_require__("7db0");
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.number.constructor.js
 var es_number_constructor = __webpack_require__("a9e3");
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/FilterButton.vue?vue&type=script&lang=js&
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.regexp.exec.js
+var es_regexp_exec = __webpack_require__("ac1f");
+
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.string.replace.js
+var es_string_replace = __webpack_require__("5319");
+
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/ActiveFilter.vue?vue&type=script&lang=js&
+
+
+
 
 //
 //
@@ -18149,7 +18672,9 @@ var es_number_constructor = __webpack_require__("a9e3");
 //
 //
 //
-/* harmony default export */ var FilterButtonvue_type_script_lang_js_ = ({
+//
+
+/* harmony default export */ var ActiveFiltervue_type_script_lang_js_ = ({
   name: 'FilterButton',
   props: {
     fieldName: {
@@ -18166,41 +18691,21 @@ var es_number_constructor = __webpack_require__("a9e3");
     }
   },
   computed: {
-    operatorText: function operatorText() {
+    operatorLabel: function operatorLabel() {
       var operator = this.operator,
           value = this.value;
+      var config = operators.find(function (item) {
+        return item.operator === operator;
+      });
 
-      switch (operator) {
-        case 'is_present':
-          {
-            return 'is present';
-          }
-
-        case 'is_not_present':
-          {
-            return 'is not present';
-          }
-
-        case 'starts_with':
-          {
-            return "starts with \"".concat(value, "\"");
-          }
-
-        case 'contain':
-          {
-            return "contains \"".concat(value, "\"");
-          }
-
-        case 'not_contain':
-          {
-            return "does not contain \"".concat(value, "\"");
-          }
-
-        default:
-          {
-            return 'Invalid operator';
-          }
+      if (config == null) {
+        return 'Invalid operator';
       }
+
+      var _config$requiresValue = config.requiresValue,
+          requiresValue = _config$requiresValue === void 0 ? true : _config$requiresValue;
+      var labelTemplate = requiresValue ? '{operator} "{value}"' : '{operator}';
+      return labelTemplate.replace('{operator}', config.label).replace('{value}', value);
     }
   },
   methods: {
@@ -18209,12 +18714,12 @@ var es_number_constructor = __webpack_require__("a9e3");
     }
   }
 });
-// CONCATENATED MODULE: ./src/components/FilterButton.vue?vue&type=script&lang=js&
- /* harmony default export */ var components_FilterButtonvue_type_script_lang_js_ = (FilterButtonvue_type_script_lang_js_); 
-// EXTERNAL MODULE: ./src/components/FilterButton.vue?vue&type=style&index=0&lang=scss&
-var FilterButtonvue_type_style_index_0_lang_scss_ = __webpack_require__("9dc3");
+// CONCATENATED MODULE: ./src/components/ActiveFilter.vue?vue&type=script&lang=js&
+ /* harmony default export */ var components_ActiveFiltervue_type_script_lang_js_ = (ActiveFiltervue_type_script_lang_js_); 
+// EXTERNAL MODULE: ./src/components/ActiveFilter.vue?vue&type=style&index=0&lang=scss&
+var ActiveFiltervue_type_style_index_0_lang_scss_ = __webpack_require__("b02d");
 
-// CONCATENATED MODULE: ./src/components/FilterButton.vue
+// CONCATENATED MODULE: ./src/components/ActiveFilter.vue
 
 
 
@@ -18223,10 +18728,10 @@ var FilterButtonvue_type_style_index_0_lang_scss_ = __webpack_require__("9dc3");
 
 /* normalize component */
 
-var FilterButton_component = normalizeComponent(
-  components_FilterButtonvue_type_script_lang_js_,
-  FilterButtonvue_type_template_id_64c4ff48_render,
-  FilterButtonvue_type_template_id_64c4ff48_staticRenderFns,
+var ActiveFilter_component = normalizeComponent(
+  components_ActiveFiltervue_type_script_lang_js_,
+  ActiveFiltervue_type_template_id_5a6db836_render,
+  ActiveFiltervue_type_template_id_5a6db836_staticRenderFns,
   false,
   null,
   null,
@@ -18234,7 +18739,7 @@ var FilterButton_component = normalizeComponent(
   
 )
 
-/* harmony default export */ var FilterButton = (FilterButton_component.exports);
+/* harmony default export */ var ActiveFilter = (ActiveFilter_component.exports);
 // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/OmniSearch.vue?vue&type=script&lang=js&
 
 
@@ -18266,7 +18771,7 @@ var FilterButton_component = normalizeComponent(
 /* harmony default export */ var OmniSearchvue_type_script_lang_js_ = ({
   name: 'OmniSearch',
   components: {
-    FilterButton: FilterButton,
+    ActiveFilter: ActiveFilter,
     AddFilterButton: AddFilterButton
   },
   props: {
@@ -18346,7 +18851,7 @@ var OmniSearchvue_type_style_index_0_lang_scss_ = __webpack_require__("a664");
 
 var OmniSearch_component = normalizeComponent(
   components_OmniSearchvue_type_script_lang_js_,
-  OmniSearchvue_type_template_id_740976f8_render,
+  OmniSearchvue_type_template_id_4942d3b0_render,
   staticRenderFns,
   false,
   null,

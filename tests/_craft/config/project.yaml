@@ -1,4 +1,4 @@
-dateModified: 1583060190
+dateModified: 1583108462
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -25,6 +25,24 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\PlainText
+  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
+    contentColumnType: text
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: shortDescription
+    instructions: ''
+    name: 'Short Description'
+    searchable: true
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: ''
+      columnType: null
+      initialRows: '4'
+      multiline: ''
+      placeholder: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
 plugins:
   omnisearch:
     edition: standard
@@ -43,6 +61,9 @@ sections:
                   276434ae-3663-4142-862e-1d8292f1b52b:
                     required: false
                     sortOrder: 1
+                  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
+                    required: false
+                    sortOrder: 2
                 name: 'Tab 1'
                 sortOrder: 1
         handle: blog
@@ -87,3 +108,13 @@ users:
   photoSubpath: ''
   photoVolumeUid: null
   requireEmailVerification: true
+volumes:
+  2028f09e-e708-4b23-8e99-1538918ba219:
+    handle: images
+    hasUrls: false
+    name: Images
+    settings:
+      path: '@storage/images'
+    sortOrder: 1
+    type: craft\volumes\Local
+    url: ''

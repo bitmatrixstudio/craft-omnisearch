@@ -26,18 +26,6 @@ describe('Omnisearch.vue', () => {
         cy.get('.omnisearch__choose-fields').should('be.visible');
       });
     });
-
-    it('should close the choose field menu when clicked twice', () => {
-      cy.get('@addFilterBtn').click().then(() => {
-        cy.get('@addFilterBtn').contains('Choose Field');
-        cy.get('.omnisearch__choose-fields').should('be.visible');
-      });
-
-      cy.get('@addFilterBtn').click().then(() => {
-        cy.get('@addFilterBtn').contains('Add Filter');
-        cy.get('.omnisearch__choose-fields').should('not.be.visible');
-      });
-    });
   });
 
   describe('Choose Fields Menu', () => {
@@ -60,6 +48,20 @@ describe('Omnisearch.vue', () => {
       cy.get('[data-test=fieldSearchInput]').type('da').then(() => {
         cy.get('[data-test=fieldListItem]').should('have.length', 1);
         cy.get('[data-test=fieldListItem]').eq(0).contains('Post Date');
+      });
+    });
+
+    it('should close the menu when button is clicked again', () => {
+      cy.get('@addFilterBtn').click().then(() => {
+        cy.get('@addFilterBtn').contains('Add Filter');
+        cy.get('.omnisearch__choose-fields').should('not.be.visible');
+      });
+    });
+
+    it('should close the menu when click outside', () => {
+      cy.get('html').click(500, 500).then(() => {
+        cy.get('@addFilterBtn').contains('Add Filter');
+        cy.get('.omnisearch__choose-fields').should('not.be.visible');
       });
     });
 
@@ -104,7 +106,7 @@ describe('Omnisearch.vue', () => {
           cy.get('[data-test=activeFilter]').should('have.length', 0);
         });
 
-        it('should show text input when "contains" filter method is chosen', () => {
+        it('should show compare value text input', () => {
           cy.get('[data-test=compareValue]').should('be.visible');
           cy.get('[data-test=compareValueTextInput]').should('have.focus');
 
@@ -138,7 +140,33 @@ describe('Omnisearch.vue', () => {
         });
       });
 
-      // contains filter...
+      describe('Filter method: equals', () => {
+        beforeEach(() => {
+          cy.get('[data-test=filterMethodListItem]').eq(2).click();
+        });
+
+        it('should change add filter button text', () => {
+          cy.get('@addFilterBtn').contains('Title equals');
+        });
+
+        it('should show compare value text input', () => {
+          cy.get('[data-test=compareValue]').should('be.visible');
+          cy.get('[data-test=compareValueTextInput]').should('have.focus');
+        });
+
+        it('should set value when the "apply filter" button is clicked', () => {
+          cy.get('[data-test=compareValueTextInput]').type('something');
+          cy.get('[data-test=applyFilterBtn]').click().then(() => {
+            cy.get('.omnisearch__choose-fields').should('not.be.visible');
+            cy.get('[data-test=activeFilter]').should('have.length', 1);
+
+            cy.get('[data-test=activeFilter]').eq(0).contains('Title equals "something"');
+
+            cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
+          });
+        });
+      });
+
       // equals filter...
       // not equals filter...
       // starts with...

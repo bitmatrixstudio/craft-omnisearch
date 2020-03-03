@@ -103,7 +103,48 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 		$this->assertEquals('Chapter 1: A Dangerous Deed', $entries[0]->title);
 	}
 
-	// filter "contain" other variables
-	// filter "not_contain" other variables
-	//
+	public function testFilterTitleEquals()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'title',
+				'operator' => 'equals',
+				'value'    => 'Chapter 1: A dangerous Deed'
+			]
+		]);
+
+		$entries = $this->query->all();
+		$this->assertCount(1, $entries);
+		$this->assertEquals('Chapter 1: A Dangerous Deed', $entries[0]->title);
+	}
+
+	public function testFilterTitleNotEquals()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'title',
+				'operator' => 'not_equals',
+				'value'    => 'Chapter 1: A Dangerous Deed'
+			]
+		]);
+
+		$entries = $this->query->all();
+		$this->assertCount(1, $entries);
+		$this->assertEquals('Chapter 2: A Daily Philosophy of Becoming Legendary', $entries[0]->title);
+	}
+
+	// filter "is_present"
+	// filter "is_not_present"
+
+	// filter "greater than"
+	// filter "greater than or equal"
+	// filter "less than"
+	// filter "less than or equal"
+	// filter "before" date/time
+	// filter "after" date/time
+	// filter "is"
+	// filter "in"
+	// filter "not in"
+
+
 }

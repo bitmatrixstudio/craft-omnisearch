@@ -64,15 +64,15 @@ class OmniSearch extends Plugin
 
 		if (Craft::$app->getRequest()->isCpRequest) {
 			Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
-
-			Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
-				Craft::info('Attach OmniSearch behavior for EntryQuery...', 'omnisearch');
-
-				/** @var EntryQuery $sender */
-				$sender = $event->sender;
-				$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());
-			});
 		}
+
+		Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
+			Craft::info('Attach OmniSearch behavior for EntryQuery...', 'omnisearch');
+
+			/** @var EntryQuery $sender */
+			$sender = $event->sender;
+			$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());
+		});
 	}
 
 	// Protected Methods

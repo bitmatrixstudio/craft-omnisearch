@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
-import Filter from '../../src/components/FilterButton.vue';
+import Filter from '../../src/components/ActiveFilter.vue';
 
-describe('FilterButton.vue', () => {
+describe('ActiveFilter.vue', () => {
   let wrapper;
 
   beforeEach(() => {
@@ -80,7 +80,31 @@ describe('FilterButton.vue', () => {
         .toEqual('Title does not contain "Epic"');
     });
 
-    // equals
+    it('renders correctly for "equal" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Title',
+          operator: 'equals',
+          value: 'something',
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Title equals "something"');
+    });
+
+    it('renders correctly for "not_equal" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Title',
+          operator: 'not_equals',
+          value: 'something',
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Title does not equal "something"');
+    });
     // in
     // not_in
 

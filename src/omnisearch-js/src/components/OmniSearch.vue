@@ -2,7 +2,7 @@
   <div class="omnisearch">
     <div class="omnisearch__active-filters"
          v-if="activeFilters.length > 0">
-      <filter-button
+      <active-filter
         v-for="(filter, index) in activeFilters"
         :field-name="getFieldName(filter.field)"
         :operator="filter.operator"
@@ -20,11 +20,11 @@
 
 <script>
 import AddFilterButton from './AddFilterButton.vue';
-import FilterButton from './FilterButton.vue';
+import ActiveFilter from './ActiveFilter.vue';
 
 export default {
   name: 'OmniSearch',
-  components: { FilterButton, AddFilterButton },
+  components: { ActiveFilter, AddFilterButton },
   props: {
     fields: {
       type: Array,

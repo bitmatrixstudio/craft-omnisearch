@@ -1,6 +1,7 @@
 <template>
   <div class="omnisearch__filter btn small" data-test="activeFilter">
-    <span class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorText }}</span>
+    <span
+      class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorLabel }}</span>
     <button
       type="button"
       class="omnisearch__remove-filter-btn"
@@ -10,6 +11,9 @@
   </div>
 </template>
 <script>
+
+import OPERATORS from '../operators';
+
 export default {
   name: 'FilterButton',
   props: {
@@ -27,34 +31,23 @@ export default {
     },
   },
   computed: {
-    operatorText() {
+    operatorLabel() {
       const { operator, value } = this;
 
-      switch (operator) {
-        case 'is_present': {
-          return 'is present';
-        }
-
-        case 'is_not_present': {
-          return 'is not present';
-        }
-
-        case 'starts_with': {
-          return `starts with "${value}"`;
-        }
-
-        case 'contain': {
-          return `contains "${value}"`;
-        }
-
-        case 'not_contain': {
-          return `does not contain "${value}"`;
-        }
-
-        default: {
-          return 'Invalid operator';
-        }
+      const config = OPERATORS.find((item) => item.operator === operator);
+      if (config == null) {
+        return 'Invalid operator';
       }
+
+      const { requiresValue = true } = config;
+
+      const labelTemplate = requiresValue
+        ? '{operator} "{value}"'
+        : '{operator}';
+
+      return labelTemplate
+        .replace('{operator}', config.label)
+        .replace('{value}', value);
     },
   },
   methods: {

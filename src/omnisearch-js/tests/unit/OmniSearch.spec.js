@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import OmniSearch from '../../src/components/OmniSearch.vue';
 import AddFilterButton from '../../src/components/AddFilterButton.vue';
-import FilterButton from '../../src/components/FilterButton.vue';
+import FilterButton from '../../src/components/ActiveFilter.vue';
 
 describe('OmniSearch.vue', () => {
   let wrapper;

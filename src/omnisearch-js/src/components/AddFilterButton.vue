@@ -15,7 +15,7 @@
          ref="filterPanel"
          data-test="filterPanel"
     >
-      <template v-if="selectedField == null">
+      <div v-show="selectedField == null">
         <!-- Step 1: choose field from list -->
         <div class="omnisearch__field-list-search">
           <div class="flex-grow texticon search icon">
@@ -37,8 +37,8 @@
             {{ field.name }}
           </div>
         </div>
-      </template>
-      <template v-else-if="selectedFilterMethod == null">
+      </div>
+      <div v-show="selectedField != null && selectedFilterMethod == null">
         <!-- Step 2: choose filter method -->
         <div class="omnisearch__filter-panel-body" data-test="filterMethodList">
           <div class="omnisearch__list-item"
@@ -50,8 +50,8 @@
             {{ filterMethod.label }}
           </div>
         </div>
-      </template>
-      <template v-else>
+      </div>
+      <div v-show="selectedField != null && selectedFilterMethod != null">
         <!-- Step 3: choose value -->
         <div class="omnisearch__filter-panel-body" data-test="compareValue">
           <input
@@ -74,7 +74,7 @@
             Apply Filter
           </button>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -82,6 +82,7 @@
 <script>
 import { createPopper } from '@popperjs/core';
 import sortBy from 'lodash/sortBy';
+import operators from '../operators';
 
 export default {
   name: 'AddFilterButton',
@@ -124,15 +125,7 @@ export default {
       return sortBy(filteredFields, 'name');
     },
     filterMethods() {
-      return [
-        { operator: 'contain', label: 'contains' },
-        { operator: 'not_contain', label: 'does not contains' },
-        { operator: 'equal', label: 'equals' },
-        { operator: 'not_equal', label: 'not equal to' },
-        { operator: 'starts_with', label: 'starts with' },
-        { operator: 'is_present', label: 'is present', requiresValue: false },
-        { operator: 'is_not_present', label: 'is not present', requiresValue: false },
-      ];
+      return operators;
     },
   },
   watch: {
@@ -193,11 +186,28 @@ export default {
         this.reset();
       }
     },
+    handleClickOutside(e) {
+      if (this.showFieldMenu === false) {
+        return;
+      }
+
+      if (this.$refs.filterPanel
+        && !this.$refs.filterPanel.contains(e.target)
+        && this.$refs.button
+        && !this.$refs.button.contains(e.target)) {
+        this.showFieldMenu = false;
+      }
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside, false);
   },
   beforeDestroy() {
     if (this.popper) {
       this.popper.destroy();
     }
+
+    document.removeEventListener('click', this.handleClickOutside);
   },
 };
 </script>
