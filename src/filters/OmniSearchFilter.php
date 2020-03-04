@@ -2,13 +2,13 @@
 
 namespace pohnean\omnisearch\filters;
 
+use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\db\Query;
-use craft\elements\db\ElementQuery;
 use craft\helpers\ArrayHelper;
-use craft\base\Field;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
+use yii\base\InvalidConfigException;
 
 abstract class OmniSearchFilter extends BaseObject
 {
@@ -27,6 +27,21 @@ abstract class OmniSearchFilter extends BaseObject
 	 */
 	public $customFields;
 
+	public static $filterClassMap = [
+		'contain'        => ContainFilter::class,
+		'not_contain'    => NotContainFilter::class,
+		'equals'         => EqualsFilter::class,
+		'not_equals'     => NotEqualsFilter::class,
+		'is_present'     => IsPresentFilter::class,
+		'is_not_present' => IsNotPresentFilter::class,
+		'gt'             => GreaterThanFilter::class,
+		'gte'            => GreaterThanOrEqualFilter::class,
+		'lt'             => LessThanFilter::class,
+		'lte'            => LessThanOrEqualFilter::class,
+		'in'             => InFilter::class,
+		'not_in'         => NotInFilter::class,
+	];
+
 	protected static $fieldToColumnMap = [
 		'title' => 'content.title',
 		'slug'  => 'elements_sites.slug',
@@ -41,8 +56,11 @@ abstract class OmniSearchFilter extends BaseObject
 			throw new InvalidArgumentException('$operator is not defined');
 		}
 
-		$filterClassName = str_replace('_', '', ucwords($operator, '_'));
-		$filterClass = "\\pohnean\\omnisearch\\filters\\{$filterClassName}Filter";
+		if (!array_key_exists($operator, static::$filterClassMap)) {
+			throw new InvalidConfigException('Unsupported operator: ' . $operator);
+		}
+
+		$filterClass = static::$filterClassMap[$operator];
 
 		return new $filterClass($config);
 	}
@@ -84,5 +102,14 @@ abstract class OmniSearchFilter extends BaseObject
 	{
 		/** @var Field $field */
 		return ($field->columnPrefix ?: 'field_') . $field->handle;
+	}
+
+	protected function ensureArray($value)
+	{
+		if (!is_array($value)) {
+			$value = [$value];
+		}
+
+		return $value;
 	}
 }

@@ -1,4 +1,4 @@
-dateModified: 1583108462
+dateModified: 1583279269
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -7,30 +7,12 @@ fieldGroups:
   106ffcf3-bc41-4008-bf90-bf1a82bbac47:
     name: Common
 fields:
-  276434ae-3663-4142-862e-1d8292f1b52b:
+  268b1098-7c02-41dd-a36f-7d209c33cb89:
     contentColumnType: text
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
-    handle: bodyContent
+    handle: bookAuthor
     instructions: ''
-    name: 'Body Content'
-    searchable: true
-    settings:
-      byteLimit: null
-      charLimit: null
-      code: ''
-      columnType: null
-      initialRows: '10'
-      multiline: '1'
-      placeholder: ''
-    translationKeyFormat: null
-    translationMethod: none
-    type: craft\fields\PlainText
-  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
-    contentColumnType: text
-    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
-    handle: shortDescription
-    instructions: ''
-    name: 'Short Description'
+    name: 'Book Author'
     searchable: true
     settings:
       byteLimit: null
@@ -43,6 +25,117 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\PlainText
+  276434ae-3663-4142-862e-1d8292f1b52b:
+    contentColumnType: text
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: summary
+    instructions: ''
+    name: Summary
+    searchable: true
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: ''
+      columnType: null
+      initialRows: '10'
+      multiline: '1'
+      placeholder: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+  a21c192d-b38b-4608-b072-e3b6fea226c1:
+    contentColumnType: 'decimal(11,1)'
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: rating
+    instructions: ''
+    name: Rating
+    searchable: true
+    settings:
+      decimals: '1'
+      defaultValue: null
+      max: null
+      min: '0'
+      prefix: ''
+      size: null
+      suffix: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
+    contentColumnType: text
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: remarks
+    instructions: ''
+    name: Remarks
+    searchable: true
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: ''
+      columnType: null
+      initialRows: '4'
+      multiline: ''
+      placeholder: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+  ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
+    contentColumnType: string
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: genre
+    instructions: ''
+    name: Genre
+    searchable: true
+    settings:
+      optgroups: true
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Productivity
+            -
+              - value
+              - productivity
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Parenting
+            -
+              - value
+              - parenting
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Biography
+            -
+              - value
+              - biography
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Fiction
+            -
+              - value
+              - fiction
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
 plugins:
   omnisearch:
     edition: standard
@@ -58,22 +151,31 @@ sections:
             tabs:
               -
                 fields:
-                  276434ae-3663-4142-862e-1d8292f1b52b:
+                  268b1098-7c02-41dd-a36f-7d209c33cb89:
                     required: false
                     sortOrder: 1
-                  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
+                  276434ae-3663-4142-862e-1d8292f1b52b:
                     required: false
                     sortOrder: 2
+                  a21c192d-b38b-4608-b072-e3b6fea226c1:
+                    required: false
+                    sortOrder: 4
+                  a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
+                    required: false
+                    sortOrder: 3
+                  ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
+                    required: false
+                    sortOrder: 5
                 name: 'Tab 1'
                 sortOrder: 1
-        handle: blog
+        handle: books
         hasTitleField: true
-        name: Blog
+        name: Books
         sortOrder: 1
         titleFormat: ''
         titleLabel: Title
-    handle: blog
-    name: Blog
+    handle: books
+    name: Books
     previewTargets: null
     propagationMethod: all
     siteSettings:
@@ -81,7 +183,7 @@ sections:
         enabledByDefault: true
         hasUrls: true
         template: ''
-        uriFormat: 'blog/{slug}'
+        uriFormat: 'books/{slug}'
     type: channel
 siteGroups:
   163b9313-17a0-49d3-8d61-bf54523d90f1:
@@ -117,4 +219,4 @@ volumes:
       path: '@storage/images'
     sortOrder: 1
     type: craft\volumes\Local
-    url: ''
+    url: null
