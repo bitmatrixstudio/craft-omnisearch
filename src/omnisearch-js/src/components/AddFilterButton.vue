@@ -54,11 +54,23 @@
       <div v-show="selectedField != null && selectedFilterMethod != null">
         <!-- Step 3: choose value -->
         <div class="omnisearch__filter-panel-body" data-test="compareValue">
+          <!-- Text Input -->
           <input
-            ref="compareValueTextInput"
-            data-test="compareValueTextInput"
+            v-if="selectedFieldDataType === DATATYPES.TEXT"
+            ref="compareValueInput"
+            data-test="compareValueInput"
             class="text"
             type="text"
+            v-model="compareValue"
+            @keydown.enter="applyFilter"
+          />
+          <!-- Number Input -->
+          <input
+            v-if="selectedFieldDataType === DATATYPES.NUMBER"
+            ref="compareValueInput"
+            data-test="compareValueInput"
+            class="text"
+            type="number"
             v-model="compareValue"
             @keydown.enter="applyFilter"
           />
@@ -83,6 +95,7 @@
 import { createPopper } from '@popperjs/core';
 import sortBy from 'lodash/sortBy';
 import operators from '../operators';
+import DATATYPES from '../datatypes';
 
 export default {
   name: 'AddFilterButton',
@@ -100,6 +113,7 @@ export default {
       selectedFilterMethod: null,
       compareValue: null,
       showFieldMenu: false,
+      DATATYPES,
     };
   },
   computed: {
@@ -124,8 +138,17 @@ export default {
 
       return sortBy(filteredFields, 'name');
     },
+    selectedFieldDataType() {
+      return this.selectedField != null ? this.selectedField.dataType : null;
+    },
     filterMethods() {
-      return operators;
+      if (this.selectedField == null) {
+        return [];
+      }
+
+      return operators.filter(
+        (operator) => operator.dataTypes.includes(this.selectedField.dataType),
+      );
     },
   },
   watch: {
@@ -166,8 +189,8 @@ export default {
         this.applyFilter();
       } else {
         this.$nextTick(() => {
-          if (this.$refs.compareValueTextInput != null) {
-            this.$refs.compareValueTextInput.focus();
+          if (this.$refs.compareValueInput != null) {
+            this.$refs.compareValueInput.focus();
           }
         });
       }

@@ -21,13 +21,6 @@ class OmniSearchFilterBehavior extends Behavior
 		];
 	}
 
-	public function init()
-	{
-		\Craft::info('OmniSearchFilterBehavior init()', __METHOD__);
-
-		parent::init();
-	}
-
 
 	public function afterPrepare(CancelableEvent $event)
 	{

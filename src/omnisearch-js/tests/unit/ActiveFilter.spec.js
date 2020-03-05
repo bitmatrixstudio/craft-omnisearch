@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Filter from '../../src/components/ActiveFilter.vue';
+import DATATYPES from '../../src/datatypes';
 
 describe('ActiveFilter.vue', () => {
   let wrapper;
@@ -8,6 +9,7 @@ describe('ActiveFilter.vue', () => {
     wrapper = shallowMount(Filter, {
       propsData: {
         fieldName: 'Category',
+        dataType: DATATYPES.TEXT,
         operator: 'is_present',
       },
     });
@@ -24,6 +26,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'is_present',
         },
       });
@@ -35,6 +38,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'is_not_present',
         },
       });
@@ -46,6 +50,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'starts_with',
           value: 'ABC-123',
         },
@@ -59,6 +64,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'contain',
           value: 'Epic',
         },
@@ -71,6 +77,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'not_contain',
           value: 'Epic',
         },
@@ -84,6 +91,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'equals',
           value: 'something',
         },
@@ -97,6 +105,7 @@ describe('ActiveFilter.vue', () => {
       wrapper = shallowMount(Filter, {
         propsData: {
           fieldName: 'Title',
+          dataType: DATATYPES.TEXT,
           operator: 'not_equals',
           value: 'something',
         },
@@ -105,14 +114,65 @@ describe('ActiveFilter.vue', () => {
       expect(wrapper.find('.omnisearch__filter-text').text())
         .toEqual('Title does not equal "something"');
     });
+
+    it('renders correctly for "gt" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Rating',
+          dataType: DATATYPES.NUMBER,
+          operator: 'gt',
+          value: 7,
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Rating greater than 7');
+    });
+
+    it('renders correctly for "gte" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Rating',
+          dataType: DATATYPES.NUMBER,
+          operator: 'gte',
+          value: 7,
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Rating greater than or equal 7');
+    });
+
+    it('renders correctly for "lt" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Rating',
+          dataType: DATATYPES.NUMBER,
+          operator: 'lt',
+          value: 5,
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Rating less than 5');
+    });
+
+    it('renders correctly for "lte" operator', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Rating',
+          dataType: DATATYPES.NUMBER,
+          operator: 'lte',
+          value: 5,
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Rating less than or equal 5');
+    });
+
     // in
     // not_in
-
-    // greater than
-    // greater than or equal to
-
-    // less than
-    // less than or equal to
   });
 
   describe('remove filter button', () => {

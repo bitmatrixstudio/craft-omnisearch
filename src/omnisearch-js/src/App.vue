@@ -6,6 +6,8 @@
 
 <script>
 import OmniSearch from './components/OmniSearch.vue';
+import DATATYPES from './datatypes';
+
 import './styles.scss';
 
 export default {
@@ -16,14 +18,17 @@ export default {
         {
           handle: 'title',
           name: 'Title',
+          dataType: DATATYPES.TEXT,
         },
         {
           handle: 'postDate',
           name: 'Post Date',
+          dataType: DATATYPES.DATE,
         },
         {
-          handle: 'area',
-          name: 'Area',
+          handle: 'rating',
+          name: 'Rating',
+          dataType: DATATYPES.NUMBER,
         },
       ],
     };

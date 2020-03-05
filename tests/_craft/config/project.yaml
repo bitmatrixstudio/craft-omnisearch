@@ -1,4 +1,4 @@
-dateModified: 1583279269
+dateModified: 1583280307
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -7,6 +7,30 @@ fieldGroups:
   106ffcf3-bc41-4008-bf90-bf1a82bbac47:
     name: Common
 fields:
+  053bdf02-15e6-4235-8a18-025ec8a10e8f:
+    contentColumnType: string
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: tags
+    instructions: ''
+    name: Tags
+    searchable: true
+    settings:
+      multi: true
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - ''
+            -
+              - value
+              - ''
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Checkboxes
   268b1098-7c02-41dd-a36f-7d209c33cb89:
     contentColumnType: text
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
@@ -151,6 +175,9 @@ sections:
             tabs:
               -
                 fields:
+                  053bdf02-15e6-4235-8a18-025ec8a10e8f:
+                    required: false
+                    sortOrder: 6
                   268b1098-7c02-41dd-a36f-7d209c33cb89:
                     required: false
                     sortOrder: 1

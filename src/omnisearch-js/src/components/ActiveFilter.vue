@@ -11,13 +11,17 @@
   </div>
 </template>
 <script>
-
 import OPERATORS from '../operators';
+import DATATYPES from '../datatypes';
 
 export default {
   name: 'FilterButton',
   props: {
     fieldName: {
+      type: String,
+      required: true,
+    },
+    dataType: {
       type: String,
       required: true,
     },
@@ -32,7 +36,7 @@ export default {
   },
   computed: {
     operatorLabel() {
-      const { operator, value } = this;
+      const { operator, value, dataType } = this;
 
       const config = OPERATORS.find((item) => item.operator === operator);
       if (config == null) {
@@ -41,9 +45,11 @@ export default {
 
       const { requiresValue = true } = config;
 
-      const labelTemplate = requiresValue
-        ? '{operator} "{value}"'
-        : '{operator}';
+      let labelTemplate = '{operator}';
+
+      if (requiresValue) {
+        labelTemplate += dataType === DATATYPES.TEXT ? ' "{value}"' : ' {value}';
+      }
 
       return labelTemplate
         .replace('{operator}', config.label)

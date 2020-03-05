@@ -1,7 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import OmniSearch from '../../src/components/OmniSearch.vue';
 import AddFilterButton from '../../src/components/AddFilterButton.vue';
-import FilterButton from '../../src/components/ActiveFilter.vue';
+import ActiveFilter from '../../src/components/ActiveFilter.vue';
+import DATATYPES from '../../src/datatypes';
 
 describe('OmniSearch.vue', () => {
   let wrapper;
@@ -32,10 +33,12 @@ describe('OmniSearch.vue', () => {
             {
               name: 'Title',
               handle: 'title',
+              dataType: DATATYPES.TEXT,
             },
             {
               name: 'Post Date',
               handle: 'postDate',
+              dataType: DATATYPES.DATE,
             },
           ],
         },
@@ -58,16 +61,19 @@ describe('OmniSearch.vue', () => {
             {
               name: 'Title',
               handle: 'title',
+              dataType: DATATYPES.TEXT,
             },
             {
               name: 'Post Date',
               handle: 'postDate',
+              dataType: DATATYPES.DATE,
             },
           ],
           initialFilters: [
             {
               field: 'title',
               operator: 'is_present',
+              dataType: DATATYPES.TEXT,
             },
           ],
         },
@@ -82,8 +88,9 @@ describe('OmniSearch.vue', () => {
     it('should add to activeFilters array and performSearch when addFilter event is emitted',
       async () => {
         wrapper.find(AddFilterButton).vm.$emit('add-filter', {
-          field: { fieldName: 'Title' },
+          field: 'title',
           operator: 'equals',
+          value: 'something',
         });
 
         expect(wrapper.vm.activeFilters.length).toBe(2);
@@ -93,7 +100,7 @@ describe('OmniSearch.vue', () => {
       });
 
     it('should remove from activeFilters when removeFilter event is emitted', async () => {
-      wrapper.find(FilterButton).vm.$emit('remove-filter', 0);
+      wrapper.find(ActiveFilter).vm.$emit('remove-filter', 0);
 
       expect(wrapper.vm.activeFilters.length).toBe(0);
       await wrapper.vm.$nextTick();

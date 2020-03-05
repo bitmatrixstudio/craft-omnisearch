@@ -7,7 +7,7 @@ return [
 	[
 		'sectionId'  => $sectionId,
 		'typeId'     => $typeId,
-		'title'      => 'Awaken The Giant Within',
+		'title'      => 'Awaken the Giant Within',
 		'slug'       => 'awaken-the-giant-within',
 		'summary'    => 'Take immediate control of your mental, emotional, physical and financial destiny',
 		'bookAuthor' => 'Anthony Robbins',

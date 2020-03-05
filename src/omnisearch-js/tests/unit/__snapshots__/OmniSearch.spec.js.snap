@@ -8,6 +8,7 @@ exports[`OmniSearch.vue with initial filters renders correctly with initial acti
     class="omnisearch__active-filters"
   >
     <active-filter-stub
+      datatype="text"
       fieldname="Title"
       operator="is_present"
     />

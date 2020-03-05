@@ -5,6 +5,7 @@
       <active-filter
         v-for="(filter, index) in activeFilters"
         :field-name="getFieldName(filter.field)"
+        :data-type="getFieldDataType(filter.field)"
         :operator="filter.operator"
         :value="filter.value"
         :key="index"
@@ -63,6 +64,9 @@ export default {
   methods: {
     getFieldName(handle) {
       return this.fieldMap[handle] != null ? this.fieldMap[handle].name : '';
+    },
+    getFieldDataType(handle) {
+      return this.fieldMap[handle] != null ? this.fieldMap[handle].dataType : null;
     },
     addFilter(filter) {
       this.activeFilters.push(filter);

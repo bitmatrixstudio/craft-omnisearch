@@ -40,6 +40,7 @@ abstract class OmniSearchFilter extends BaseObject
 		'lte'            => LessThanOrEqualFilter::class,
 		'in'             => InFilter::class,
 		'not_in'         => NotInFilter::class,
+		'starts_with'    => StartsWithFilter::class,
 	];
 
 	protected static $fieldToColumnMap = [
