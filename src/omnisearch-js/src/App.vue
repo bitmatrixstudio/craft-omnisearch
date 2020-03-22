@@ -30,6 +30,23 @@ export default {
           name: 'Rating',
           dataType: DATATYPES.NUMBER,
         },
+        {
+          handle: 'isFeatured',
+          name: 'Is Featured',
+          dataType: DATATYPES.BOOLEAN,
+        },
+        {
+          handle: 'tags',
+          name: 'Tags',
+          dataType: DATATYPES.LIST,
+          items: [
+            { value: 'a', label: 'Item A' },
+            { value: 'b', label: 'Item B' },
+            { value: 'c', label: 'Item C' },
+            { value: 'd', label: 'Item D' },
+            { value: 'e', label: 'Item E' },
+          ],
+        },
       ],
     };
   },

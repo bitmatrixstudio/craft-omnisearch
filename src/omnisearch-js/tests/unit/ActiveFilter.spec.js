@@ -171,6 +171,20 @@ describe('ActiveFilter.vue', () => {
         .toEqual('Rating less than or equal 5');
     });
 
+    it('renders correctly for "equal" operator (List)', () => {
+      wrapper = shallowMount(Filter, {
+        propsData: {
+          fieldName: 'Tags',
+          dataType: DATATYPES.LIST,
+          operator: 'equals',
+          value: 'Item B',
+        },
+      });
+
+      expect(wrapper.find('.omnisearch__filter-text').text())
+        .toEqual('Tags equals Item B');
+    });
+
     // in
     // not_in
   });

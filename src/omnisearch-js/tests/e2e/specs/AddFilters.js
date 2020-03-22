@@ -36,10 +36,12 @@ describe('Add Filter', () => {
     });
 
     it('should list the available fields sorted', () => {
-      cy.get('[data-test=fieldListItem]').should('have.length', 3);
-      cy.get('[data-test=fieldListItem]').eq(0).contains('Post Date');
-      cy.get('[data-test=fieldListItem]').eq(1).contains('Rating');
-      cy.get('[data-test=fieldListItem]').eq(2).contains('Title');
+      cy.get('[data-test=fieldListItem]').should('have.length', 5);
+      cy.get('[data-test=fieldListItem]').eq(0).contains('Is Featured');
+      cy.get('[data-test=fieldListItem]').eq(1).contains('Post Date');
+      cy.get('[data-test=fieldListItem]').eq(2).contains('Rating');
+      cy.get('[data-test=fieldListItem]').eq(3).contains('Tags');
+      cy.get('[data-test=fieldListItem]').eq(4).contains('Title');
     });
 
     it('should narrow down available fields when keyword is entered', () => {
@@ -68,7 +70,7 @@ describe('Add Filter', () => {
 describe('Text Filters', () => {
   beforeEach(() => {
     cy.get('@addFilterBtn').click();
-    cy.get('[data-test=fieldListItem]').eq(2).as('titleField');
+    cy.get('[data-test=fieldListItem]').eq(4).as('titleField');
     cy.get('@titleField').click();
 
     cy.get('[data-test=filterMethodListItem]').eq(0).as('containsFilter');
@@ -244,10 +246,10 @@ describe('Text Filters', () => {
   });
 });
 
-describe.only('Number Filters', () => {
+describe('Number Filters', () => {
   beforeEach(() => {
     cy.get('@addFilterBtn').click();
-    cy.get('[data-test=fieldListItem]').eq(1).as('ratingField');
+    cy.get('[data-test=fieldListItem]').eq(2).as('ratingField');
     cy.get('@ratingField').click();
 
     cy.get('[data-test=filterMethodListItem]').eq(0).as('equalsFilter');
@@ -401,4 +403,132 @@ describe.only('Number Filters', () => {
       });
     });
   });
+});
+
+describe('Boolean Filters', () => {
+  beforeEach(() => {
+    cy.get('@addFilterBtn').click();
+    cy.get('[data-test=fieldListItem]').eq(0).as('isFeaturedField');
+    cy.get('@isFeaturedField').click();
+
+    cy.get('[data-test=filterMethodListItem]').eq(0).as('equalsFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(1).as('notEqualsFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(2).as('isPresentFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(3).as('isNotPresentFilter');
+  });
+
+  it('shows 4 filter types', () => {
+    cy.get('[data-test=filterMethodListItem]').should('have.length', 4);
+
+    cy.get('[data-test=filterMethodListItem]').eq(0).contains('equals');
+    cy.get('[data-test=filterMethodListItem]').eq(1).contains('does not equal');
+    cy.get('[data-test=filterMethodListItem]').eq(2).contains('is present');
+    cy.get('[data-test=filterMethodListItem]').eq(3).contains('is not present');
+  });
+
+  describe('Filter method: "equals"', () => {
+    beforeEach(() => {
+      cy.get('@equalsFilter').click();
+    });
+
+    it('shows true or false options', () => {
+      cy.get('[data-test=compareValue]').should('be.visible');
+      cy.get('[data-test=compareValueRadio]').eq(0).contains('True');
+      cy.get('[data-test=compareValueRadio]').eq(1).contains('False');
+    });
+
+    it('should set value when the "apply filter" button is clicked', () => {
+      cy.get('[data-test=compareValueRadio] input[type=radio]').eq(1).click();
+      cy.get('[data-test=applyFilterBtn]').click().then(() => {
+        cy.get('[data-test=activeFilter]').eq(0).contains('Is Featured equals false');
+      });
+    });
+  });
+
+  describe('Filter method: "not_equals"', () => {
+    beforeEach(() => {
+      cy.get('@notEqualsFilter').click();
+    });
+
+    it('shows true or false options', () => {
+      cy.get('[data-test=compareValue]').should('be.visible');
+      cy.get('[data-test=compareValueRadio]').eq(0).contains('True');
+      cy.get('[data-test=compareValueRadio]').eq(1).contains('False');
+    });
+
+    it('should set value when the "apply filter" button is clicked', () => {
+      cy.get('[data-test=compareValueRadio] input[type=radio]').eq(0).click();
+      cy.get('[data-test=applyFilterBtn]').click().then(() => {
+        cy.get('[data-test=activeFilter]').eq(0).contains('Is Featured does not equal true');
+      });
+    });
+  });
+});
+
+describe('List Filters', () => {
+  beforeEach(() => {
+    cy.get('@addFilterBtn').click();
+    cy.get('[data-test=fieldListItem]').eq(3).as('tagsField');
+    cy.get('@tagsField').click();
+
+    cy.get('[data-test=filterMethodListItem]').eq(0).as('includesFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(1).as('doesNotIncludeFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(2).as('equalsFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(3).as('notEqualsFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(4).as('isFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(5).as('isNotFilter');
+  });
+
+  it('shows the correct filter methods', () => {
+    cy.get('[data-test=filterMethodListItem]').should('have.length', 6);
+
+    cy.get('[data-test=filterMethodListItem]').eq(0).contains('includes');
+    cy.get('[data-test=filterMethodListItem]').eq(1).contains('does not include');
+    cy.get('[data-test=filterMethodListItem]').eq(2).contains('equals');
+    cy.get('[data-test=filterMethodListItem]').eq(3).contains('does not equal');
+    cy.get('[data-test=filterMethodListItem]').eq(4).contains('is present');
+    cy.get('[data-test=filterMethodListItem]').eq(5).contains('is not present');
+  });
+
+  describe.only('Filter method "equals"', () => {
+    beforeEach(() => {
+      cy.get('@equalsFilter').click();
+    });
+
+    it('shows the list item available items in a checklist', () => {
+      cy.get('[data-test=listOptions]').should('be.visible');
+      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 5);
+    });
+
+    it('should set value when the "apply filter" button is clicked', () => {
+      cy.get('[data-test=listOption] input[type=radio]').eq(1).click();
+
+      cy.get('[data-test=applyFilterBtn]').click().then(() => {
+        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Item B');
+      });
+    });
+  });
+
+  describe('Filter method "in"', () => {
+    beforeEach(() => {
+      cy.get('@equalsFilter').click();
+    });
+
+    it('shows the list item available items in a checklist', () => {
+      cy.get('[data-test=listOptions]').should('be.visible');
+      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 5);
+    });
+
+    it('should set value when the "apply filter" button is clicked', () => {
+      cy.get('[data-test=listOption] input[type=radio]').eq(1).click();
+
+      cy.get('[data-test=applyFilterBtn]').click().then(() => {
+        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Item B');
+      });
+    });
+  });
+});
+
+describe('Date Filters', () => {
+
 });

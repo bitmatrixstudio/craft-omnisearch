@@ -1,4 +1,4 @@
-dateModified: 1583280307
+dateModified: 1584865060
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -10,9 +10,9 @@ fields:
   053bdf02-15e6-4235-8a18-025ec8a10e8f:
     contentColumnType: string
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
-    handle: tags
+    handle: languagesAvailable
     instructions: ''
-    name: Tags
+    name: 'Languages Available'
     searchable: true
     settings:
       multi: true
@@ -21,10 +21,43 @@ fields:
           __assoc__:
             -
               - label
-              - ''
+              - English
             -
               - value
+              - english
+            -
+              - default
               - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Chinese
+            -
+              - value
+              - chinese
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - French
+            -
+              - value
+              - french
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - German
+            -
+              - value
+              - german
             -
               - default
               - ''
@@ -103,6 +136,18 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\PlainText
+  cd577a29-e259-40c2-8057-5a781d3ddccb:
+    contentColumnType: boolean
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: isFeatured
+    instructions: ''
+    name: 'Is Featured'
+    searchable: true
+    settings:
+      default: ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
   ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
     contentColumnType: string
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
@@ -190,6 +235,9 @@ sections:
                   a38992f3-c5f8-4fb4-9cf8-fa9148a0ffec:
                     required: false
                     sortOrder: 3
+                  cd577a29-e259-40c2-8057-5a781d3ddccb:
+                    required: false
+                    sortOrder: 7
                   ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
                     required: false
                     sortOrder: 5

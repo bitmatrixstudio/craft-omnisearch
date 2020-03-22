@@ -22,19 +22,4 @@ use craft\base\Component;
  */
 class OmniSearchService extends Component
 {
-    // Public Methods
-    // =========================================================================
-
-    /*
-     * @return mixed
-     */
-    public function exampleService()
-    {
-        $result = 'something';
-        // Check our Plugin's settings for `someAttribute`
-        if (OmniSearch::$plugin->getSettings()->someAttribute) {
-        }
-
-        return $result;
-    }
 }

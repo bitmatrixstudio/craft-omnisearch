@@ -2,7 +2,7 @@
   <div class="omnisearch__add-filter">
     <button type="button"
             class="btn small icon omnisearch__add-filter-btn"
-            @click="toggleMenu"
+            @click="onAddFilterBtnClick"
             ref="button"
     >
       <template v-if="selectedField != null">
@@ -74,6 +74,41 @@
             v-model="compareValue"
             @keydown.enter="applyFilter"
           />
+          <!-- Boolean Input -->
+          <div class="select" v-if="selectedFieldDataType === DATATYPES.BOOLEAN">
+            <div>
+              <label data-test="compareValueRadio">
+                <input
+                  type="radio"
+                  :value="true"
+                  v-model="compareValue"/> True</label>
+            </div>
+            <div>
+              <label data-test="compareValueRadio">
+                <input
+                  type="radio"
+                  :value="false"
+                  v-model="compareValue"/> False</label>
+            </div>
+          </div>
+          <!-- List Field -->
+          <div v-if="selectedFieldDataType === DATATYPES.LIST" data-test="listOptions">
+            <div v-if="isMultiSelect">
+              Multi select
+            </div>
+            <div v-else>
+              <div
+                data-test="listOption"
+                v-for="item in listItems"
+                :key="item.value">
+                <label>
+                  <input
+                    type="radio"
+                    :value="item.value"
+                    v-model="compareValue"/> {{ item.label }}</label>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="omnisearch__filter-panel-footer">
           <button
@@ -150,12 +185,22 @@ export default {
         (operator) => operator.dataTypes.includes(this.selectedField.dataType),
       );
     },
+    listItems() {
+      if (this.selectedField == null || this.selectedField.items == null) {
+        return [];
+      }
+
+      return this.selectedField.items;
+    },
+    isMultiSelect() {
+      return ['in', 'not_in'].includes(this.selectedFilterMethod);
+    },
   },
   watch: {
     showFieldMenu(show) {
-      if (show) {
-        this.reset();
+      this.reset();
 
+      if (show) {
         this.$nextTick(() => {
           this.popper = createPopper(this.$refs.button, this.$refs.filterPanel, {
             placement: 'bottom-start',
@@ -169,13 +214,25 @@ export default {
     },
   },
   methods: {
+    onAddFilterBtnClick() {
+      const { showFieldMenu } = this;
+
+      if (!showFieldMenu) {
+        this.showFieldMenu = true;
+      } else if (this.selectedField != null) {
+        this.selectedField = null;
+      } else {
+        this.closeMenu();
+      }
+    },
     reset() {
       this.selectedField = null;
       this.selectedFilterMethod = null;
       this.compareValue = null;
     },
-    toggleMenu() {
-      this.showFieldMenu = !this.showFieldMenu;
+    closeMenu() {
+      this.showFieldMenu = false;
+      this.reset();
     },
     setSelectedField(field) {
       this.selectedField = field;
@@ -205,8 +262,7 @@ export default {
           value: this.compareValue,
         });
 
-        this.showFieldMenu = false;
-        this.reset();
+        this.closeMenu();
       }
     },
     handleClickOutside(e) {
@@ -218,7 +274,7 @@ export default {
         && !this.$refs.filterPanel.contains(e.target)
         && this.$refs.button
         && !this.$refs.button.contains(e.target)) {
-        this.showFieldMenu = false;
+        this.closeMenu();
       }
     },
   },

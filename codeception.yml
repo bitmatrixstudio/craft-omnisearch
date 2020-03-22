@@ -23,3 +23,5 @@ modules:
       cleanup: true
       transaction: true
       dbSetup: { clean: true, setupCraft: true }
+      dbConfig:
+        dsn: "mysql:host=test_db;port=3306;dbname=craftcms;"

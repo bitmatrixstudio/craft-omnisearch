@@ -24,23 +24,23 @@ class OmniSearchModel extends Model
 {
     // Public Properties
     // =========================================================================
-
-    /**
-     * @var string
-     */
-    public $someAttribute = 'Some Default';
-
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
-        ];
-    }
+//
+//    /**
+//     * @var string
+//     */
+//    public $someAttribute = 'Some Default';
+//
+//    // Public Methods
+//    // =========================================================================
+//
+//    /**
+//     * @inheritdoc
+//     */
+//    public function rules()
+//    {
+//        return [
+//            ['someAttribute', 'string'],
+//            ['someAttribute', 'default', 'value' => 'Some Default'],
+//        ];
+//    }
 }

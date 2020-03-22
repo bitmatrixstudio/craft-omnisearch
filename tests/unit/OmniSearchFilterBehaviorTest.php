@@ -300,42 +300,92 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
 	}
 
-	public function testFilterInMultiSelect()
+	public function testFilterInCheckboxList()
 	{
-//		$this->query->setOmnisearchFilters([
-//			[
-//				'field'    => 'genre',
-//				'operator' => 'in',
-//				'value'    => ['parenting', 'biography'],
-//			]
-//		]);
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'languagesAvailable',
+				'operator' => 'in',
+				'value'    => ['chinese', 'german'],
+			]
+		]);
+
+		$entries = $this->query->all();
+
+		$this->assertCount(2, $entries);
+		$this->assertEquals('The 5AM Club', $entries[0]->title);
+		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
+	}
+
+	public function testFilterNotInCheckboxList()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'languagesAvailable',
+				'operator' => 'not_in',
+				'value'    => ['german'],
+			]
+		]);
+
+		$entries = $this->query->all();
+
+		$this->assertCount(4, $entries);
+		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+		$this->assertEquals('The 5AM Club', $entries[1]->title);
+		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
+		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+	}
+
+	public function testBooleanTrue()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'isFeatured',
+				'operator' => 'equals',
+				'value'    => 1,
+			]
+		]);
+
+		$entries = $this->query->all();
+
+		$this->assertCount(2, $entries);
+		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
+		$this->assertEquals('Memoirs of a Geisha', $entries[1]->title);
+	}
+
+	public function testBooleanFalse()
+	{
+		$this->query->setOmnisearchFilters([
+			[
+				'field'    => 'isFeatured',
+				'operator' => 'equals',
+				'value'    => 0,
+			]
+		]);
+
+		$entries = $this->query->all();
+
+		$this->assertCount(3, $entries);
+		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+		$this->assertEquals('The 5AM Club', $entries[1]->title);
+		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
+	}
+
+//	public function testFilterPostDateBefore()
+//	{
+//	}
 //
-//		$entries = $this->query->all();
+//	public function testFilterCustomDateBefore()
+//	{
+//	}
 //
-//		$this->assertCount(2, $entries);
-//		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
-//		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[1]->title);
-	}
-
-	public function testFilterNotInMultiSelect()
-	{
-	}
-
-	public function testFilterPostDateBefore()
-	{
-	}
-
-	public function testFilterCustomDateBefore()
-	{
-	}
-
-	public function testFilterPostDateAfter()
-	{
-	}
-
-	public function testFilterCustomDateAfter()
-	{
-	}
+//	public function testFilterPostDateAfter()
+//	{
+//	}
+//
+//	public function testFilterCustomDateAfter()
+//	{
+//	}
 
 	public function testMultipleFilters()
 	{

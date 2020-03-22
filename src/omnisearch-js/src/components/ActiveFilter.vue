@@ -1,7 +1,8 @@
 <template>
   <div class="omnisearch__filter btn small" data-test="activeFilter">
     <span
-      class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorLabel }}</span>
+      class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorLabel }} <template v-if="requiresValue">{{ valueText }}</template>
+    </span>
     <button
       type="button"
       class="omnisearch__remove-filter-btn"
@@ -35,25 +36,22 @@ export default {
     },
   },
   computed: {
-    operatorLabel() {
-      const { operator, value, dataType } = this;
-
-      const config = OPERATORS.find((item) => item.operator === operator);
+    config() {
+      return OPERATORS.find((item) => item.operator === this.operator);
+    },
+    requiresValue() {
+      const { config } = this;
       if (config == null) {
-        return 'Invalid operator';
+        return true;
       }
 
-      const { requiresValue = true } = config;
-
-      let labelTemplate = '{operator}';
-
-      if (requiresValue) {
-        labelTemplate += dataType === DATATYPES.TEXT ? ' "{value}"' : ' {value}';
-      }
-
-      return labelTemplate
-        .replace('{operator}', config.label)
-        .replace('{value}', value);
+      return config.requiresValue != null ? config.requiresValue : true;
+    },
+    operatorLabel() {
+      return this.config != null ? this.config.label : 'Invalid operator';
+    },
+    valueText() {
+      return this.dataType === DATATYPES.TEXT ? `"${this.value}"` : this.value;
     },
   },
   methods: {

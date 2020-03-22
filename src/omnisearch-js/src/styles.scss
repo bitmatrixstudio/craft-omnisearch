@@ -100,3 +100,39 @@ strong {
   -moz-appearance: none;
   appearance: none;
 }
+
+.select:not(.selectize) select {
+  padding: 7px 22px 7px 10px;
+}
+
+.select:not(.selectize) select {
+  display: block;
+  position: relative;
+  border: none;
+  font-size: 14px;
+  line-height: 20px;
+  color: #3f4d5a;
+  background-color: rgba(96, 125, 159, 0.25);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  white-space: pre;
+}
+
+.select:not(.selectize), .select:not(.selectize) select {
+  position: relative;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+:not(.flex) > .select:not(.selectize) {
+  display: inline-block;
+}
+.select:not(.selectize) {
+  position: relative;
+}
+.select:not(.selectize), .select:not(.selectize) select {
+  position: relative;
+  border-radius: 5px;
+  white-space: nowrap;
+}

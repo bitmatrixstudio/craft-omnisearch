@@ -12,6 +12,16 @@ export default [
     dataTypes: [DATATYPES.TEXT],
   },
   {
+    operator: 'in',
+    label: 'includes',
+    dataTypes: [DATATYPES.LIST],
+  },
+  {
+    operator: 'not_in',
+    label: 'does not include',
+    dataTypes: [DATATYPES.LIST],
+  },
+  {
     operator: 'starts_with',
     label: 'starts with',
     dataTypes: [DATATYPES.TEXT],
@@ -19,12 +29,12 @@ export default [
   {
     operator: 'equals',
     label: 'equals',
-    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER],
+    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER, DATATYPES.BOOLEAN, DATATYPES.LIST],
   },
   {
     operator: 'not_equals',
     label: 'does not equal',
-    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER],
+    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER, DATATYPES.BOOLEAN, DATATYPES.LIST],
   },
   {
     operator: 'gt',
@@ -51,12 +61,22 @@ export default [
     operator: 'is_present',
     label: 'is present',
     requiresValue: false,
-    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER],
+    dataTypes: [
+      DATATYPES.TEXT,
+      DATATYPES.NUMBER,
+      DATATYPES.BOOLEAN,
+      DATATYPES.LIST,
+      DATATYPES.DATE],
   },
   {
     operator: 'is_not_present',
     label: 'is not present',
     requiresValue: false,
-    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER],
+    dataTypes: [
+      DATATYPES.TEXT,
+      DATATYPES.NUMBER,
+      DATATYPES.BOOLEAN,
+      DATATYPES.LIST,
+      DATATYPES.DATE],
   },
 ];

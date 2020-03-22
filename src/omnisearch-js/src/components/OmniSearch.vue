@@ -7,7 +7,7 @@
         :field-name="getFieldName(filter.field)"
         :data-type="getFieldDataType(filter.field)"
         :operator="filter.operator"
-        :value="filter.value"
+        :value="getValueText(filter.field, filter.value)"
         :key="index"
         @remove-filter="removeFilter(index)"
       />
@@ -67,6 +67,23 @@ export default {
     },
     getFieldDataType(handle) {
       return this.fieldMap[handle] != null ? this.fieldMap[handle].dataType : null;
+    },
+    getValueText(handle, value) {
+      const field = this.fieldMap[handle];
+
+      if (field == null) {
+        return '';
+      }
+
+      let valueText = value;
+      if (field.items != null) {
+        const listOption = field.items.find((item) => item.value === value);
+        if (listOption != null) {
+          valueText = listOption.label;
+        }
+      }
+
+      return valueText;
     },
     addFilter(filter) {
       this.activeFilters.push(filter);

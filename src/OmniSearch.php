@@ -35,6 +35,12 @@ use yii\base\Event;
  */
 class OmniSearch extends Plugin
 {
+	const DATATYPE_TEXT = 'text';
+	const DATATYPE_NUMBER = 'number';
+	const DATATYPE_DATE = 'date';
+	const DATATYPE_BOOLEAN = 'boolean';
+	const DATATYPE_LIST = 'list';
+
 	// Static Properties
 	// =========================================================================
 

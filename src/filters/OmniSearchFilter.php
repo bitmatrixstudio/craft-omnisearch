@@ -5,10 +5,13 @@ namespace pohnean\omnisearch\filters;
 use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\db\Query;
+use craft\fields\BaseOptionsField;
+use craft\fields\Lightswitch;
 use craft\helpers\ArrayHelper;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
+use yii\db\Exception;
 
 abstract class OmniSearchFilter extends BaseObject
 {
@@ -23,9 +26,9 @@ abstract class OmniSearchFilter extends BaseObject
 	public $value;
 
 	/**
-	 * @var Field[]|null
+	 * @var Field|null
 	 */
-	public $customFields;
+	public $customField;
 
 	public static $filterClassMap = [
 		'contain'        => ContainFilter::class,
@@ -48,6 +51,8 @@ abstract class OmniSearchFilter extends BaseObject
 		'slug'  => 'elements_sites.slug',
 	];
 
+	protected static $hasJsonSupport;
+
 	abstract public function modifyQuery(Query $query): Query;
 
 	public static function create(array $config): OmniSearchFilter
@@ -66,31 +71,67 @@ abstract class OmniSearchFilter extends BaseObject
 		return new $filterClass($config);
 	}
 
-	protected function getColumn(): string
+	protected function isCustomField(): bool
 	{
-		$columnMap = $this->getColumnMap();
-		if (!array_key_exists($this->field, $columnMap)) {
-			throw new InvalidArgumentException('Invalid field: "' . $this->field . '"');
-		}
-
-		return $columnMap[$this->field];
+		return $this->customField != null;
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getColumnMap(): array
+	protected function getColumn(): string
 	{
-		$columnMap = static::$fieldToColumnMap;
-		if (!empty($this->customFields)) {
-			foreach ($this->customFields as $field) {
-				if ($field->hasContentColumn()) {
-					$columnMap[$field->handle] = 'content.' . $this->_getFieldContentColumnName($field);
+		if ($this->isCustomField()) {
+			$column = 'content.' . $this->_getFieldContentColumnName($this->customField);
+
+			if ($this->customField instanceof Lightswitch) {
+				$column = 'COALESCE(' . $column . ', ' . ($this->customField->default ? '1' : '0') . ')';
+			}
+
+			return $column;
+		} else {
+			return self::$fieldToColumnMap[$this->field];
+		}
+	}
+
+	protected function ensureArray($value)
+	{
+		if (!is_array($value)) {
+			$value = [$value];
+		}
+
+		return $value;
+	}
+
+	protected function isMultiSelect(): bool
+	{
+		if (!$this->isCustomField()) {
+			return false;
+		}
+
+		return ($this->customField instanceof BaseOptionsField) && $this->customField->getIsMultiOptionsField();
+	}
+
+	protected function dbSupportsJsonContains(): bool
+	{
+		$schema = \Craft::$app->db->schema;
+		if (!($schema instanceof \yii\db\mysql\Schema)) {
+			// Must be MySql or MariaDB
+			return false;
+		}
+
+		if (static::$hasJsonSupport === null) {
+			try {
+				\Craft::$app->db->createCommand("SELECT JSON_CONTAINS('[\"test\"]', '\"test\"')")->queryScalar();
+
+				static::$hasJsonSupport = true;
+			} catch (Exception $e) {
+				if (strpos($e->getMessage(), 'JSON_CONTAINS does not exist') !== false) {
+					static::$hasJsonSupport = false;
+				} else {
+					throw $e;
 				}
 			}
 		}
 
-		return $columnMap;
+		return static::$hasJsonSupport;
 	}
 
 	/**
@@ -103,14 +144,5 @@ abstract class OmniSearchFilter extends BaseObject
 	{
 		/** @var Field $field */
 		return ($field->columnPrefix ?: 'field_') . $field->handle;
-	}
-
-	protected function ensureArray($value)
-	{
-		if (!is_array($value)) {
-			$value = [$value];
-		}
-
-		return $value;
 	}
 }
