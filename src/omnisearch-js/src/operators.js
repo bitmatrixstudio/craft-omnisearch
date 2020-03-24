@@ -34,7 +34,7 @@ export default [
   {
     operator: 'not_equals',
     label: 'does not equal',
-    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER, DATATYPES.BOOLEAN, DATATYPES.LIST],
+    dataTypes: [DATATYPES.TEXT, DATATYPES.NUMBER, DATATYPES.LIST],
   },
   {
     operator: 'gt',

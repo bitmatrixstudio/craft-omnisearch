@@ -31,7 +31,7 @@ export default {
       required: true,
     },
     value: {
-      type: [String, Number, Array],
+      type: [String, Number, Boolean, Array],
       default: null,
     },
   },

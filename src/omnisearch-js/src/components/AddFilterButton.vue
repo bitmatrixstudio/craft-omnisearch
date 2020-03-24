@@ -51,64 +51,16 @@
           </div>
         </div>
       </div>
-      <div v-show="selectedField != null && selectedFilterMethod != null">
+      <div v-if="selectedField != null && selectedFilterMethod != null">
         <!-- Step 3: choose value -->
         <div class="omnisearch__filter-panel-body" data-test="compareValue">
-          <!-- Text Input -->
-          <input
-            v-if="selectedFieldDataType === DATATYPES.TEXT"
-            ref="compareValueInput"
-            data-test="compareValueInput"
-            class="text"
-            type="text"
+          <component
+            :is="selectedFieldDataType + '-filter'"
             v-model="compareValue"
-            @keydown.enter="applyFilter"
+            :items="selectedField.items"
+            :filter-method="selectedFilterMethod"
+            @apply="applyFilter"
           />
-          <!-- Number Input -->
-          <input
-            v-if="selectedFieldDataType === DATATYPES.NUMBER"
-            ref="compareValueInput"
-            data-test="compareValueInput"
-            class="text"
-            type="number"
-            v-model="compareValue"
-            @keydown.enter="applyFilter"
-          />
-          <!-- Boolean Input -->
-          <div class="select" v-if="selectedFieldDataType === DATATYPES.BOOLEAN">
-            <div>
-              <label data-test="compareValueRadio">
-                <input
-                  type="radio"
-                  :value="true"
-                  v-model="compareValue"/> True</label>
-            </div>
-            <div>
-              <label data-test="compareValueRadio">
-                <input
-                  type="radio"
-                  :value="false"
-                  v-model="compareValue"/> False</label>
-            </div>
-          </div>
-          <!-- List Field -->
-          <div v-if="selectedFieldDataType === DATATYPES.LIST" data-test="listOptions">
-            <div v-if="isMultiSelect">
-              Multi select
-            </div>
-            <div v-else>
-              <div
-                data-test="listOption"
-                v-for="item in listItems"
-                :key="item.value">
-                <label>
-                  <input
-                    type="radio"
-                    :value="item.value"
-                    v-model="compareValue"/> {{ item.label }}</label>
-              </div>
-            </div>
-          </div>
         </div>
         <div class="omnisearch__filter-panel-footer">
           <button
@@ -131,9 +83,19 @@ import { createPopper } from '@popperjs/core';
 import sortBy from 'lodash/sortBy';
 import operators from '../operators';
 import DATATYPES from '../datatypes';
+import TextFilter from '../filters/TextFilter.vue';
+import NumberFilter from '../filters/NumberFilter.vue';
+import BooleanFilter from '../filters/BooleanFilter.vue';
+import ListFilter from '../filters/ListFilter.vue';
 
 export default {
   name: 'AddFilterButton',
+  components: {
+    ListFilter,
+    BooleanFilter,
+    NumberFilter,
+    TextFilter,
+  },
   props: {
     fields: {
       type: Array,
@@ -185,16 +147,6 @@ export default {
         (operator) => operator.dataTypes.includes(this.selectedField.dataType),
       );
     },
-    listItems() {
-      if (this.selectedField == null || this.selectedField.items == null) {
-        return [];
-      }
-
-      return this.selectedField.items;
-    },
-    isMultiSelect() {
-      return ['in', 'not_in'].includes(this.selectedFilterMethod);
-    },
   },
   watch: {
     showFieldMenu(show) {
@@ -229,6 +181,7 @@ export default {
       this.selectedField = null;
       this.selectedFilterMethod = null;
       this.compareValue = null;
+      this.keyword = '';
     },
     closeMenu() {
       this.showFieldMenu = false;
@@ -244,12 +197,6 @@ export default {
 
       if (!requiresValue) {
         this.applyFilter();
-      } else {
-        this.$nextTick(() => {
-          if (this.$refs.compareValueInput != null) {
-            this.$refs.compareValueInput.focus();
-          }
-        });
       }
     },
     applyFilter() {

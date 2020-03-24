@@ -412,18 +412,16 @@ describe('Boolean Filters', () => {
     cy.get('@isFeaturedField').click();
 
     cy.get('[data-test=filterMethodListItem]').eq(0).as('equalsFilter');
-    cy.get('[data-test=filterMethodListItem]').eq(1).as('notEqualsFilter');
-    cy.get('[data-test=filterMethodListItem]').eq(2).as('isPresentFilter');
-    cy.get('[data-test=filterMethodListItem]').eq(3).as('isNotPresentFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(1).as('isPresentFilter');
+    cy.get('[data-test=filterMethodListItem]').eq(2).as('isNotPresentFilter');
   });
 
-  it('shows 4 filter types', () => {
-    cy.get('[data-test=filterMethodListItem]').should('have.length', 4);
+  it('shows 3 filter types', () => {
+    cy.get('[data-test=filterMethodListItem]').should('have.length', 3);
 
     cy.get('[data-test=filterMethodListItem]').eq(0).contains('equals');
-    cy.get('[data-test=filterMethodListItem]').eq(1).contains('does not equal');
-    cy.get('[data-test=filterMethodListItem]').eq(2).contains('is present');
-    cy.get('[data-test=filterMethodListItem]').eq(3).contains('is not present');
+    cy.get('[data-test=filterMethodListItem]').eq(1).contains('is present');
+    cy.get('[data-test=filterMethodListItem]').eq(2).contains('is not present');
   });
 
   describe('Filter method: "equals"', () => {
@@ -441,25 +439,6 @@ describe('Boolean Filters', () => {
       cy.get('[data-test=compareValueRadio] input[type=radio]').eq(1).click();
       cy.get('[data-test=applyFilterBtn]').click().then(() => {
         cy.get('[data-test=activeFilter]').eq(0).contains('Is Featured equals false');
-      });
-    });
-  });
-
-  describe('Filter method: "not_equals"', () => {
-    beforeEach(() => {
-      cy.get('@notEqualsFilter').click();
-    });
-
-    it('shows true or false options', () => {
-      cy.get('[data-test=compareValue]').should('be.visible');
-      cy.get('[data-test=compareValueRadio]').eq(0).contains('True');
-      cy.get('[data-test=compareValueRadio]').eq(1).contains('False');
-    });
-
-    it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-test=compareValueRadio] input[type=radio]').eq(0).click();
-      cy.get('[data-test=applyFilterBtn]').click().then(() => {
-        cy.get('[data-test=activeFilter]').eq(0).contains('Is Featured does not equal true');
       });
     });
   });
@@ -490,21 +469,28 @@ describe('List Filters', () => {
     cy.get('[data-test=filterMethodListItem]').eq(5).contains('is not present');
   });
 
-  describe.only('Filter method "equals"', () => {
+  describe('Filter method "equals"', () => {
     beforeEach(() => {
       cy.get('@equalsFilter').click();
     });
 
     it('shows the list item available items in a checklist', () => {
       cy.get('[data-test=listOptions]').should('be.visible');
-      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 5);
+      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 6);
+    });
+
+    it('shows filtered options when keyword is entered', () => {
+      cy.get('[data-test=listOptionsFilterInput]').should('have.focus');
+      cy.get('[data-test=listOptionsFilterInput]').type('to').then(() => {
+        cy.get('[data-test=listOption]').should('have.length', 2);
+      });
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-test=listOption] input[type=radio]').eq(1).click();
 
       cy.get('[data-test=applyFilterBtn]').click().then(() => {
-        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Item B');
+        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Potato');
       });
     });
   });
@@ -516,14 +502,14 @@ describe('List Filters', () => {
 
     it('shows the list item available items in a checklist', () => {
       cy.get('[data-test=listOptions]').should('be.visible');
-      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 5);
+      cy.get('[data-test=listOption] input[type=radio]').should('have.length', 6);
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-test=listOption] input[type=radio]').eq(1).click();
 
       cy.get('[data-test=applyFilterBtn]').click().then(() => {
-        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Item B');
+        cy.get('[data-test=activeFilter]').eq(0).contains('Tags equals Potato');
       });
     });
   });
