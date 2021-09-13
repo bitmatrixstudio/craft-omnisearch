@@ -6,11 +6,12 @@ export default {
     },
     items: {
       type: Array,
+      default: () => () => [],
     },
   },
   methods: {
-    apply() {
-      this.$emit('apply');
+    apply(value) {
+      this.$emit('apply', value);
     },
   },
 };

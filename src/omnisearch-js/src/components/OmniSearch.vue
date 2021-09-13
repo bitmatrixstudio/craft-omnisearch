@@ -75,15 +75,21 @@ export default {
         return '';
       }
 
-      let valueText = value;
-      if (field.items != null) {
-        const listOption = field.items.find((item) => item.value === value);
-        if (listOption != null) {
-          valueText = listOption.label;
-        }
-      }
+      const values = !Array.isArray(value) ? [value] : value;
 
-      return valueText;
+      const labels = values.map((val) => {
+        let label = val;
+        if (field.items != null) {
+          const listOption = field.items.find((item) => item.value === val);
+          if (listOption != null) {
+            label = listOption.label;
+          }
+        }
+
+        return label;
+      });
+
+      return labels.join(', ');
     },
     addFilter(filter) {
       this.activeFilters.push(filter);
@@ -114,6 +120,17 @@ export default {
 
     .btn:not(.small) {
       font-size: 1em;
+    }
+
+    .omnisearch__filter {
+      display: flex;
+    }
+
+    .omnisearch__filter-text {
+      display: block;
+      max-width: 20rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .omnisearch__active-filters {

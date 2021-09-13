@@ -1,6 +1,6 @@
 <template>
   <input
-    data-test="compareValueInput"
+    data-testid="compareValueInput"
     class="text"
     type="text"
     :value="value"

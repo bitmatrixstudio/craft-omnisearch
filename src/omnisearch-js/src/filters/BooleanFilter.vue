@@ -1,7 +1,7 @@
 <template>
   <div class="select">
     <div v-for="option in options" :key="option.value">
-      <label data-test="compareValueRadio">
+      <label data-testid="compareValueRadio">
         <input
           type="radio"
           :value="option.value"

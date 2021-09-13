@@ -1,32 +1,29 @@
 <template>
-  <div data-test="listOptions">
+  <div data-testid="list-options">
     <div class="flex-grow texticon search icon">
       <input class="text"
              type="text"
              v-model="keyword"
              placeholder="Search..."
              ref="keywordInput"
-             data-test="listOptionsFilterInput"
+             data-testid="list-options-filter-input"
       />
     </div>
-    <div>
-      <template v-if="isMultiSelect">
-        Multi select
-      </template>
-      <template v-else>
-        <div
-          data-test="listOption"
-          v-for="item in filteredListItems"
-          :key="item.value">
-          <label>
-            <input
-              type="radio"
-              :value="item.value"
-              :checked="value === item.value"
-              @change="$emit('change', item.value)"
-            /> {{ item.label }}</label>
-        </div>
-      </template>
+    <div class="filter-list-options">
+      <div
+        class="filter-list-option"
+        data-testid="list-option"
+        v-for="item in filteredListItems"
+        :key="item.value">
+        <label>
+          <input
+            :type="isMultiSelect ? 'checkbox' : 'radio'"
+            :value="item.value"
+            v-model="selection"
+            @change="onSelectionChange"
+          />
+          {{ item.label }}</label>
+      </div>
     </div>
   </div>
 </template>
@@ -42,11 +39,14 @@ export default {
     event: 'change',
   },
   props: {
-    value: { type: String },
+    value: {
+      type: [String, Array],
+    },
   },
   data() {
     return {
       keyword: '',
+      selection: null,
     };
   },
   computed: {
@@ -59,8 +59,38 @@ export default {
       return ['in', 'not_in'].includes(this.filterMethod.operator);
     },
   },
+  created() {
+    if (this.value == null) {
+      this.selection = this.isMultiSelect ? [] : null;
+    }
+  },
+  methods: {
+    onSelectionChange() {
+      this.$emit('change', this.selection);
+    },
+  },
   mounted() {
     this.$refs.keywordInput.focus();
   },
 };
 </script>
+
+<style lang="scss">
+  .filter-list-options {
+    max-height: 15rem;
+    overflow-x: auto;
+    margin: 0.5rem -0.5rem 0;
+  }
+
+  .filter-list-option {
+    label {
+      padding: 0.25rem 0.5rem;
+      display: block;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f3f7fc;
+      }
+    }
+  }
+</style>

@@ -5,15 +5,17 @@
             @click="onAddFilterBtnClick"
             ref="button"
     >
-      <template v-if="selectedField != null">
-        <strong>{{ buttonText }}</strong>{{ operatorText }}
-      </template>
-      <template v-else>{{ buttonText }}</template>
+      <span class="omnisearch__filter-text">
+        <template v-if="selectedField != null">
+          <strong>{{ buttonText }}</strong>{{ operatorText }}{{ valueText }}
+        </template>
+        <template v-else>{{ buttonText }}</template>
+      </span>
     </button>
     <div v-if="showFieldMenu"
          class="menu omnisearch__filter-panel omnisearch__choose-fields"
          ref="filterPanel"
-         data-test="filterPanel"
+         data-testid="filterPanel"
     >
       <div v-show="selectedField == null">
         <!-- Step 1: choose field from list -->
@@ -24,14 +26,14 @@
                    v-model="keyword"
                    placeholder="Search attributes..."
                    ref="searchInput"
-                   data-test="fieldSearchInput"
+                   data-testid="field-search-input"
             />
           </div>
         </div>
-        <div class="omnisearch__filter-panel-body" data-test="fieldList">
+        <div class="omnisearch__filter-panel-body" data-testid="fieldList">
           <div class="omnisearch__list-item"
-               data-test="fieldListItem"
                v-for="(field, index) in fieldList"
+               :data-testid="`field-list-item-${field.handle}`"
                :key="index"
                @click="setSelectedField(field)">
             {{ field.name }}
@@ -40,10 +42,10 @@
       </div>
       <div v-show="selectedField != null && selectedFilterMethod == null">
         <!-- Step 2: choose filter method -->
-        <div class="omnisearch__filter-panel-body" data-test="filterMethodList">
+        <div class="omnisearch__filter-panel-body" data-testid="filterMethodList">
           <div class="omnisearch__list-item"
-               data-test="filterMethodListItem"
                v-for="filterMethod in filterMethods"
+               :data-testid="`filter-method-${filterMethod.operator}`"
                :key="filterMethod.operator"
                @click="selectFilterMethod(filterMethod)"
           >
@@ -53,11 +55,11 @@
       </div>
       <div v-if="selectedField != null && selectedFilterMethod != null">
         <!-- Step 3: choose value -->
-        <div class="omnisearch__filter-panel-body" data-test="compareValue">
+        <div class="omnisearch__filter-panel-body" data-testid="compareValue">
           <component
-            :is="selectedFieldDataType + '-filter'"
+            :is="filterComponentName"
             v-model="compareValue"
-            :items="selectedField.items"
+            :items="selectedField.items != null ? selectedField.items : null"
             :filter-method="selectedFilterMethod"
             @apply="applyFilter"
           />
@@ -69,7 +71,7 @@
             type="button"
             :disabled="compareValue == null"
             @click="applyFilter"
-            data-test="applyFilterBtn">
+            data-testid="applyFilterBtn">
             Apply Filter
           </button>
         </div>
@@ -122,11 +124,30 @@ export default {
       return '+ Add Filter';
     },
     operatorText() {
-      if (this.selectedFilterMethod != null) {
-        return ` ${this.selectedFilterMethod.label}`;
+      return this.selectedFilterMethod != null ? ` ${this.selectedFilterMethod.label}` : '';
+    },
+    valueText() {
+      const { selectedField, compareValue } = this;
+
+      if (selectedField == null || !this.hasValue) {
+        return '';
       }
 
-      return '';
+      const values = !Array.isArray(compareValue) ? [compareValue] : compareValue;
+
+      const labels = values.map((val) => {
+        let label = (typeof val === 'string') ? `"${val}"` : val;
+        if (selectedField.items != null) {
+          const listOption = selectedField.items.find((item) => item.value === val);
+          if (listOption != null) {
+            label = listOption.label;
+          }
+        }
+
+        return label;
+      });
+
+      return ` ${labels.join(', ')}`;
     },
     fieldList() {
       const filteredFields = this.fields.filter(
@@ -146,6 +167,18 @@ export default {
       return operators.filter(
         (operator) => operator.dataTypes.includes(this.selectedField.dataType),
       );
+    },
+    filterComponentName() {
+      return `${this.selectedFieldDataType}-filter`;
+    },
+    hasValue() {
+      const { compareValue } = this;
+
+      const isNonEmptyScalar = !Array.isArray(compareValue)
+        && (compareValue !== null && compareValue !== '');
+      const isNonEmptyArray = Array.isArray(compareValue) && compareValue.length > 0;
+
+      return isNonEmptyScalar || isNonEmptyArray;
     },
   },
   watch: {
@@ -171,6 +204,9 @@ export default {
 
       if (!showFieldMenu) {
         this.showFieldMenu = true;
+      } else if (this.selectedFilterMethod != null) {
+        this.selectedFilterMethod = null;
+        this.compareValue = null;
       } else if (this.selectedField != null) {
         this.selectedField = null;
       } else {
@@ -202,7 +238,7 @@ export default {
     applyFilter() {
       const { requiresValue = true } = this.selectedFilterMethod;
 
-      if (!requiresValue || (this.compareValue !== null && this.compareValue !== '')) {
+      if (!requiresValue || this.hasValue) {
         this.$emit('add-filter', {
           field: this.selectedField.handle,
           operator: this.selectedFilterMethod.operator,

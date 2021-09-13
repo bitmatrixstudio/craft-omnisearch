@@ -1,5 +1,5 @@
 <template>
-  <div class="omnisearch__filter btn small" data-test="activeFilter">
+  <div class="omnisearch__filter btn small" data-testid="active-filter">
     <span
       class="omnisearch__filter-text"><strong>{{ fieldName }}</strong> {{ operatorLabel }} <template v-if="requiresValue">{{ valueText }}</template>
     </span>

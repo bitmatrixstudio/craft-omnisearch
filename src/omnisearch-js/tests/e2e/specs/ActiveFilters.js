@@ -6,23 +6,23 @@ describe('Active filters', () => {
 
     // Setup... Add a 'is present' filter for Rating
     cy.get('@addFilterBtn').click();
-    cy.get('[data-test=fieldListItem]').eq(0).click();
-    cy.get('[data-test=filterMethodListItem]').eq(5).click();
+    cy.get('[data-testid=field-list-item-rating]').click();
+    cy.get('[data-testid=filter-method-is_present]').click();
 
     // Setup... Add a 'is present' filter for Title
     cy.get('@addFilterBtn').click();
-    cy.get('[data-test=fieldListItem]').eq(2).click();
-    cy.get('[data-test=filterMethodListItem]').eq(6).click();
+    cy.get('[data-testid=field-list-item-title]').click();
+    cy.get('[data-testid=filter-method-is_present]').click();
   });
 
   it('should remove filter when close button is pressed', () => {
-    cy.get('[data-test=activeFilter]').should('have.length', 2);
+    cy.get('[data-testid=active-filter]').should('have.length', 2);
     cy.get('.omnisearch__filter:nth-child(2) .omnisearch__remove-filter-btn').click();
-    cy.get('[data-test=activeFilter]').should('have.length', 1);
-    cy.get('[data-test=activeFilter]').eq(0).contains('Rating is present');
+    cy.get('[data-testid=active-filter]').should('have.length', 1);
+    cy.get('[data-testid=active-filter]').eq(0).contains('Rating is present');
 
     cy.get('.omnisearch__filter:nth-child(1) .omnisearch__remove-filter-btn').click();
-    cy.get('[data-test=activeFilter]').should('have.length', 0);
+    cy.get('[data-testid=active-filter]').should('have.length', 0);
   });
 
   // test load existing filters
