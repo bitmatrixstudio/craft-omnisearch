@@ -371,19 +371,45 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
 	}
 
-//	public function testFilterPostDateBefore()
-//	{
-//	}
+	public function testFilterPostDateBefore()
+	{
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'postDate',
+                'operator' => 'lt',
+                'value'    => '2020-01-01',
+            ]
+        ]);
+
+        $entries = $this->query->all();
+        $this->assertCount(1, $entries);
+        $this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+	}
+
+	public function testFilterPostDateAfter()
+	{
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'postDate',
+                'operator' => 'gt',
+                'value'    => '2020-01-01',
+            ]
+        ]);
+
+        $entries = $this->query->all();
+        $this->assertCount(2, $entries);
+	}
 //
 //	public function testFilterCustomDateBefore()
 //	{
 //	}
 //
-//	public function testFilterPostDateAfter()
-//	{
-//	}
 //
 //	public function testFilterCustomDateAfter()
+//	{
+//	}
+
+//	public function testMatrixField()
 //	{
 //	}
 

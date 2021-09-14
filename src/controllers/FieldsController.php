@@ -48,6 +48,11 @@ class FieldsController extends Controller
 				'handle'   => 'slug',
 				'dataType' => OmniSearch::DATATYPE_TEXT,
 			],
+            [
+                'name'     => Craft::t('app', 'Post Date'),
+                'handle'   => 'postDate',
+                'dataType' => OmniSearch::DATATYPE_DATE,
+            ],
 		], $entryFields));
 	}
 

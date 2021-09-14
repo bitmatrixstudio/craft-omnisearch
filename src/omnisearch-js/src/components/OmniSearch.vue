@@ -1,17 +1,16 @@
 <template>
   <div class="omnisearch">
-    <div class="omnisearch__active-filters"
-         v-if="activeFilters.length > 0">
+    <template v-if="activeFilters.length > 0">
       <active-filter
         v-for="(filter, index) in activeFilters"
         :field-name="getFieldName(filter.field)"
         :data-type="getFieldDataType(filter.field)"
         :operator="filter.operator"
-        :value="getValueText(filter.field, filter.value)"
+        :value="getValueText(filter.field, filter.operator, filter.value)"
         :key="index"
         @remove-filter="removeFilter(index)"
       />
-    </div>
+    </template>
     <add-filter-button
       :fields="fields"
       @add-filter="addFilter"
@@ -22,6 +21,7 @@
 <script>
 import AddFilterButton from './AddFilterButton.vue';
 import ActiveFilter from './ActiveFilter.vue';
+import { formatValues } from '../formatters';
 
 export default {
   name: 'OmniSearch',
@@ -68,7 +68,7 @@ export default {
     getFieldDataType(handle) {
       return this.fieldMap[handle] != null ? this.fieldMap[handle].dataType : null;
     },
-    getValueText(handle, value) {
+    getValueText(handle, operator, value) {
       const field = this.fieldMap[handle];
 
       if (field == null) {
@@ -77,19 +77,7 @@ export default {
 
       const values = !Array.isArray(value) ? [value] : value;
 
-      const labels = values.map((val) => {
-        let label = val;
-        if (field.items != null) {
-          const listOption = field.items.find((item) => item.value === val);
-          if (listOption != null) {
-            label = listOption.label;
-          }
-        }
-
-        return label;
-      });
-
-      return labels.join(', ');
+      return formatValues(field, operator, values);
     },
     addFilter(filter) {
       this.activeFilters.push(filter);
@@ -117,6 +105,8 @@ export default {
     position: relative;
     margin-top: -1em;
     margin-bottom: 1em;
+    display: inline-flex;
+    flex-wrap: wrap;
 
     .btn:not(.small) {
       font-size: 1em;
@@ -124,6 +114,7 @@ export default {
 
     .omnisearch__filter {
       display: flex;
+      margin-bottom: 0.5em;
     }
 
     .omnisearch__filter-text {
@@ -133,13 +124,10 @@ export default {
       text-overflow: ellipsis;
     }
 
-    .omnisearch__active-filters {
-      display: inline-block;
-    }
-
     .omnisearch__filter-panel {
       display: block;
       padding: 0 !important;
+      min-width: 10rem;
     }
 
     .omnisearch__field-list-search {

@@ -66,7 +66,7 @@ export default [
       DATATYPES.NUMBER,
       DATATYPES.BOOLEAN,
       DATATYPES.LIST,
-      DATATYPES.DATE],
+    ],
   },
   {
     operator: 'is_not_present',
@@ -77,6 +77,21 @@ export default [
       DATATYPES.NUMBER,
       DATATYPES.BOOLEAN,
       DATATYPES.LIST,
-      DATATYPES.DATE],
+    ],
+  },
+  {
+    operator: 'date_between',
+    label: 'is between',
+    dataTypes: [DATATYPES.DATE],
+  },
+  {
+    operator: 'date_before',
+    label: 'is before',
+    dataTypes: [DATATYPES.DATE],
+  },
+  {
+    operator: 'date_after',
+    label: 'is after',
+    dataTypes: [DATATYPES.DATE],
   },
 ];

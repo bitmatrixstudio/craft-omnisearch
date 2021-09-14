@@ -7,7 +7,7 @@
     >
       <span class="omnisearch__filter-text">
         <template v-if="selectedField != null">
-          <strong>{{ buttonText }}</strong>{{ operatorText }}{{ valueText }}
+          <strong>{{ buttonText }}</strong>{{ operatorText }} {{ valueText }}
         </template>
         <template v-else>{{ buttonText }}</template>
       </span>
@@ -89,6 +89,8 @@ import TextFilter from '../filters/TextFilter.vue';
 import NumberFilter from '../filters/NumberFilter.vue';
 import BooleanFilter from '../filters/BooleanFilter.vue';
 import ListFilter from '../filters/ListFilter.vue';
+import DateFilter from '../filters/DateFilter.vue';
+import { formatValues } from '../formatters';
 
 export default {
   name: 'AddFilterButton',
@@ -97,6 +99,7 @@ export default {
     BooleanFilter,
     NumberFilter,
     TextFilter,
+    DateFilter,
   },
   props: {
     fields: {
@@ -127,27 +130,16 @@ export default {
       return this.selectedFilterMethod != null ? ` ${this.selectedFilterMethod.label}` : '';
     },
     valueText() {
-      const { selectedField, compareValue } = this;
+      const { selectedField, compareValue, selectedFilterMethod } = this;
 
-      if (selectedField == null || !this.hasValue) {
+      if (selectedField == null || selectedFilterMethod == null || !this.hasValue) {
         return '';
       }
 
       const values = !Array.isArray(compareValue) ? [compareValue] : compareValue;
+      const valueText = formatValues(selectedField, selectedFilterMethod.operator, values);
 
-      const labels = values.map((val) => {
-        let label = (typeof val === 'string') ? `"${val}"` : val;
-        if (selectedField.items != null) {
-          const listOption = selectedField.items.find((item) => item.value === val);
-          if (listOption != null) {
-            label = listOption.label;
-          }
-        }
-
-        return label;
-      });
-
-      return ` ${labels.join(', ')}`;
+      return selectedField.dataType === DATATYPES.TEXT ? `"${valueText}"` : valueText;
     },
     fieldList() {
       const filteredFields = this.fields.filter(
