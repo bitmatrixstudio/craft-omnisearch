@@ -1,4 +1,4 @@
-dateModified: 1584865060
+dateModified: 1631677292
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -64,6 +64,20 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\Checkboxes
+  186871af-7f86-4806-b75c-15975e9e1bd6:
+    contentColumnType: datetime
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: publishingDate
+    instructions: ''
+    name: 'Publishing Date'
+    searchable: true
+    settings:
+      minuteIncrement: '30'
+      showDate: true
+      showTime: false
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Date
   268b1098-7c02-41dd-a36f-7d209c33cb89:
     contentColumnType: text
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
@@ -148,6 +162,51 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\Lightswitch
+  dbf3f2b8-c49a-4853-9a94-454ec249f050:
+    contentColumnType: string
+    fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
+    handle: things
+    instructions: ''
+    name: Things
+    searchable: true
+    settings:
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - 'Item 1'
+            -
+              - value
+              - item1
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Item 2'
+            -
+              - value
+              - item2
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Item 3'
+            -
+              - value
+              - item3
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\RadioButtons
   ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
     contentColumnType: string
     fieldGroup: 106ffcf3-bc41-4008-bf90-bf1a82bbac47
@@ -238,6 +297,9 @@ sections:
                   cd577a29-e259-40c2-8057-5a781d3ddccb:
                     required: false
                     sortOrder: 7
+                  dbf3f2b8-c49a-4853-9a94-454ec249f050:
+                    required: false
+                    sortOrder: 8
                   ebc5e0d1-92d6-4d72-bd09-7cace62e9fca:
                     required: false
                     sortOrder: 5
@@ -277,7 +339,7 @@ system:
   edition: solo
   live: true
   name: 'Craft test site'
-  schemaVersion: 3.4.10
+  schemaVersion: 3.4.11
   timeZone: America/Los_Angeles
 users:
   allowPublicRegistration: false

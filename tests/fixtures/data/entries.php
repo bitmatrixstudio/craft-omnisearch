@@ -28,6 +28,7 @@ return [
         'rating'             => 9.5,
         'genre'              => 'productivity',
         'languagesAvailable' => ['english', 'chinese'],
+        'postDate'           => new DateTime('2020-11-20'),
     ],
     [
         'sectionId'          => $sectionId,

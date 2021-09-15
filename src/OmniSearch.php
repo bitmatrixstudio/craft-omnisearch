@@ -73,8 +73,6 @@ class OmniSearch extends Plugin
 		}
 
 		Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
-			Craft::info('Attach OmniSearch behavior for EntryQuery...', 'omnisearch');
-
 			/** @var EntryQuery $sender */
 			$sender = $event->sender;
 			$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());

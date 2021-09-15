@@ -44,12 +44,15 @@ abstract class OmniSearchFilter extends BaseObject
         'in'             => InFilter::class,
         'not_in'         => NotInFilter::class,
         'starts_with'    => StartsWithFilter::class,
+        'date_between'   => DateBetweenFilter::class,
+        'date_before'    => DateBeforeFilter::class,
+        'date_after'     => DateAfterFilter::class,
     ];
 
     protected static $fieldToColumnMap = [
-        'title'      => 'content.title',
-        'postDate'   => 'entries.postDate',
-        'slug'       => 'elements_sites.slug',
+        'title'    => 'content.title',
+        'postDate' => 'entries.postDate',
+        'slug'     => 'elements_sites.slug',
     ];
 
     protected static $hasJsonSupport;

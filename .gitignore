@@ -6,3 +6,4 @@
 ## Tests
 /tests/_craft/storage
 /tests/.env
+composer.phar

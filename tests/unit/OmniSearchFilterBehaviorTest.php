@@ -53,9 +53,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
 	}
 
 	public function testFilterSlugContain()
@@ -68,9 +68,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('The 5AM Club', $titles);
 	}
 
 	public function testFilterTitleStartsWith()
@@ -83,9 +83,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
 
 
 		$this->query->setOmnisearchFilters([
@@ -96,8 +96,8 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(0, $entries);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(0, $titles);
 	}
 
 	public function testFilterCustomTextFieldContain()
@@ -110,9 +110,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
 	}
 
 	public function testFilterTitleNotContain()
@@ -125,12 +125,12 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(4, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
-		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(4, $titles);
+		$this->assertContains('The 5AM Club', $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testFilterTitleEquals()
@@ -143,9 +143,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('The 5AM Club', $titles);
 	}
 
 	public function testFilterTitleNotEquals()
@@ -158,12 +158,13 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(4, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+		$titles = $this->query->select(['title'])->column();
+
+		$this->assertCount(4, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testFilterIsPresent()
@@ -175,9 +176,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(1, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
+		$titles = $this->query->select(['title'])->column();
+		$this->assertCount(1, $titles);
+		$this->assertContains('The 5AM Club', $titles);
 	}
 
 	public function testFilterIsNotPresent()
@@ -189,12 +190,12 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(4, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+        $titles = $this->query->select(['title'])->column();
+		$this->assertCount(4, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testFilterGreaterThan()
@@ -207,10 +208,10 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+		$titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(1, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
+		$this->assertCount(1, $titles);
+		$this->assertContains('The 5AM Club', $titles);
 	}
 
 	public function testFilterGreaterThanOrEqual()
@@ -223,10 +224,10 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-		$this->assertCount(2, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The 5AM Club', $entries[1]->title);
+        $titles = $this->query->select(['title'])->column();
+		$this->assertCount(2, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The 5AM Club', $titles);
 	}
 
 	public function testFilterLessThan()
@@ -239,11 +240,11 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(2, $entries);
-		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[1]->title);
+		$this->assertCount(2, $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testFilterLessThanOrEqual()
@@ -256,13 +257,13 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(4, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+		$this->assertCount(4, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testFilterInSingleSelect()
@@ -275,11 +276,11 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(2, $entries);
-		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[1]->title);
+		$this->assertCount(2, $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
 	}
 
 	public function testFilterNotInSingleSelect()
@@ -292,12 +293,12 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(3, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The 5AM Club', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
+		$this->assertCount(3, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The 5AM Club', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
 	}
 
 	public function testFilterInCheckboxList()
@@ -310,11 +311,11 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(2, $entries);
-		$this->assertEquals('The 5AM Club', $entries[0]->title);
-		$this->assertEquals('The Gentle Parenting Book', $entries[1]->title);
+		$this->assertCount(2, $titles);
+		$this->assertContains('The 5AM Club', $titles);
+		$this->assertContains('The Gentle Parenting Book', $titles);
 	}
 
 	public function testFilterNotInCheckboxList()
@@ -327,13 +328,13 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+        $titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(4, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The 5AM Club', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[3]->title);
+		$this->assertCount(4, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The 5AM Club', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testBooleanTrue()
@@ -346,11 +347,9 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
-
-		$this->assertCount(2, $entries);
-		$this->assertEquals('The Gentle Parenting Book', $entries[0]->title);
-		$this->assertEquals('Memoirs of a Geisha', $entries[1]->title);
+        $titles = $this->query->select(['title'])->column();
+		$this->assertContains('The Gentle Parenting Book', $titles);
+		$this->assertContains('Memoirs of a Geisha', $titles);
 	}
 
 	public function testBooleanFalse()
@@ -363,27 +362,40 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			]
 		]);
 
-		$entries = $this->query->all();
+		$titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(3, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('The 5AM Club', $entries[1]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[2]->title);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('The 5AM Club', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
 	}
+
+    public function testFilterPostDateBetween()
+    {
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'postDate',
+                'operator' => 'date_between',
+                'value'    => '2020-11-30,9999-12-31',
+            ]
+        ]);
+
+        $titles = $this->query->select(['title'])->column();
+        $this->assertCount(3, $titles);
+    }
 
 	public function testFilterPostDateBefore()
 	{
         $this->query->setOmnisearchFilters([
             [
                 'field'    => 'postDate',
-                'operator' => 'lt',
+                'operator' => 'date_before',
                 'value'    => '2020-01-01',
             ]
         ]);
 
-        $entries = $this->query->all();
-        $this->assertCount(1, $entries);
-        $this->assertEquals('Awaken the Giant Within', $entries[0]->title);
+        $titles = $this->query->select(['title'])->column();
+        $this->assertCount(1, $titles);
+        $this->assertContains('Awaken the Giant Within', $titles);
 	}
 
 	public function testFilterPostDateAfter()
@@ -391,13 +403,13 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
         $this->query->setOmnisearchFilters([
             [
                 'field'    => 'postDate',
-                'operator' => 'gt',
-                'value'    => '2020-01-01',
+                'operator' => 'date_after',
+                'value'    => '2020-11-30',
             ]
         ]);
 
-        $entries = $this->query->all();
-        $this->assertCount(2, $entries);
+        $titles = $this->query->select(['title'])->column();
+        $this->assertCount(3, $titles);
 	}
 //
 //	public function testFilterCustomDateBefore()
@@ -428,10 +440,10 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 			],
 		]);
 
-		$entries = $this->query->all();
+		$titles = $this->query->select(['title'])->column();
 
-		$this->assertCount(2, $entries);
-		$this->assertEquals('Awaken the Giant Within', $entries[0]->title);
-		$this->assertEquals('Nelson Mandela: No Easy Walk to Freedom', $entries[1]->title);
+		$this->assertCount(2, $titles);
+		$this->assertContains('Awaken the Giant Within', $titles);
+		$this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
 	}
 }
