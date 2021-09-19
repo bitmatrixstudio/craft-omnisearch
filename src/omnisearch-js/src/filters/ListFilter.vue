@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep';
 import FilterMethodMixin from './FilterMethodMixin';
 
 export default {
@@ -46,7 +47,7 @@ export default {
   data() {
     return {
       keyword: '',
-      selection: null,
+      selection: this.value ? cloneDeep(this.value) : null,
     };
   },
   computed: {

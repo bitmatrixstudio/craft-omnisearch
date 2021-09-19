@@ -18,7 +18,7 @@ use craft\events\DefineBehaviorsEvent;
 use craft\helpers\Json;
 use craft\web\Controller;
 use craft\web\View;
-use pohnean\omnisearch\assetbundles\OmniSearch\OmniSearchAsset;
+use pohnean\omnisearch\assetbundles\omnisearch\OmniSearchAsset;
 use pohnean\omnisearch\behaviors\OmniSearchFilterBehavior;
 use pohnean\omnisearch\models\Settings;
 use pohnean\omnisearch\services\OmniSearchService as OmniSearchServiceService;

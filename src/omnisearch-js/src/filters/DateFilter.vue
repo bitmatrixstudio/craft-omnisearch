@@ -8,6 +8,7 @@
 
 <script>
 import DatePicker from 'v-calendar/lib/components/date-picker.umd';
+import dayjs from 'dayjs';
 import FilterMethodMixin from './FilterMethodMixin';
 import { parseDateRange } from '../utils';
 
@@ -34,8 +35,10 @@ export default {
     onChange(value) {
       if (this.isRange) {
         const { start, end } = value;
+        const t1 = dayjs(start).startOf('day').format('YYYY-MM-DD');
+        const t2 = dayjs(end).endOf('day').format('YYYY-MM-DD');
 
-        const newValue = `${start.toISOString().substr(0, 10)},${end.toISOString().substr(0, 10)}`;
+        const newValue = `${t1},${t2}`;
         this.$emit('input', newValue);
       } else {
         this.$emit('input', value.toISOString().substr(0, 10));

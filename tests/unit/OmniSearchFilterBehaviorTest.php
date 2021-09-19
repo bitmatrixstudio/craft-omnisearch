@@ -411,15 +411,58 @@ class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
         $titles = $this->query->select(['title'])->column();
         $this->assertCount(3, $titles);
 	}
-//
-//	public function testFilterCustomDateBefore()
-//	{
-//	}
-//
-//
-//	public function testFilterCustomDateAfter()
-//	{
-//	}
+
+    public function testFilterCustomDateBetween()
+    {
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'publishingDate',
+                'operator' => 'date_between',
+                'value'    => '2018-12-31,2020-12-31',
+            ]
+        ]);
+
+        $titles = $this->query->select(['title'])->column();
+
+        $this->assertCount(2, $titles);
+        $this->assertContains('The Gentle Parenting Book', $titles);
+        $this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+    }
+
+	public function testFilterCustomDateBefore()
+	{
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'publishingDate',
+                'operator' => 'date_before',
+                'value'    => '2020-12-31',
+            ]
+        ]);
+
+        $titles = $this->query->select(['title'])->column();
+
+        $this->assertCount(4, $titles);
+        $this->assertContains('The Gentle Parenting Book', $titles);
+        $this->assertContains('Nelson Mandela: No Easy Walk to Freedom', $titles);
+        $this->assertContains('The 5AM Club', $titles);
+        $this->assertContains('Awaken the Giant Within', $titles);
+	}
+
+	public function testFilterCustomDateAfter()
+	{
+        $this->query->setOmnisearchFilters([
+            [
+                'field'    => 'publishingDate',
+                'operator' => 'date_after',
+                'value'    => '2020-12-31',
+            ]
+        ]);
+
+        $titles = $this->query->select(['title'])->column();
+
+        $this->assertCount(1, $titles);
+        $this->assertContains('Memoirs of a Geisha', $titles);
+	}
 
 //	public function testMatrixField()
 //	{

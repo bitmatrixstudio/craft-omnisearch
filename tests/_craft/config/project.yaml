@@ -1,4 +1,4 @@
-dateModified: 1631677292
+dateModified: 1632043823
 email:
   fromEmail: support@craftcms.com
   fromName: 'Craft test site'
@@ -282,6 +282,9 @@ sections:
                   053bdf02-15e6-4235-8a18-025ec8a10e8f:
                     required: false
                     sortOrder: 6
+                  186871af-7f86-4806-b75c-15975e9e1bd6:
+                    required: false
+                    sortOrder: 9
                   268b1098-7c02-41dd-a36f-7d209c33cb89:
                     required: false
                     sortOrder: 1
@@ -339,7 +342,7 @@ system:
   edition: solo
   live: true
   name: 'Craft test site'
-  schemaVersion: 3.4.11
+  schemaVersion: 3.4.10
   timeZone: America/Los_Angeles
 users:
   allowPublicRegistration: false

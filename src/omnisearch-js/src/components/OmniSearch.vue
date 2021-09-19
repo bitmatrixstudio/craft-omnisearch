@@ -3,11 +3,11 @@
     <template v-if="activeFilters.length > 0">
       <active-filter
         v-for="(filter, index) in activeFilters"
-        :field-name="getFieldName(filter.field)"
-        :data-type="getFieldDataType(filter.field)"
+        :field="getField(filter.field)"
         :operator="filter.operator"
-        :value="getValueText(filter.field, filter.operator, filter.value)"
+        :value="filter.value"
         :key="index"
+        @update-filter="updateFilter(filter, $event)"
         @remove-filter="removeFilter(index)"
       />
     </template>
@@ -21,7 +21,6 @@
 <script>
 import AddFilterButton from './AddFilterButton.vue';
 import ActiveFilter from './ActiveFilter.vue';
-import { formatValues } from '../formatters';
 
 export default {
   name: 'OmniSearch',
@@ -62,25 +61,14 @@ export default {
     },
   },
   methods: {
-    getFieldName(handle) {
-      return this.fieldMap[handle] != null ? this.fieldMap[handle].name : '';
-    },
-    getFieldDataType(handle) {
-      return this.fieldMap[handle] != null ? this.fieldMap[handle].dataType : null;
-    },
-    getValueText(handle, operator, value) {
-      const field = this.fieldMap[handle];
-
-      if (field == null) {
-        return '';
-      }
-
-      const values = !Array.isArray(value) ? [value] : value;
-
-      return formatValues(field, operator, values);
+    getField(handle) {
+      return this.fieldMap[handle] != null ? this.fieldMap[handle] : null;
     },
     addFilter(filter) {
       this.activeFilters.push(filter);
+    },
+    updateFilter(filter, data) {
+      Object.assign(filter, data);
     },
     removeFilter(index) {
       this.activeFilters.splice(index, 1);

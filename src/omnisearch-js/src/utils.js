@@ -10,11 +10,11 @@ export function parseDateRange(value = '') {
   if (value && value.length > 0) {
     const [from = '', to = ''] = value.split(',');
     if (from.length > 0) {
-      start = dayjs(from);
+      start = dayjs(from).toDate();
     }
 
     if (to.length > 0) {
-      end = dayjs(to);
+      end = dayjs(to).toDate();
     }
   }
 

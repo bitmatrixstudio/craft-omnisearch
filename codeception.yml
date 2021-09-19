@@ -15,7 +15,8 @@ modules:
     \craft\test\Craft:
       configFile: "tests/_craft/config/test.php"
       entryUrl: "http://craftcms-demo.localhost/index.php"
-      projectConfig: {}
+      projectConfig:
+        file: "tests/_craft/config/project.yaml"
       migrations: []
       plugins:
         - class: \pohnean\omnisearch\OmniSearch

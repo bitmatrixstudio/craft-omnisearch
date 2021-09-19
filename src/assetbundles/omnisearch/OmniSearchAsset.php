@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2020 Tai Poh Nean
  */
 
-namespace pohnean\omnisearch\assetbundles\OmniSearch;
+namespace pohnean\omnisearch\assetbundles\omnisearch;
 
 use Craft;
 use craft\web\AssetBundle;
