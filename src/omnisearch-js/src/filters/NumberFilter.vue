@@ -1,7 +1,7 @@
 <template>
   <input
     ref="compareValueInput"
-    data-testid="compareValueInput"
+    data-testid="compare-value-input"
     class="text"
     type="number"
     :value="value"

@@ -1,9 +1,9 @@
 <template>
-  <div class="omnisearch__filter">
+  <div class="omnisearch__filter" :data-testid="`active-filter-${index}`">
     <div
       ref="button"
       class="btn small"
-      data-testid="active-filter"
+      data-testid="filter-button"
       @click="editFilter"
     >
       <span
@@ -13,14 +13,16 @@
       <button
         type="button"
         class="omnisearch__remove-filter-btn"
+        data-testid="remove-filter-button"
         @click.stop="removeFilter">
         &times;
       </button>
     </div>
-    <div v-if="edited"
-         class="menu omnisearch__filter-panel omnisearch__choose-fields"
-         ref="filterPanel"
-         data-testid="filterPanel"
+    <div
+      v-if="edited"
+      class="menu omnisearch__filter-panel omnisearch__choose-fields"
+      ref="filterPanel"
+      data-testid="filter-panel"
     >
       <div
         v-if="showSelectFilterMethod"
@@ -37,7 +39,7 @@
         </div>
       </div>
       <div v-else>
-        <div class="omnisearch__filter-panel-body" data-testid="compareValue">
+        <div class="omnisearch__filter-panel-body" data-testid="compare-value">
           <component
             :is="filterComponentName"
             v-model="compareValue"
@@ -83,6 +85,10 @@ export default {
     DateFilter,
   },
   props: {
+    index: {
+      type: Number,
+      required: true,
+    },
     field: {
       type: Object,
       required: true,

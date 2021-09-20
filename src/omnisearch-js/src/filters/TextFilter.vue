@@ -1,6 +1,6 @@
 <template>
   <input
-    data-testid="compareValueInput"
+    data-testid="compare-value-input"
     class="text"
     type="text"
     :value="value"
@@ -19,7 +19,9 @@ export default {
     value: String,
   },
   mounted() {
-    this.$el.focus();
+    this.$nextTick(() => {
+      this.$el.focus();
+    });
   },
 };
 </script>

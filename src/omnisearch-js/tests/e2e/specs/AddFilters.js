@@ -112,7 +112,7 @@ describe('Text Filters', () => {
 
     it('should show compare value text input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
 
       cy.get('[data-testid=applyFilterBtn]')
         .contains('Apply Filter')
@@ -121,7 +121,7 @@ describe('Text Filters', () => {
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('something');
+      cy.get('[data-testid=compare-value-input]').type('something');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
         cy.get('[data-testid=active-filter]').should('have.length', 1);
@@ -133,7 +133,7 @@ describe('Text Filters', () => {
     });
 
     it('should set value with "enter" key', () => {
-      cy.get('[data-testid=compareValueInput]').type('something{enter}').then(() => {
+      cy.get('[data-testid=compare-value-input]').type('something{enter}').then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
         cy.get('[data-testid=active-filter]').should('have.length', 1);
 
@@ -154,7 +154,7 @@ describe('Text Filters', () => {
 
     it('should show compare value text input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
 
       cy.get('[data-testid=applyFilterBtn]')
         .contains('Apply Filter')
@@ -173,7 +173,7 @@ describe('Text Filters', () => {
 
     it('should show compare value text input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
 
       cy.get('[data-testid=applyFilterBtn]')
         .contains('Apply Filter')
@@ -193,11 +193,11 @@ describe('Text Filters', () => {
 
     it('should show compare value text input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('something');
+      cy.get('[data-testid=compare-value-input]').type('something');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
         cy.get('[data-testid=active-filter]').should('have.length', 1);
@@ -220,7 +220,7 @@ describe('Text Filters', () => {
 
     it('should show compare value text input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
     });
   });
 
@@ -290,12 +290,12 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('7.2');
+      cy.get('[data-testid=compare-value-input]').type('7.2');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
         cy.get('[data-testid=active-filter]').should('have.length', 1);
@@ -314,8 +314,8 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
   });
 
@@ -330,12 +330,12 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('7.2');
+      cy.get('[data-testid=compare-value-input]').type('7.2');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('[data-testid=active-filter]').eq(0).contains('Rating greater than 7.2');
       });
@@ -353,12 +353,12 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('7.2');
+      cy.get('[data-testid=compare-value-input]').type('7.2');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('[data-testid=active-filter]').eq(0).contains('Rating greater than or equal 7.2');
       });
@@ -376,12 +376,12 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('7.2');
+      cy.get('[data-testid=compare-value-input]').type('7.2');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('[data-testid=active-filter]').eq(0).contains('Rating less than 7.2');
       });
@@ -399,12 +399,12 @@ describe('Number Filters', () => {
 
     it('should show compare value number input', () => {
       cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueInput]').should('have.focus');
-      cy.get('[data-testid=compareValueInput]').should('have.attr', 'type', 'number');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+      cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueInput]').type('7.2');
+      cy.get('[data-testid=compare-value-input]').type('7.2');
       cy.get('[data-testid=applyFilterBtn]').click().then(() => {
         cy.get('[data-testid=active-filter]').eq(0).contains('Rating less than or equal 7.2');
       });

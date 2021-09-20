@@ -6,6 +6,7 @@
         :field="getField(filter.field)"
         :operator="filter.operator"
         :value="filter.value"
+        :index="index"
         :key="index"
         @update-filter="updateFilter(filter, $event)"
         @remove-filter="removeFilter(index)"
