@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { parseDateRange } from './utils';
+import DATATYPES from './datatypes';
 
 dayjs.extend(localizedFormat);
 
@@ -31,6 +32,9 @@ function formatValue(field, operator, value) {
   return label;
 }
 
-export function formatValues(field, operator, values) {
-  return values.map((val) => formatValue(field, operator, val)).join(', ');
+export function formatValues(field, operator, compareValue) {
+  const values = !Array.isArray(compareValue) ? [compareValue] : compareValue;
+  const valueText = values.map((val) => formatValue(field, operator, val)).join(', ');
+
+  return field.dataType === DATATYPES.TEXT ? `"${valueText}"` : valueText;
 }

@@ -15,11 +15,13 @@ export default [
     operator: 'in',
     label: 'includes',
     dataTypes: [DATATYPES.LIST],
+    multiple: true,
   },
   {
     operator: 'not_in',
     label: 'does not include',
     dataTypes: [DATATYPES.LIST],
+    multiple: true,
   },
   {
     operator: 'starts_with',

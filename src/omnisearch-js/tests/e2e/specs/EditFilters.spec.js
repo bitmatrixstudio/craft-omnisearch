@@ -1,22 +1,22 @@
-describe('Active filters', () => {
+describe('Edit filters', () => {
   beforeEach(() => {
     cy.visit('/');
 
-    cy.get('.omnisearch__add-filter-btn').as('addFilterBtn');
+    cy.get('[data-testid=add-filter] [data-testid=filter-button]').as('addFilterBtn');
 
     // Setup... Add a 'is present' filter for Rating
     cy.get('@addFilterBtn').click();
     cy.get('[data-testid=field-list-item-rating]').click();
     cy.get('[data-testid=filter-method-gte]').click();
     cy.get('[data-testid=compare-value-input]').type('4');
-    cy.get('[data-testid=applyFilterBtn]').click();
+    cy.get('[data-testid=apply-filter-btn]').click();
 
     // Setup... Add a 'is present' filter for Title
     cy.get('@addFilterBtn').click();
     cy.get('[data-testid=field-list-item-title]').click();
     cy.get('[data-testid=filter-method-equals]').click();
     cy.get('[data-testid=compare-value-input]').type('something');
-    cy.get('[data-testid=applyFilterBtn]').click();
+    cy.get('[data-testid=apply-filter-btn]').click();
 
     // Aliases
     cy.get('[data-testid="active-filter-0"] [data-testid=filter-button]').as('ratingFilter');
@@ -45,7 +45,7 @@ describe('Active filters', () => {
 
     it('should change the value of the text filter', () => {
       cy.get('[data-testid="compare-value-input"]').clear().type('hello world');
-      cy.get('[data-testid=applyFilterBtn]').click();
+      cy.get('[data-testid=apply-filter-btn]').click();
       cy.get('@titleFilter').contains('Title equals "hello world"');
     });
 
@@ -73,7 +73,7 @@ describe('Active filters', () => {
 
     it('should change the value of the filter', () => {
       cy.get('[data-testid="compare-value-input"]').clear().type('3');
-      cy.get('[data-testid=applyFilterBtn]').click();
+      cy.get('[data-testid=apply-filter-btn]').click();
       cy.get('@ratingFilter').contains('Rating greater than or equal 3');
     });
 

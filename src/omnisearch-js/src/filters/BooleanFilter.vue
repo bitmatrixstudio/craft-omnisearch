@@ -1,12 +1,12 @@
 <template>
   <div class="select">
     <div v-for="option in options" :key="option.value">
-      <label data-testid="compareValueRadio">
+      <label data-testid="compare-value-radio">
         <input
           type="radio"
           :value="option.value"
           :checked="value === option.value"
-          @change="$emit('change', option.value)"
+          @change="$emit('input', option.value)"
         /> {{ option.label }}</label>
     </div>
   </div>

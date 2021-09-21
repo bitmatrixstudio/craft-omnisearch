@@ -3,10 +3,10 @@
 beforeEach(() => {
   cy.visit('/');
 
-  cy.get('.omnisearch__add-filter-btn').as('addFilterBtn');
+  cy.get('[data-testid=add-filter] [data-testid=filter-button]').as('addFilterBtn');
 });
 
-describe('Add Filter', () => {
+describe('Add Filters', () => {
   it('should render correctly initially', () => {
     cy.get('.omnisearch').should('have.length', 1);
     cy.get('.omnisearch__choose-fields').should('not.be.visible');
@@ -107,14 +107,14 @@ describe('Text Filters', () => {
       cy.get('@containsFilter').click();
 
       cy.get('@addFilterBtn').contains('Title contains');
-      cy.get('[data-testid=active-filter]').should('have.length', 0);
+      cy.get('[data-testid^=active-filter]').should('have.length', 0);
     });
 
     it('should show compare value text input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
 
-      cy.get('[data-testid=applyFilterBtn]')
+      cy.get('[data-testid=apply-filter-btn]')
         .contains('Apply Filter')
         .should('be.disabled')
         .should('have.class', 'disabled');
@@ -122,11 +122,11 @@ describe('Text Filters', () => {
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('something');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
-        cy.get('[data-testid=active-filter]').should('have.length', 1);
+        cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-        cy.get('[data-testid=active-filter]').eq(0).contains('Title contains "something"');
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Title contains "something"');
 
         cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
       });
@@ -135,9 +135,9 @@ describe('Text Filters', () => {
     it('should set value with "enter" key', () => {
       cy.get('[data-testid=compare-value-input]').type('something{enter}').then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
-        cy.get('[data-testid=active-filter]').should('have.length', 1);
+        cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-        cy.get('[data-testid=active-filter]').eq(0).contains('Title contains "something"');
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Title contains "something"');
 
         cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
       });
@@ -149,14 +149,14 @@ describe('Text Filters', () => {
       cy.get('@notContainsFilter').click();
 
       cy.get('@addFilterBtn').contains('Title does not contain');
-      cy.get('[data-testid=active-filter]').should('have.length', 0);
+      cy.get('[data-testid^=active-filter]').should('have.length', 0);
     });
 
     it('should show compare value text input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
 
-      cy.get('[data-testid=applyFilterBtn]')
+      cy.get('[data-testid=apply-filter-btn]')
         .contains('Apply Filter')
         .should('be.disabled')
         .should('have.class', 'disabled');
@@ -168,14 +168,14 @@ describe('Text Filters', () => {
       cy.get('@startsWithFilter').click();
 
       cy.get('@addFilterBtn').contains('Title starts with');
-      cy.get('[data-testid=active-filter]').should('have.length', 0);
+      cy.get('[data-testid^=active-filter]').should('have.length', 0);
     });
 
     it('should show compare value text input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
 
-      cy.get('[data-testid=applyFilterBtn]')
+      cy.get('[data-testid=apply-filter-btn]')
         .contains('Apply Filter')
         .should('be.disabled')
         .should('have.class', 'disabled');
@@ -192,17 +192,17 @@ describe('Text Filters', () => {
     });
 
     it('should show compare value text input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('something');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
-        cy.get('[data-testid=active-filter]').should('have.length', 1);
+        cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-        cy.get('[data-testid=active-filter]').eq(0).contains('Title equals "something"');
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Title equals "something"');
 
         cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
       });
@@ -219,7 +219,7 @@ describe('Text Filters', () => {
     });
 
     it('should show compare value text input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
     });
   });
@@ -232,9 +232,9 @@ describe('Text Filters', () => {
     it('should add filter when "is_present" filter method is chosen', () => {
       cy.get('@addFilterBtn').contains('Add Filter');
       cy.get('.omnisearch__choose-fields').should('not.be.visible');
-      cy.get('[data-testid=active-filter]').should('have.length', 1);
+      cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-      cy.get('[data-testid=active-filter]').eq(0).contains('Title is present');
+      cy.get('[data-testid^=active-filter]').eq(0).contains('Title is present');
     });
   });
 
@@ -246,9 +246,9 @@ describe('Text Filters', () => {
     it('should add filter when "is_present" filter method is chosen', () => {
       cy.get('@addFilterBtn').contains('Add Filter');
       cy.get('.omnisearch__choose-fields').should('not.be.visible');
-      cy.get('[data-testid=active-filter]').should('have.length', 1);
+      cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-      cy.get('[data-testid=active-filter]').eq(0).contains('Title is not present');
+      cy.get('[data-testid^=active-filter]').eq(0).contains('Title is not present');
     });
   });
 });
@@ -289,18 +289,18 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('7.2');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
         cy.get('.omnisearch__choose-fields').should('not.be.visible');
-        cy.get('[data-testid=active-filter]').should('have.length', 1);
+        cy.get('[data-testid^=active-filter]').should('have.length', 1);
 
-        cy.get('[data-testid=active-filter]').eq(0).contains('Rating equals 7.2');
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Rating equals 7.2');
 
         cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
       });
@@ -313,7 +313,7 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
@@ -329,15 +329,15 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('7.2');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('Rating greater than 7.2');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Rating greater than 7.2');
       });
     });
   });
@@ -352,15 +352,15 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('7.2');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('Rating greater than or equal 7.2');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Rating greater than or equal 7.2');
       });
     });
   });
@@ -375,15 +375,15 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('7.2');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('Rating less than 7.2');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Rating less than 7.2');
       });
     });
   });
@@ -398,15 +398,15 @@ describe('Number Filters', () => {
     });
 
     it('should show compare value number input', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
+      cy.get('[data-testid=compare-value]').should('be.visible');
       cy.get('[data-testid=compare-value-input]').should('have.focus');
       cy.get('[data-testid=compare-value-input]').should('have.attr', 'type', 'number');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
       cy.get('[data-testid=compare-value-input]').type('7.2');
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('Rating less than or equal 7.2');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Rating less than or equal 7.2');
       });
     });
   });
@@ -437,15 +437,15 @@ describe('Boolean Filters', () => {
     });
 
     it('shows true or false options', () => {
-      cy.get('[data-testid=compareValue]').should('be.visible');
-      cy.get('[data-testid=compareValueRadio]').eq(0).contains('True');
-      cy.get('[data-testid=compareValueRadio]').eq(1).contains('False');
+      cy.get('[data-testid=compare-value]').should('be.visible');
+      cy.get('[data-testid=compare-value-radio]').eq(0).contains('True');
+      cy.get('[data-testid=compare-value-radio]').eq(1).contains('False');
     });
 
     it('should set value when the "apply filter" button is clicked', () => {
-      cy.get('[data-testid=compareValueRadio] input[type=radio]').eq(1).click();
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('Is Featured equals false');
+      cy.get('[data-testid=compare-value-radio] input[type=radio]').eq(1).click();
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Is Featured equals false');
       });
     });
   });
@@ -499,8 +499,8 @@ describe('List Filters', () => {
       cy.get('[data-testid=list-option] input[type=radio]').eq(1).click();
       cy.get('@addFilterBtn').contains('City equals Johor Bahru');
 
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]').eq(0).contains('City equals Johor Bahru');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]').eq(0).contains('City equals Johor Bahru');
       });
     });
   });
@@ -531,8 +531,8 @@ describe('List Filters', () => {
         cy.get('[data-testid=list-option] input[type=checkbox]').eq(0).click();
         cy.get('[data-testid=list-option] input[type=checkbox]').eq(1).click();
 
-        cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-          cy.get('[data-testid=active-filter]').eq(0).contains('City includes Tokyo, Kyoto');
+        cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+          cy.get('[data-testid^=active-filter]').eq(0).contains('City includes Tokyo, Kyoto');
         });
       });
     });
@@ -563,8 +563,8 @@ describe('List Filters', () => {
       cy.get('[data-testid=list-option] input[type=checkbox]').eq(8).click();
       cy.get('@addFilterBtn').contains('City does not include Melbourne, Sydney, Perth, New York, London');
 
-      cy.get('[data-testid=applyFilterBtn]').click().then(() => {
-        cy.get('[data-testid=active-filter]')
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('[data-testid^=active-filter]')
           .eq(0)
           .contains('City does not include Melbourne, Sydney, Perth, New York, London');
       });

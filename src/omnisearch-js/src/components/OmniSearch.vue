@@ -1,31 +1,31 @@
 <template>
   <div class="omnisearch">
     <template v-if="activeFilters.length > 0">
-      <active-filter
+      <filter-button
         v-for="(filter, index) in activeFilters"
-        :field="getField(filter.field)"
-        :operator="filter.operator"
-        :value="filter.value"
-        :index="index"
-        :key="index"
-        @update-filter="updateFilter(filter, $event)"
-        @remove-filter="removeFilter(index)"
+        :fields="fields"
+        :filter="filter"
+        :test-id="`active-filter-${index}`"
+        :key="`filter-${index}`"
+        @apply="updateFilter(filter, $event)"
+        @remove="removeFilter(index)"
       />
     </template>
-    <add-filter-button
+    <filter-button
+      test-id="add-filter"
       :fields="fields"
-      @add-filter="addFilter"
+      key="add-filter"
+      @apply="addFilter"
     />
   </div>
 </template>
 
 <script>
-import AddFilterButton from './AddFilterButton.vue';
-import ActiveFilter from './ActiveFilter.vue';
+import FilterButton from './FilterButton.vue';
 
 export default {
   name: 'OmniSearch',
-  components: { ActiveFilter, AddFilterButton },
+  components: { FilterButton },
   props: {
     fields: {
       type: Array,

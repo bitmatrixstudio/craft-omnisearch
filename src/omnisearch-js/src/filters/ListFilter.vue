@@ -57,7 +57,7 @@ export default {
       );
     },
     isMultiSelect() {
-      return ['in', 'not_in'].includes(this.filterMethod.operator);
+      return Boolean(this.filterMethod.multiple);
     },
   },
   created() {
@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     onSelectionChange() {
-      this.$emit('change', this.selection);
+      this.$emit('input', this.selection);
     },
   },
   mounted() {

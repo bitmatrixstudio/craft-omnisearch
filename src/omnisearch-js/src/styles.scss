@@ -128,11 +128,73 @@ strong {
 :not(.flex) > .select:not(.selectize) {
   display: inline-block;
 }
+
 .select:not(.selectize) {
   position: relative;
 }
+
 .select:not(.selectize), .select:not(.selectize) select {
   position: relative;
   border-radius: 5px;
   white-space: nowrap;
+}
+
+/* menu buttons */
+.menubtn {
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+
+  &:after {
+    display: block;
+    content: '.';
+    font-size: 0;
+    width: 5px;
+    height: 5px;
+    border: solid #596673;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(
+                    45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: relative;
+  }
+
+  &.btn {
+    &:after {
+      top: -1px;
+    }
+
+    &:not(.disabled):not(.inactive) {
+      &:active,
+      &.active {
+        &:after {
+          border-color: #596673;
+        }
+      }
+    }
+
+    &.submit {
+      &:after {
+        border-color: #FFF !important;
+        opacity: 0.8;
+      }
+
+      &:not(.disabled):not(.inactive) {
+        &:hover,
+        &.hover,
+        &:active,
+        &.active {
+          &:after {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
+  &:empty {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }

@@ -1,12 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
-import Filter from '../../src/components/ActiveFilter.vue';
+import FilterButton from '../../src/components/FilterButton.vue';
 import DATATYPES from '../../src/datatypes';
 
-describe('ActiveFilter.vue', () => {
+describe('FilterButton.vue', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallowMount(Filter, {
+    wrapper = shallowMount(FilterButton, {
       propsData: {
         fieldName: 'Category',
         dataType: DATATYPES.TEXT,
@@ -23,7 +23,7 @@ describe('ActiveFilter.vue', () => {
 
   describe('filter methods', () => {
     it('renders correctly for "is_present" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -35,7 +35,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "is_not_present" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -47,7 +47,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "starts_with" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -61,7 +61,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "contain" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -74,7 +74,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "not_contain" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -88,7 +88,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "equal" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -102,7 +102,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "not_equal" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Title',
           dataType: DATATYPES.TEXT,
@@ -116,7 +116,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "gt" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Rating',
           dataType: DATATYPES.NUMBER,
@@ -130,7 +130,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "gte" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Rating',
           dataType: DATATYPES.NUMBER,
@@ -144,7 +144,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "lt" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Rating',
           dataType: DATATYPES.NUMBER,
@@ -158,7 +158,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "lte" operator', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Rating',
           dataType: DATATYPES.NUMBER,
@@ -172,7 +172,7 @@ describe('ActiveFilter.vue', () => {
     });
 
     it('renders correctly for "equal" operator (List)', () => {
-      wrapper = shallowMount(Filter, {
+      wrapper = shallowMount(FilterButton, {
         propsData: {
           fieldName: 'Tags',
           dataType: DATATYPES.LIST,
