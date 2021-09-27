@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 // https://docs.cypress.io/api/introduction/api.html
 
 beforeEach(() => {
@@ -573,5 +574,60 @@ describe('List Filters', () => {
 });
 
 describe('Date Filters', () => {
+  beforeEach(() => {
+    cy.get('@addFilterBtn').click();
+    cy.get('[data-testid=field-list-item-postDate]').as('postDateField');
+    cy.get('@postDateField').click();
 
+    cy.get('[data-testid=filter-method-date_between]').as('betweenFilter');
+    cy.get('[data-testid=filter-method-date_before]').as('beforeFilter');
+    cy.get('[data-testid=filter-method-date_after]').as('afterFilter');
+  });
+
+  it('shows the correct filter methods', () => {
+    cy.get('[data-testid^=filter-method]').should('have.length', 3);
+    cy.get('@betweenFilter').should('exist');
+    cy.get('@beforeFilter').should('exist');
+    cy.get('@afterFilter').should('exist');
+  });
+  it('between filter ', () => {
+    cy.get('@betweenFilter').click();
+    cy.get('@addFilterBtn').contains('between');
+    cy.get('[class="vc-title"]').then((result) => {
+      cy.wrap(result.text()).as('month_and_year').then((result2) => {
+        const month = result2.substring(0, 3);
+        const year = result2.substring(result2.indexOf(' ') + 1);
+        cy.get('[class="vc-weeks"]').contains('14').click();
+        cy.get('[class="vc-weeks"]').contains('16').click();
+        cy.get('[data-testid="apply-filter-btn"]').click();
+        cy.get('[data-testid="active-filter-0"]').contains('Post Date is between ' + month + ' 14, ' + year + ' to ' + month + ' 16, ' + year);
+      });
+    });
+  });
+  it('before filter ', () => {
+    cy.get('@beforeFilter').click();
+    cy.get('@addFilterBtn').contains('before');
+    cy.get('[class="vc-title"]').then((result) => {
+      cy.wrap(result.text()).as('month_and_year').then((result2) => {
+        const month = result2.substring(0, 3);
+        const year = result2.substring(result2.indexOf(' ') + 1);
+        cy.get('[class="vc-weeks"]').contains('15').click();
+        cy.get('[data-testid="apply-filter-btn"]').click();
+        cy.get('[data-testid="active-filter-0"]').contains('Post Date is before ' + month + ' 15, ' + year);
+      });
+    });
+  });
+  it('after filter ', () => {
+    cy.get('@afterFilter').click();
+    cy.get('@addFilterBtn').contains('after');
+    cy.get('[class="vc-title"]').then((result) => {
+      cy.wrap(result.text()).as('month_and_year').then((result2) => {
+        const month = result2.substring(0, 3);
+        const year = result2.substring(result2.indexOf(' ') + 1);
+        cy.get('[class="vc-weeks"]').contains('15').click();
+        cy.get('[data-testid="apply-filter-btn"]').click();
+        cy.get('[data-testid="active-filter-0"]').contains('Post Date is after ' + month + ' 15, ' + year);
+      });
+    });
+  });
 });

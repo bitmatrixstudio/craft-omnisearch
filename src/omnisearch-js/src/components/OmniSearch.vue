@@ -54,6 +54,9 @@ export default {
     },
   },
   watch: {
+    initialFilters(newValue) {
+      this.activeFilters = newValue;
+    },
     activeFilters: {
       deep: true,
       handler() {
@@ -62,6 +65,9 @@ export default {
     },
   },
   methods: {
+    reset() {
+      this.activeFilters = [];
+    },
     getField(handle) {
       return this.fieldMap[handle] != null ? this.fieldMap[handle] : null;
     },
@@ -75,15 +81,7 @@ export default {
       this.activeFilters.splice(index, 1);
     },
     updateFilterCriteria() {
-      const elementIndex = window?.Craft?.elementIndex;
-      const criteria = elementIndex?.settings?.criteria;
-
-      if (criteria == null) {
-        return;
-      }
-
-      criteria.omnisearchFilters = [...this.activeFilters];
-      elementIndex.updateElements();
+      this.$emit('change', this.activeFilters);
     },
   },
 };

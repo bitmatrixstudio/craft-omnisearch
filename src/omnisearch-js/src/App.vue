@@ -1,6 +1,6 @@
 <template>
   <div id="app" style="margin: 30px 15px;">
-    <omni-search :fields="fields"></omni-search>
+    <omni-search :fields="fields" :initial-filters="initialFilters"></omni-search>
   </div>
 </template>
 
@@ -14,6 +14,13 @@ export default {
   name: 'App',
   data() {
     return {
+      initialFilters: [
+        {
+          field: 'city',
+          operator: 'in',
+          value: ['1', '2'],
+        },
+      ],
       fields: [
         {
           handle: 'title',

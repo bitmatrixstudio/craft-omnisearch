@@ -93,6 +93,9 @@ export default {
     },
   },
   watch: {
+    fields() {
+      this.reset();
+    },
     showFilterPanel(show) {
       if (show) {
         this.$nextTick(() => {
