@@ -91,6 +91,16 @@ export default {
               name: 'Is Recommended',
               dataType: DATATYPES.BOOLEAN,
             },
+            {
+              handle: 'blocks.spells',
+              name: 'Spells',
+              dataType: DATATYPES.LIST,
+              items: [
+                { value: 'fireball', label: 'Fireball' },
+                { value: 'windwalk', label: 'Windwalk' },
+                { value: 'waterEl', label: 'Conjure Water Elemental' },
+              ],
+            },
           ],
         },
       ],

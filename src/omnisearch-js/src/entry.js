@@ -84,7 +84,7 @@ window.onload = function onLoad() {
 
           if (typeof window.history !== 'undefined') {
             const handle = $(window.Craft.elementIndex.$source[0]).data('handle');
-            let uri = 'entries';
+            let uri = window.Craft.path.split('/')[0];
             if (handle) {
               uri += `/${handle}`;
             }

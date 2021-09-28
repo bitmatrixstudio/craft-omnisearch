@@ -13,6 +13,7 @@ namespace pohnean\omnisearch;
 use Craft;
 use craft\base\Plugin;
 use craft\controllers\TemplatesController;
+use craft\elements\db\ElementQuery;
 use craft\elements\db\EntryQuery;
 use craft\events\DefineBehaviorsEvent;
 use craft\helpers\Json;
@@ -73,8 +74,8 @@ class OmniSearch extends Plugin
 			Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
 		}
 
-		Event::on(EntryQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
-			/** @var EntryQuery $sender */
+		Event::on(ElementQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
+			/** @var ElementQuery $sender */
 			$sender = $event->sender;
 			$sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior());
 		});

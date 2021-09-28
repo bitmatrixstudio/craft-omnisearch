@@ -5,8 +5,11 @@ namespace pohnean\omnisearch\filters;
 use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\db\Query;
+use craft\elements\db\MatrixBlockQuery;
+use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\Lightswitch;
+use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
@@ -26,9 +29,14 @@ abstract class OmniSearchFilter extends BaseObject
     public $value;
 
     /**
-     * @var Field|null
+     * @var Field
      */
     public $customField;
+
+    /**
+     * @var Field|null
+     */
+    public $parentField;
 
     public static $filterClassMap = [
         'contain'        => ContainFilter::class,
@@ -59,6 +67,25 @@ abstract class OmniSearchFilter extends BaseObject
 
     abstract public function modifyQuery(Query $query): Query;
 
+    public function modifyElementQuery(Query $query): Query {
+        if ($this->isMatrixField()) {
+            $matrixBlockQuery = MatrixBlock::find()
+                ->select('matrixblocks.ownerId')
+                ->fieldId($this->parentField->id);
+
+            $this->modifyQuery($matrixBlockQuery);
+
+            return $query->andWhere([
+                'in',
+                'elements.id',
+                $matrixBlockQuery
+            ]);
+        }
+
+
+        return $this->modifyQuery($query);
+    }
+
     public static function create(array $config): OmniSearchFilter
     {
         $operator = ArrayHelper::remove($config, 'operator', null);
@@ -78,6 +105,11 @@ abstract class OmniSearchFilter extends BaseObject
     protected function isCustomField(): bool
     {
         return $this->customField != null;
+    }
+
+    public function isMatrixField(): bool
+    {
+        return strpos($this->field, '.') > -1;
     }
 
     protected function getColumn(): string

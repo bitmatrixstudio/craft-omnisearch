@@ -91,11 +91,7 @@ class FieldsController extends Controller
             if ($field->searchable) {
                 if ($field instanceof Matrix) {
                     $matrixFields = array_map(function ($item) use ($field) {
-                        return [
-                            'handle'   => $field->handle . '.' . $item->handle,
-                            'name'     => $item->name,
-                            'dataType' => $this->mapDataType($item),
-                        ];
+                        return $this->createFieldConfig($item, $field->handle . '.');
                     }, $field->getBlockTypeFields());
 
                     $fieldConfig = [
@@ -105,18 +101,7 @@ class FieldsController extends Controller
                         'fields'   => $matrixFields,
                     ];
                 } else {
-                    $fieldConfig = [
-                        'handle'   => $field->handle,
-                        'name'     => $field->name,
-                        'dataType' => $this->mapDataType($field),
-                    ];
-
-                    if ($field instanceof BaseOptionsField) {
-                        $fieldConfig['items'] = array_map(function ($item) {
-                            unset($item['default']);
-                            return $item;
-                        }, $field->options);
-                    }
+                    $fieldConfig = $this->createFieldConfig($field);
                 }
 
                 $fields[] = $fieldConfig;
@@ -124,6 +109,24 @@ class FieldsController extends Controller
         }
 
         return $fields;
+    }
+
+    protected function createFieldConfig($field, $prefix = '')
+    {
+        $fieldConfig = [
+            'handle'   => $prefix . $field->handle,
+            'name'     => $field->name,
+            'dataType' => $this->mapDataType($field),
+        ];
+
+        if ($field instanceof BaseOptionsField) {
+            $fieldConfig['items'] = array_map(function ($item) {
+                unset($item['default']);
+                return $item;
+            }, $field->options);
+        }
+
+        return $fieldConfig;
     }
 
     /**
@@ -140,7 +143,7 @@ class FieldsController extends Controller
                     $sectionsAndEntryTypes[$section->id][] = $entryType->id;
                 }
             }
-        } else {
+        } elseif (strpos($source, 'section:') > -1) {
             $sectionUid = str_replace('section:', '', $source);
             $section = Craft::$app->getSections()->getSectionByUid($sectionUid);
             foreach (Craft::$app->getSections()->getEntryTypesBySectionId($section->id) as $entryType) {

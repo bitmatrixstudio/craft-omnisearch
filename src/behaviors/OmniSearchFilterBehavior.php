@@ -4,8 +4,10 @@ namespace pohnean\omnisearch\behaviors;
 
 use craft\base\Field;
 use craft\base\FieldInterface;
+use craft\elements\db\ElementQuery;
 use craft\elements\db\EntryQuery;
 use craft\events\CancelableEvent;
+use craft\fields\Matrix;
 use pohnean\omnisearch\filters\OmniSearchFilter;
 use yii\base\Behavior;
 use yii\base\InvalidArgumentException;
@@ -22,16 +24,16 @@ class OmniSearchFilterBehavior extends Behavior
 	public function events()
 	{
 		return [
-			EntryQuery::EVENT_AFTER_PREPARE => [$this, 'afterPrepare'],
+			ElementQuery::EVENT_AFTER_PREPARE => [$this, 'afterPrepare'],
 		];
 	}
 
 
 	public function afterPrepare(CancelableEvent $event)
 	{
-		/** @var EntryQuery $entryQuery */
+		/** @var ElementQuery $entryQuery */
 		$entryQuery = $event->sender;
-		$this->setCustomFieldMap($entryQuery->customFields);
+        $this->customFieldMap = $this->mapCustomFields($entryQuery->customFields);
 
 		/** @var OmniSearchFilter[] $filters */
 		$filters = array_map(function ($config) {
@@ -43,13 +45,20 @@ class OmniSearchFilterBehavior extends Behavior
 
 			$customField = array_key_exists($field, $this->customFieldMap) ? $this->customFieldMap[$field] : null;
 
+            $parentField = null;
+            if (strpos($field, '.') > -1) {
+                $parentFieldId = explode('.', $field)[0];
+                $parentField = array_key_exists($parentFieldId, $this->customFieldMap) ? $this->customFieldMap[$parentFieldId] : null;
+            }
+
 			return OmniSearchFilter::create(array_merge($config, [
-				'customField' => $customField
+				'customField' => $customField,
+				'parentField' => $parentField,
 			]));
 		}, $this->omnisearchFilters);
 
 		foreach ($filters as $filter) {
-			$filter->modifyQuery($entryQuery->subQuery);
+			$filter->modifyElementQuery($entryQuery->subQuery);
 		}
 	}
 
@@ -64,15 +73,24 @@ class OmniSearchFilterBehavior extends Behavior
 	/**
 	 * @param Field[] $customFields
 	 */
-	protected function setCustomFieldMap(array $customFields)
+	protected function mapCustomFields(array $customFields)
 	{
 		$customFieldMap = [];
 		foreach ($customFields as $customField) {
+		    if ($customField instanceof Matrix) {
+                $customFieldMap[$customField->handle] = $customField;
+
+                foreach ($customField->getBlockTypeFields() as $blockTypeField) {
+                    $key = $customField->handle . '.' . $blockTypeField->handle;
+                    $customFieldMap[$key] = $blockTypeField;
+                }
+            }
+
 			if ($customField->hasContentColumn()) {
 				$customFieldMap[$customField->handle] = $customField;
 			}
 		}
 
-		$this->customFieldMap = $customFieldMap;
+		return $customFieldMap;
 	}
 }
