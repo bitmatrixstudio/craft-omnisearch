@@ -4,4 +4,5 @@ export default {
   DATE: 'date',
   BOOLEAN: 'boolean',
   LIST: 'list',
+  MATRIX: 'matrix',
 };

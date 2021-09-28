@@ -9,18 +9,13 @@ import OmniSearch from './components/OmniSearch.vue';
 import DATATYPES from './datatypes';
 
 import './styles.scss';
+import { parseQueryParams } from './utils';
 
 export default {
   name: 'App',
   data() {
     return {
-      initialFilters: [
-        {
-          field: 'city',
-          operator: 'in',
-          value: ['1', '2'],
-        },
-      ],
+      initialFilters: parseQueryParams(window.location),
       fields: [
         {
           handle: 'title',
@@ -69,6 +64,33 @@ export default {
             { value: '20', label: 'Phuket' },
             { value: '21', label: 'Hua Hin' },
             { value: '22', label: 'Ko Samui' },
+          ],
+        },
+        {
+          handle: 'blocks',
+          name: 'Blocks',
+          dataType: DATATYPES.MATRIX,
+          fields: [
+            {
+              handle: 'blocks.featureTitle',
+              name: 'Feature Title',
+              dataType: DATATYPES.TEXT,
+            },
+            {
+              handle: 'blocks.featureDate',
+              name: 'Feature Date',
+              dataType: DATATYPES.DATE,
+            },
+            {
+              handle: 'blocks.votes',
+              name: 'Votes',
+              dataType: DATATYPES.NUMBER,
+            },
+            {
+              handle: 'blocks.isRecommended',
+              name: 'Is Recommended',
+              dataType: DATATYPES.BOOLEAN,
+            },
           ],
         },
       ],

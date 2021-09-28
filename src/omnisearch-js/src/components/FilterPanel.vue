@@ -7,33 +7,61 @@
       <!-- Step 1: choose field from list -->
       <div class="omnisearch__field-list-search">
         <div class="flex-grow texticon search icon">
-          <input class="text"
-                 type="text"
-                 v-model="keyword"
-                 placeholder="Search attributes..."
-                 ref="searchInput"
-                 data-testid="field-search-input"
+          <input
+            class="text"
+            type="text"
+            v-model="keyword"
+            placeholder="Search attributes..."
+            ref="searchInput"
+            data-testid="field-search-input"
           />
         </div>
       </div>
       <div class="omnisearch__filter-panel-body" data-testid="fieldList">
-        <div class="omnisearch__list-item"
-             v-for="(field, index) in fieldList"
-             :data-testid="`field-list-item-${field.handle}`"
-             :key="index"
-             @click="selectField(field)">
-          {{ field.name }}
-        </div>
+        <template v-for="(field, index) in fieldList">
+          <template v-if="isGroup(field)">
+            <div
+              class="omnisearch__list-item omnisearch__list-item-group"
+              :data-testid="createKey('field-list-group', field.handle)"
+              :key="createKey('field-list-group', field.handle)"
+            >
+              {{ field.name }}
+            </div>
+            <div
+              class="omnisearch__list-item-group-list"
+              :key="createKey('field-list-items', field.handle)"
+            >
+              <template v-for="groupField in field.fields">
+                <div
+                  class="omnisearch__list-item"
+                  :data-testid="createKey('field-list-item', groupField.handle)"
+                  :key="createKey('field-list-item', groupField.handle)"
+                  @click="selectField(groupField)">
+                  {{ groupField.name }}
+                </div>
+              </template>
+            </div>
+          </template>
+          <div
+            v-else
+            class="omnisearch__list-item"
+            :data-testid="createKey('field-list-item', field.handle)"
+            :key="index"
+            @click="selectField(field)">
+            {{ field.name }}
+          </div>
+        </template>
       </div>
     </div>
     <div v-show="selectedField != null && selectedFilterMethod == null">
       <!-- Step 2: choose filter method -->
       <div class="omnisearch__filter-panel-body" data-testid="filterMethodList">
-        <div class="omnisearch__list-item"
-             v-for="filterMethod in filterMethods"
-             :data-testid="`filter-method-${filterMethod.operator}`"
-             :key="filterMethod.operator"
-             @click="selectFilterMethod(filterMethod)"
+        <div
+          class="omnisearch__list-item"
+          v-for="filterMethod in filterMethods"
+          :data-testid="`filter-method-${filterMethod.operator}`"
+          :key="filterMethod.operator"
+          @click="selectFilterMethod(filterMethod)"
         >
           {{ filterMethod.label }}
         </div>
@@ -102,7 +130,7 @@ export default {
       type: Object,
     },
     compareValue: {
-      type: [Object, String, Number, Array],
+      type: [Object, String, Number, Array, Boolean],
     },
   },
   data() {
@@ -112,11 +140,29 @@ export default {
   },
   computed: {
     fieldList() {
-      const filteredFields = this.fields.filter(
-        (field) => field.name.toLowerCase().includes(this.keyword.toLowerCase()),
-      );
+      const keyword = this.keyword.toLowerCase();
 
-      return sortBy(filteredFields, 'name');
+      const fieldList = this.fields.reduce((filtered, field) => {
+        if (this.isGroup(field)) {
+          const innerFields = field.fields.filter((groupField) => groupField.name.toLowerCase().includes(keyword));
+
+          if (innerFields.length > 0) {
+            filtered.push({
+              ...field,
+              fields: sortBy(innerFields, 'name'),
+            });
+          }
+        } else if (field.name.toLowerCase().includes(keyword)) {
+          filtered.push(field);
+        }
+
+        return filtered;
+      }, []);
+
+      return sortBy(fieldList, [
+        (o) => this.isGroup(o),
+        'name',
+      ]);
     },
     selectedFieldDataType() {
       return this.selectedField != null ? this.selectedField.dataType : null;
@@ -140,6 +186,12 @@ export default {
     },
   },
   methods: {
+    isGroup(field) {
+      return field.fields != null;
+    },
+    createKey(prefix, handle) {
+      return `${prefix}-${handle.replace('.', '-')}`;
+    },
     selectField(field) {
       this.$emit('update:selected-field', field);
     },

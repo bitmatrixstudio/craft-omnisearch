@@ -23,3 +23,28 @@ export function parseDateRange(value = '') {
     end,
   };
 }
+
+export function createQueryParams(filters) {
+  return filters.map((filter) => {
+    const values = ['in', 'not_in'].includes(filter.operator) ? filter.value.join(',') : filter.value;
+
+    return `${filter.field}[${filter.operator}]=${values}`;
+  }).join('&');
+}
+
+export function parseQueryParams(url) {
+  const location = new URL(url);
+  const queryParams = new URLSearchParams(location.search);
+
+  return Array.from(queryParams.entries()).map(([key, val]) => {
+    const [, field, operator] = key.match(/([\w/.]+)\[(\w+)]/);
+
+    const value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
+
+    return {
+      field,
+      operator,
+      value,
+    };
+  });
+}

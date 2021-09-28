@@ -22,6 +22,7 @@
 
 <script>
 import FilterButton from './FilterButton.vue';
+import DATATYPES from '../datatypes';
 
 export default {
   name: 'OmniSearch',
@@ -39,7 +40,7 @@ export default {
   },
   data() {
     return {
-      activeFilters: [...this.initialFilters],
+      activeFilters: this.processFilters(this.initialFilters),
     };
   },
   computed: {
@@ -55,7 +56,7 @@ export default {
   },
   watch: {
     initialFilters(newValue) {
-      this.activeFilters = newValue;
+      this.activeFilters = this.processFilters(newValue);
     },
     activeFilters: {
       deep: true,
@@ -83,61 +84,106 @@ export default {
     updateFilterCriteria() {
       this.$emit('change', this.activeFilters);
     },
+    processFilters(filters) {
+      const { fields } = this;
+
+      return filters.map((filter) => {
+        const field = fields.find((item) => item.handle === filter.field);
+        if (!field) {
+          return filter;
+        }
+
+        return {
+          ...filter,
+          value: this.processValue(field.dataType, filter.value),
+        };
+      });
+    },
+    processValue(dataType, value) {
+      switch (dataType) {
+        case DATATYPES.BOOLEAN: {
+          return value === 1 || value === '1' || value === 'true';
+        }
+
+        case DATATYPES.NUMBER: {
+          return Number(value);
+        }
+
+        default: {
+          return value;
+        }
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
-  .omnisearch {
-    position: relative;
-    margin-top: -1em;
-    margin-bottom: 1em;
-    display: inline-flex;
-    flex-wrap: wrap;
+.omnisearch {
+  position: relative;
+  margin-top: -1em;
+  margin-bottom: 1em;
+  display: inline-flex;
+  flex-wrap: wrap;
 
-    .btn:not(.small) {
-      font-size: 1em;
+  .btn:not(.small) {
+    font-size: 1em;
+  }
+
+  .omnisearch__filter {
+    display: flex;
+    margin-bottom: 0.5em;
+  }
+
+  .omnisearch__filter-text {
+    display: block;
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .omnisearch__filter-panel {
+    display: block;
+    padding: 0 !important;
+    min-width: 10rem;
+  }
+
+  .omnisearch__field-list-search {
+    padding: 0.5rem;
+  }
+
+  .omnisearch__field-list-search + .omnisearch__filter-panel-body {
+    padding-top: 0;
+  }
+
+  .omnisearch__filter-panel-body,
+  .omnisearch__filter-panel-footer {
+    padding: 0.5rem;
+  }
+
+  .omnisearch__list-item {
+    cursor: pointer;
+    padding: 10px 14px;
+    margin: 0 -0.5rem;
+
+    &:hover {
+      background-color: #f3f7fc;
     }
 
-    .omnisearch__filter {
-      display: flex;
-      margin-bottom: 0.5em;
-    }
-
-    .omnisearch__filter-text {
-      display: block;
-      max-width: 20rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .omnisearch__filter-panel {
-      display: block;
-      padding: 0 !important;
-      min-width: 10rem;
-    }
-
-    .omnisearch__field-list-search {
-      padding: 0.5rem;
-    }
-
-    .omnisearch__field-list-search + .omnisearch__filter-panel-body {
-      padding-top: 0;
-    }
-
-    .omnisearch__filter-panel-body,
-    .omnisearch__filter-panel-footer {
-      padding: 0.5rem;
-    }
-
-    .omnisearch__list-item {
-      cursor: pointer;
-      padding: 10px 14px;
-      margin: 0 -0.5rem;
+    &.omnisearch__list-item-group {
+      cursor: default;
+      font-weight: bold;
 
       &:hover {
-        background-color: #f3f7fc;
+        background-color: transparent;
       }
     }
   }
+
+  .omnisearch__list-item-group-list {
+    .omnisearch__list-item {
+      padding-left: 24px;
+    }
+  }
+}
 </style>

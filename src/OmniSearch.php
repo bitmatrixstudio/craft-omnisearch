@@ -40,6 +40,7 @@ class OmniSearch extends Plugin
 	const DATATYPE_DATE = 'date';
 	const DATATYPE_BOOLEAN = 'boolean';
 	const DATATYPE_LIST = 'list';
+	const DATATYPE_MATRIX = 'matrix';
 
 	// Static Properties
 	// =========================================================================

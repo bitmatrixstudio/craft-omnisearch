@@ -1,46 +1,9 @@
+
 describe('Edit filters', () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.visit('?rating[gte]=4&title[equals]=something&city[in]=2,4&isFeatured[equals]=false&postDate[date_before]=2021-09-15');
 
     cy.get('[data-testid=add-filter] [data-testid=filter-button]').as('addFilterBtn');
-
-    // Setup... Add a 'is present' filter for Rating
-    cy.get('@addFilterBtn').click();
-    cy.get('[data-testid=field-list-item-rating]').click();
-    cy.get('[data-testid=filter-method-gte]').click();
-    cy.get('[data-testid=compare-value-input]').type('4');
-    cy.get('[data-testid=apply-filter-btn]').click();
-
-    // Setup... Add a 'is present' filter for Title
-    cy.get('@addFilterBtn').click();
-    cy.get('[data-testid=field-list-item-title]').click();
-    cy.get('[data-testid=filter-method-equals]').click();
-    cy.get('[data-testid=compare-value-input]').type('something');
-    cy.get('[data-testid=apply-filter-btn]').click();
-
-    // Setup... Add a 'is present' filter for City
-    cy.get('@addFilterBtn').click();
-    cy.get('[data-testid=field-list-item-city]').click();
-    cy.get('[data-testid=filter-method-in]').click();
-    cy.get('[data-testid=list-option] input[type=checkbox]').eq(1).click(); // Johor Bahru
-    cy.get('[data-testid=list-option] input[type=checkbox]').eq(3).click(); // Penang
-
-    cy.get('[data-testid=apply-filter-btn]').click();
-
-    // Setup... Add a 'is present' filter for Is Featured
-    cy.get('@addFilterBtn').click();
-    cy.get('[data-testid=field-list-item-isFeatured]').click();
-    cy.get('[data-testid=filter-method-equals]').click();
-    cy.get('[data-testid=compare-value-radio] input[type=radio]').eq(1).click(); // False
-    cy.get('[data-testid=apply-filter-btn]').click();
-
-    // Setup... Add a 'is present' filter for date
-    cy.get('@addFilterBtn').click();
-    cy.get('[data-testid=field-list-item-postDate]').click();
-    cy.get('[data-testid=filter-method-date_before]').click();
-    cy.get('[class="vc-weeks"]').contains('15').click();
-    cy.get('[data-testid=apply-filter-btn]').click();
-
 
     // Aliases
     cy.get('[data-testid="active-filter-0"] [data-testid=filter-button]').as('ratingFilter');
@@ -91,7 +54,6 @@ describe('Edit filters', () => {
       cy.get('@titleFilter').contains('Title equals "something"');
     });
 
-    // TODO: can change filter method
     it('can change filter method', () => {
       cy.get('[class="btn menubtn omnisearch__filter-method-dropdown"]').click();
       cy.get('[data-testid="filter-method-not_contain"]').click();
@@ -125,7 +87,6 @@ describe('Edit filters', () => {
       cy.get('@ratingFilter').contains('Rating greater than or equal 4');
     });
 
-    // TODO: can change filter method
     it('change filter method', () => {
       cy.get('[class="btn menubtn omnisearch__filter-method-dropdown"]').click();
       cy.get('[data-testid="filter-method-lt"]').click();
@@ -134,7 +95,6 @@ describe('Edit filters', () => {
       cy.get('@ratingFilter').contains('Rating less than 3');
     });
 
-    // TODO: decimals
     it('works with decimals', () => {
       cy.get('[data-testid="compare-value-input"]').clear().clear().type('2.5');
       cy.get('[data-testid=apply-filter-btn]').click();
@@ -143,7 +103,6 @@ describe('Edit filters', () => {
   });
 
   // List Filters
-
   describe('Edit: List Filter', () => {
     beforeEach(() => {
       cy.get('@cityFilter').click();
@@ -179,7 +138,6 @@ describe('Edit filters', () => {
   });
 
   // Boolean Filters
-
   describe('Edit: Boolean Filter', () => {
     beforeEach(() => {
       cy.get('@isFeaturedFilter').click();
@@ -201,6 +159,7 @@ describe('Edit filters', () => {
       cy.get('[data-testid="filter-panel"]').should('not.be.visible');
       cy.get('@isFeaturedFilter').contains('false', { matchCase: false });
     });
+
     it('change filter method', () => {
       cy.get('[class="btn menubtn omnisearch__filter-method-dropdown"]').click();
       cy.get('[data-testid="filter-method-is_present"]').click();

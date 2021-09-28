@@ -37,7 +37,10 @@ describe('Add Filters', () => {
     });
 
     it('should list the available fields sorted', () => {
-      cy.get('[data-testid^=field-list-item]').should('have.length', 5);
+      cy.get('[data-testid^=field-list-group]').should('have.length', 1);
+      cy.get('[data-testid^=field-list-group]').eq(0).contains('Blocks');
+
+      cy.get('[data-testid^=field-list-item]').should('have.length', 9);
 
       const expectedItems = [
         'City',
@@ -45,6 +48,10 @@ describe('Add Filters', () => {
         'Post Date',
         'Rating',
         'Title',
+        'Feature Title',
+        'Feature Date',
+        'Is Recommended',
+        'Votes',
       ];
 
       expectedItems.forEach((item, i) => {
@@ -53,9 +60,11 @@ describe('Add Filters', () => {
     });
 
     it('should narrow down available fields when keyword is entered', () => {
-      cy.get('[data-testid=field-search-input]').type('da').then(() => {
-        cy.get('[data-testid^=field-list-item]').should('have.length', 1);
-        cy.get('[data-testid^=field-list-item]').eq(0).contains('Post Date');
+      cy.get('[data-testid=field-search-input]').type('title').then(() => {
+        cy.get('[data-testid^=field-list-item]').should('have.length', 2);
+        cy.get('[data-testid^=field-list-item]').eq(0).contains('Title');
+        cy.get('[data-testid^=field-list-group]').eq(0).contains('Blocks');
+        cy.get('[data-testid^=field-list-item]').eq(1).contains('Feature Title');
       });
     });
 
@@ -627,6 +636,64 @@ describe('Date Filters', () => {
         cy.get('[class="vc-weeks"]').contains('15').click();
         cy.get('[data-testid="apply-filter-btn"]').click();
         cy.get('[data-testid="active-filter-0"]').contains('Post Date is after ' + month + ' 15, ' + year);
+      });
+    });
+  });
+});
+
+describe('Nested Filters', () => {
+  beforeEach(() => {
+    cy.get('@addFilterBtn').click();
+    cy.get('[data-testid=field-list-item-blocks-featureTitle]').as('featureTitleField');
+    cy.get('@featureTitleField').click();
+
+    cy.get('[data-testid=filter-method-contain]').as('containsFilter');
+    cy.get('[data-testid=filter-method-not_contain]').as('notContainsFilter');
+    cy.get('[data-testid=filter-method-starts_with]').as('startsWithFilter');
+    cy.get('[data-testid=filter-method-equals]').as('equalsFilter');
+    cy.get('[data-testid=filter-method-not_equals]').as('notEqualsFilter');
+    cy.get('[data-testid=filter-method-is_present]').as('isPresentFilter');
+    cy.get('[data-testid=filter-method-is_not_present]').as('isNotPresentFilter');
+  });
+
+  it('shows the correct filter methods', () => {
+    cy.get('@addFilterBtn').contains('Feature Title');
+
+    cy.get('[data-testid^=filter-method]').should('have.length', 7);
+    cy.get('@containsFilter').contains('contains');
+    cy.get('@notContainsFilter').contains('does not contain');
+    cy.get('@startsWithFilter').contains('starts with');
+    cy.get('@equalsFilter').contains('equals');
+    cy.get('@notEqualsFilter').contains('does not equal');
+    cy.get('@isPresentFilter').contains('is present');
+    cy.get('@isNotPresentFilter').contains('is not present');
+  });
+
+  describe('contains filter', () => {
+    beforeEach(() => {
+      cy.get('@containsFilter').click();
+      cy.get('@addFilterBtn').contains('Feature Title contains');
+    });
+
+    it('should show compare value text input', () => {
+      cy.get('[data-testid=compare-value]').should('be.visible');
+      cy.get('[data-testid=compare-value-input]').should('have.focus');
+
+      cy.get('[data-testid=apply-filter-btn]')
+        .contains('Apply Filter')
+        .should('be.disabled')
+        .should('have.class', 'disabled');
+    });
+
+    it('should set value when the "apply filter" button is clicked', () => {
+      cy.get('[data-testid=compare-value-input]').type('something');
+      cy.get('[data-testid=apply-filter-btn]').click().then(() => {
+        cy.get('.omnisearch__choose-fields').should('not.be.visible');
+        cy.get('[data-testid^=active-filter]').should('have.length', 1);
+
+        cy.get('[data-testid^=active-filter]').eq(0).contains('Feature Title contains "something"');
+
+        cy.get('@addFilterBtn').should('have.text', '+ Add Filter');
       });
     });
   });

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import OmniSearch from './components/OmniSearch.vue';
+import { createQueryParams, parseQueryParams } from './utils';
 
 const originalLocation = new URL(window.location);
-const originalParams = new URLSearchParams(originalLocation.search);
 
 window.onload = function onLoad() {
   const $ = window.jQuery;
@@ -48,21 +48,7 @@ window.onload = function onLoad() {
           this.$refs.omnisearch.reset();
         },
         parseParams() {
-          const filters = Array.from(originalParams.entries()).map(([key, val]) => {
-            const [, field, operator] = key.match(/(\w+)\[(\w+)]/);
-
-            const value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
-
-            return {
-              field,
-              operator,
-              value,
-            };
-          });
-
-          if (filters.length > 0) {
-            this.initialFilters = filters;
-          }
+          this.initialFilters = parseQueryParams(originalLocation);
         },
         loadFields() {
           const elementIndex = window?.Craft?.elementIndex;
@@ -104,13 +90,7 @@ window.onload = function onLoad() {
             }
 
             if (activeFilters.length > 0) {
-              const parts = activeFilters.map((filter) => {
-                const values = ['in', 'not_in'].includes(filter.operator) ? filter.value.join(',') : filter.value;
-
-                return `${filter.field}[${filter.operator}]=${values}`;
-              });
-
-              uri += `?${parts.join('&')}`;
+              uri += `?${createQueryParams(activeFilters)}`;
             }
 
             window.history.replaceState({}, '', window.Craft.getUrl(uri));

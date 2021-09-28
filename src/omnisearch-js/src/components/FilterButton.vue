@@ -91,6 +91,18 @@ export default {
 
       return isNonEmptyScalar || isNonEmptyArray;
     },
+    fieldsFlattened() {
+      return this.fields.reduce((allFields, item) => {
+        if (item.fields) {
+          return allFields.concat(item.fields);
+        }
+
+        return [
+          ...allFields,
+          item,
+        ];
+      }, []);
+    },
   },
   watch: {
     fields() {
@@ -126,7 +138,7 @@ export default {
         this.selectedFilterMethod = null;
         this.compareValue = null;
       } else {
-        this.selectedField = this.fields.find((field) => field.handle === filter.field);
+        this.selectedField = this.fieldsFlattened.find((field) => field.handle === filter.field);
         this.selectedFilterMethod = operators.find(
           (operator) => operator.operator === filter.operator,
         );
