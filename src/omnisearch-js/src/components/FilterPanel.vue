@@ -149,7 +149,7 @@ export default {
           if (innerFields.length > 0) {
             filtered.push({
               ...field,
-              fields: sortBy(innerFields, 'name'),
+              fields: innerFields,
             });
           }
         } else if (field.name.toLowerCase().includes(keyword)) {
@@ -161,7 +161,6 @@ export default {
 
       return sortBy(fieldList, [
         (o) => this.isGroup(o),
-        'name',
       ]);
     },
     selectedFieldDataType() {

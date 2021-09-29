@@ -58,16 +58,36 @@ abstract class OmniSearchFilter extends BaseObject
     ];
 
     protected static $fieldToColumnMap = [
-        'title'    => 'content.title',
-        'postDate' => 'entries.postDate',
-        'slug'     => 'elements_sites.slug',
+        'id'          => 'elements.id',
+        'title'       => 'content.title',
+        'slug'        => 'elements_sites.slug',
+        'dateCreated' => 'elements.dateCreated',
+        'dateUpdated' => 'elements.dateUpdated',
+        // Entries
+        'postDate'    => 'entries.postDate',
+        'authorId'    => 'entries.authorId',
+        'typeId'      => 'entries.typeId',
+        // Categories
+        // Assets
+        'filename'    => 'assets.filename',
+        'kind'        => 'assets.kind',
+        'width'       => 'assets.width',
+        'height'      => 'assets.height',
+        'size'        => 'assets.size',
+        // Users
+        'username'    => 'users.username',
+        'email'       => 'users.email',
+        'firstName'   => 'users.firstName',
+        'lastName'    => 'users.lastName',
+        'fullName'    => 'CONCAT(users.firstName, " ", users.lastName)',
     ];
 
     protected static $hasJsonSupport;
 
     abstract public function modifyQuery(Query $query): Query;
 
-    public function modifyElementQuery(Query $query): Query {
+    public function modifyElementQuery(Query $query): Query
+    {
         if ($this->isMatrixField()) {
             $matrixBlockQuery = MatrixBlock::find()
                 ->select('matrixblocks.ownerId')

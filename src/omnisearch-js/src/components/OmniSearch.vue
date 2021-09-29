@@ -156,6 +156,11 @@ export default {
     padding-top: 0;
   }
 
+  .omnisearch__filter-panel-body {
+    max-height: 21rem;
+    overflow-y: auto;
+  }
+
   .omnisearch__filter-panel-body,
   .omnisearch__filter-panel-footer {
     padding: 0.5rem;

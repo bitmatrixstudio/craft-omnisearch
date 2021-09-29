@@ -33,7 +33,10 @@ class OmniSearchFilterBehavior extends Behavior
 	{
 		/** @var ElementQuery $entryQuery */
 		$entryQuery = $event->sender;
-        $this->customFieldMap = $this->mapCustomFields($entryQuery->customFields);
+
+		if ($entryQuery->customFields != null) {
+            $this->customFieldMap = $this->mapCustomFields($entryQuery->customFields);
+        }
 
 		/** @var OmniSearchFilter[] $filters */
 		$filters = array_map(function ($config) {
