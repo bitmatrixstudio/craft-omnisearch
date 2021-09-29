@@ -1,3 +1,8 @@
+<!--
+  - @copyright Copyright (c) 2021 Bitmatrix Studio
+  - @license https://craftcms.github.io/license/
+  -->
+
 <template>
   <div
     class="menu omnisearch__filter-panel omnisearch__choose-fields"

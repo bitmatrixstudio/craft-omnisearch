@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 import { shallowMount } from '@vue/test-utils';
 import OmniSearch from '../../src/components/OmniSearch.vue';
 import FilterButton from '../../src/components/FilterButton.vue';

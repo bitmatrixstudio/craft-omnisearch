@@ -1,3 +1,8 @@
+<!--
+  - @copyright Copyright (c) 2021 Bitmatrix Studio
+  - @license https://craftcms.github.io/license/
+  -->
+
 <template>
   <div id="app" style="margin: 30px 15px;">
     <omni-search :fields="fields" :initial-filters="initialFilters"></omni-search>

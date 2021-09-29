@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 

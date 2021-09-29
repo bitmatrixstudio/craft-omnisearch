@@ -1,3 +1,8 @@
+<!--
+  - @copyright Copyright (c) 2021 Bitmatrix Studio
+  - @license https://craftcms.github.io/license/
+  -->
+
 <template>
   <div class="select">
     <div v-for="option in options" :key="option.value">

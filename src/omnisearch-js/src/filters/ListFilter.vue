@@ -1,3 +1,8 @@
+<!--
+  - @copyright Copyright (c) 2021 Bitmatrix Studio
+  - @license https://craftcms.github.io/license/
+  -->
+
 <template>
   <div data-testid="list-options">
     <div class="flex-grow texticon search icon">

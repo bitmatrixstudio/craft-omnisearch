@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 import Vue from 'vue';
 import OmniSearch from './components/OmniSearch.vue';
 import { createQueryParams, parseQueryParams } from './utils';

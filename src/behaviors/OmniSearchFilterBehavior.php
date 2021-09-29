@@ -1,11 +1,13 @@
 <?php
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
 
 namespace pohnean\omnisearch\behaviors;
 
 use craft\base\Field;
-use craft\base\FieldInterface;
 use craft\elements\db\ElementQuery;
-use craft\elements\db\EntryQuery;
 use craft\events\CancelableEvent;
 use craft\fields\Matrix;
 use pohnean\omnisearch\filters\OmniSearchFilter;

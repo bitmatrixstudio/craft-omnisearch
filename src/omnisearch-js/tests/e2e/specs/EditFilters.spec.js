@@ -1,4 +1,9 @@
 
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 describe('Edit filters', () => {
   beforeEach(() => {
     cy.visit('?rating[gte]=4&title[equals]=something&city[in]=2,4&isFeatured[equals]=false&postDate[date_before]=2021-09-15');

@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 /* eslint-disable arrow-body-style */
 // https://docs.cypress.io/guides/guides/plugins-guide.html
 

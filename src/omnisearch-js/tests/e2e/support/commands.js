@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite

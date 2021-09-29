@@ -1,11 +1,7 @@
 <?php
-/**
- * OmniSearch plugin for Craft CMS 3.x
- *
- * A powerful control panel search filter replacement for CraftCMS
- *
- * @link      github.com/pohnean
- * @copyright Copyright (c) 2020 Tai Poh Nean
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
  */
 
 namespace pohnean\omnisearch;
@@ -28,7 +24,7 @@ use yii\base\Event;
 /**
  * Class OmniSearch
  *
- * @author    Tai Poh Nean
+ * @author    Bitmatrix Studio
  * @package   OmniSearch
  * @since     1.0.0
  *

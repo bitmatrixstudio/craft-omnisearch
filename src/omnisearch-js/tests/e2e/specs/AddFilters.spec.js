@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 /* eslint-disable prefer-template */
 // https://docs.cypress.io/api/introduction/api.html
 

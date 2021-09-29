@@ -1,3 +1,8 @@
+/*
+ * @copyright Copyright (c) 2021 Bitmatrix Studio
+ * @license https://craftcms.github.io/license/
+ */
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
