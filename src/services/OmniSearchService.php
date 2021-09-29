@@ -4,9 +4,9 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\services;
+namespace bitmatrix\omnisearch\services;
 
-use pohnean\omnisearch\OmniSearch;
+use bitmatrix\omnisearch\OmniSearch;
 
 use Craft;
 use craft\base\Component;

@@ -4,7 +4,7 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\filters;
+namespace bitmatrix\omnisearch\filters;
 
 use craft\db\Query;
 

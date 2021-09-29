@@ -4,7 +4,7 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\assetbundles\omnisearch;
+namespace bitmatrix\omnisearch\assetbundles\omnisearch;
 
 use Craft;
 use craft\web\AssetBundle;
@@ -25,7 +25,7 @@ class OmniSearchAsset extends AssetBundle
      */
     public function init()
     {
-        $this->sourcePath = "@pohnean/omnisearch/assetbundles/omnisearch/dist";
+        $this->sourcePath = "@bitmatrix/omnisearch/assetbundles/omnisearch/dist";
 
         $this->depends = [
             CpAsset::class,

@@ -5,7 +5,7 @@ namespace tests;
 use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
 use fixtures\EntryFixture;
-use pohnean\omnisearch\behaviors\OmniSearchFilterBehavior;
+use bitmatrix\omnisearch\behaviors\OmniSearchFilterBehavior;
 
 class OmniSearchFilterBehaviorTest extends \Codeception\Test\Unit
 {

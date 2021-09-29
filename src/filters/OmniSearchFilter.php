@@ -4,7 +4,7 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\filters;
+namespace bitmatrix\omnisearch\filters;
 
 use craft\base\Field;
 use craft\base\FieldInterface;

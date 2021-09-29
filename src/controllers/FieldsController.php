@@ -4,7 +4,7 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\controllers;
+namespace bitmatrix\omnisearch\controllers;
 
 use Craft;
 use craft\base\Element;
@@ -22,7 +22,7 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Assets;
 use craft\models\EntryType;
 use craft\web\Controller;
-use pohnean\omnisearch\OmniSearch;
+use bitmatrix\omnisearch\OmniSearch;
 
 /**
  * @author    Tai Poh Nean

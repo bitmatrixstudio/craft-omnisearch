@@ -1,5 +1,5 @@
 {
-    "name": "pohnean/craft-omnisearch",
+    "name": "bitmatrix/craft-omnisearch",
     "description": "A powerful control panel search filter replacement for CraftCMS",
     "type": "craft-plugin",
     "version": "1.0.0",
@@ -14,14 +14,14 @@
         "query"
     ],
     "support": {
-        "docs": "https://github.com/pohnean/craft-omnisearch/blob/master/README.md",
-        "issues": "https://github.com/pohnean/craft-omnisearch/issues"
+        "docs": "https://github.com/bitmatrixstudio/craft-omnisearch/blob/master/README.md",
+        "issues": "https://github.com/bitmatrixstudio/craft-omnisearch/issues"
     },
     "license": "Craft",
     "authors": [
         {
-            "name": "Tai Poh Nean",
-            "homepage": "https://github.com/pohnean"
+            "name": "Bitmatrix Studio",
+            "homepage": "https://github.com/bitmatrixstudio"
         }
     ],
     "require": {
@@ -29,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "pohnean\\omnisearch\\": "src/",
+            "bitmatrix\\omnisearch\\": "src/",
             "fixtures\\": "tests/fixtures/"
         }
     },
@@ -38,11 +38,11 @@
         "handle": "omnisearch",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/pohnean/craft-omnisearch/master/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/bitmatrix/craft-omnisearch/master/CHANGELOG.md",
         "components": {
-            "omniSearchService": "pohnean\\omnisearch\\services\\OmniSearchService"
+            "omniSearchService": "bitmatrix\\omnisearch\\services\\OmniSearchService"
         },
-        "class": "pohnean\\omnisearch\\OmniSearch"
+        "class": "bitmatrix\\omnisearch\\OmniSearch"
     },
     "require-dev": {
         "codeception/codeception": "3.1.*",

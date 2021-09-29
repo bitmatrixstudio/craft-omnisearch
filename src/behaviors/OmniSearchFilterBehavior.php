@@ -4,13 +4,13 @@
  * @license https://craftcms.github.io/license/
  */
 
-namespace pohnean\omnisearch\behaviors;
+namespace bitmatrix\omnisearch\behaviors;
 
 use craft\base\Field;
 use craft\elements\db\ElementQuery;
 use craft\events\CancelableEvent;
 use craft\fields\Matrix;
-use pohnean\omnisearch\filters\OmniSearchFilter;
+use bitmatrix\omnisearch\filters\OmniSearchFilter;
 use yii\base\Behavior;
 use yii\base\InvalidArgumentException;
 
