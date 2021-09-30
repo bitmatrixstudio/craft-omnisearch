@@ -11,8 +11,6 @@ use craft\base\Element;
 use craft\base\Field;
 use craft\elements\Asset;
 use craft\elements\Category;
-use craft\elements\db\ElementQuery;
-use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
 use craft\elements\Tag;
 use craft\elements\User;
@@ -29,7 +27,6 @@ use craft\fields\Users;
 use craft\helpers\Assets;
 use craft\models\EntryType;
 use craft\models\Section;
-use craft\models\UserGroup;
 use craft\web\Controller;
 use bitmatrix\omnisearch\OmniSearch;
 

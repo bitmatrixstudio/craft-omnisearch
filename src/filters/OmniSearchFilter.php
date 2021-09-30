@@ -100,7 +100,11 @@ abstract class OmniSearchFilter extends BaseObject
                 ->select('matrixblocks.ownerId')
                 ->fieldId($this->parentField->id);
 
-            $this->modifyQuery($matrixBlockQuery);
+            if ($this->isRelationField()) {
+                $matrixBlockQuery = $this->applyRelationQuery($matrixBlockQuery);
+            } else {
+                $this->modifyQuery($matrixBlockQuery);
+            }
 
             return $query->andWhere([
                 'in',
@@ -108,21 +112,26 @@ abstract class OmniSearchFilter extends BaseObject
                 $matrixBlockQuery
             ]);
         } elseif ($this->isRelationField()) {
-            $relationSubQuery = (new Query())
-                ->select(['sourceId'])
-                ->from('{{%relations}}')
-                ->where(['fieldId' => $this->customField->id]);
-
-            $this->modifyQuery($relationSubQuery);
-
-            return $query->andWhere([
-                'in',
-                'elements.id',
-                $relationSubQuery
-            ]);
+            return $this->applyRelationQuery($query);
         }
 
         return $this->modifyQuery($query);
+    }
+
+    public function applyRelationQuery(Query $query): Query
+    {
+        $relationSubQuery = (new Query())
+            ->select(['sourceId'])
+            ->from('{{%relations}}')
+            ->where(['fieldId' => $this->customField->id]);
+
+        $this->modifyQuery($relationSubQuery);
+
+        return $query->andWhere([
+            'in',
+            'elements.id',
+            $relationSubQuery
+        ]);
     }
 
     public static function create(array $config): OmniSearchFilter
