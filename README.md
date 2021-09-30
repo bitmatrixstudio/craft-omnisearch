@@ -13,13 +13,24 @@ Omnisearch is an advanced search filter bar that allows you to perform multi-var
 ## Features
 - Minimalist and compact
 - Zero-configuration: just install and use!
-- Supports all built-in data types:
-  - Text
-  - Number
-  - Date Range
-  - List (Checkbox and Radio)
+- Supports all built-in fields types:
+  - Assets
+  - Categories
+  - Checkboxes
+  - Color
+  - Date/Time
+  - Email
+  - Entries
+  - Lightswitch
   - Matrix
-- Full Matrix field support 
+  - Multi-Select
+  - Plain Text
+  - Radio Buttons
+  - Plain Text
+  - Tags
+  - URLs
+  - Users
+- Full Matrix field support (Yes, you can search within matrix fields!)
 - Supports native + custom fields
 - Supports advanced filtering the following Element types:
   - Entry
