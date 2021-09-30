@@ -9,11 +9,14 @@ namespace bitmatrix\omnisearch\filters;
 use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\db\Query;
+use craft\elements\db\ElementQuery;
 use craft\elements\db\MatrixBlockQuery;
 use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
+use craft\fields\BaseRelationField;
 use craft\fields\Lightswitch;
 use craft\fields\Matrix;
+use craft\fields\Tags;
 use craft\helpers\ArrayHelper;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
@@ -104,8 +107,20 @@ abstract class OmniSearchFilter extends BaseObject
                 'elements.id',
                 $matrixBlockQuery
             ]);
-        }
+        } elseif ($this->isRelationField()) {
+            $relationSubQuery = (new Query())
+                ->select(['sourceId'])
+                ->from('{{%relations}}')
+                ->where(['fieldId' => $this->customField->id]);
 
+            $this->modifyQuery($relationSubQuery);
+
+            return $query->andWhere([
+                'in',
+                'elements.id',
+                $relationSubQuery
+            ]);
+        }
 
         return $this->modifyQuery($query);
     }
@@ -136,9 +151,16 @@ abstract class OmniSearchFilter extends BaseObject
         return strpos($this->field, '.') > -1;
     }
 
+    public function isRelationField(): bool
+    {
+        return $this->isCustomField() && $this->customField instanceof BaseRelationField;
+    }
+
     protected function getColumn(): string
     {
-        if ($this->isCustomField()) {
+        if ($this->isRelationField()) {
+            return 'targetId';
+        } elseif ($this->isCustomField()) {
             $column = 'content.' . $this->_getFieldContentColumnName($this->customField);
 
             if ($this->customField instanceof Lightswitch) {

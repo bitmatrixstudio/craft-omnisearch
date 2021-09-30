@@ -11,16 +11,25 @@ use craft\base\Element;
 use craft\base\Field;
 use craft\elements\Asset;
 use craft\elements\Category;
+use craft\elements\db\ElementQuery;
+use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
+use craft\elements\Tag;
 use craft\elements\User;
 use craft\fields\BaseOptionsField;
+use craft\fields\BaseRelationField;
+use craft\fields\Categories;
 use craft\fields\Date;
+use craft\fields\Entries;
 use craft\fields\Lightswitch;
 use craft\fields\Matrix;
 use craft\fields\Number;
-use craft\helpers\ArrayHelper;
+use craft\fields\Tags;
+use craft\fields\Users;
 use craft\helpers\Assets;
 use craft\models\EntryType;
+use craft\models\Section;
+use craft\models\UserGroup;
 use craft\web\Controller;
 use bitmatrix\omnisearch\OmniSearch;
 
@@ -116,7 +125,7 @@ class FieldsController extends Controller
                         'name'     => Craft::t('app', 'Author'),
                         'handle'   => 'authorId',
                         'dataType' => OmniSearch::DATATYPE_LIST,
-                        'items'    => $this->getAuthorsListData(),
+                        'items'    => $this->getUsersListData(),
                     ],
                     [
                         'name'     => Craft::t('app', 'Entry Type'),
@@ -262,8 +271,8 @@ class FieldsController extends Controller
         foreach ($fieldLayout->getFields() as $field) {
             if ($field->searchable) {
                 if ($field instanceof Matrix) {
-                    $matrixFields = array_map(function ($item) use ($field) {
-                        return $this->createFieldConfig($item, $field->handle . '.');
+                    $matrixFields = array_map(function ($item) use ($element, $field) {
+                        return $this->createFieldConfig($element, $item, $field->handle . '.');
                     }, $field->getBlockTypeFields());
 
                     $fieldConfig = [
@@ -273,7 +282,7 @@ class FieldsController extends Controller
                         'fields'   => $matrixFields,
                     ];
                 } else {
-                    $fieldConfig = $this->createFieldConfig($field);
+                    $fieldConfig = $this->createFieldConfig($element, $field, '');
                 }
 
                 $fields[] = $fieldConfig;
@@ -283,7 +292,7 @@ class FieldsController extends Controller
         return $fields;
     }
 
-    protected function createFieldConfig($field, $prefix = '')
+    protected function createFieldConfig(Element $element, $field, $prefix = '')
     {
         $fieldConfig = [
             'handle'   => $prefix . $field->handle,
@@ -296,6 +305,8 @@ class FieldsController extends Controller
                 unset($item['default']);
                 return $item;
             }, $field->options);
+        } elseif ($field instanceof BaseRelationField) {
+            $fieldConfig['items'] = $this->getRelationListItems($field);
         }
 
         return $fieldConfig;
@@ -335,7 +346,7 @@ class FieldsController extends Controller
             return OmniSearch::DATATYPE_BOOLEAN;
         } elseif ($field instanceof Date) {
             return OmniSearch::DATATYPE_DATE;
-        } elseif ($field instanceof BaseOptionsField) {
+        } elseif ($field instanceof BaseOptionsField || $field instanceof BaseRelationField) {
             return OmniSearch::DATATYPE_LIST;
         } elseif ($field instanceof Number) {
             return OmniSearch::DATATYPE_NUMBER;
@@ -347,13 +358,24 @@ class FieldsController extends Controller
     /**
      * @return array|\craft\base\ElementInterface[]|User[]|null
      */
-    protected function getAuthorsListData(): array
+    protected function getUsersListData($sources = []): array
     {
-        return User::find()
+        $query = User::find()
             ->select([
                 'users.id AS value',
-                'users.username AS label'
-            ])
+                'users.username AS label',
+            ]);
+
+        if (is_array($sources) && count($sources) > 0) {
+            $groupIds = array_map(function($source) {
+                [, $uid] = explode(':', $source);
+                return Craft::$app->userGroups->getGroupByUid($uid)->id;
+            }, $sources);
+
+            $query->groupId($groupIds);
+        }
+
+        return $query
             ->asArray()
             ->all();
     }
@@ -387,5 +409,105 @@ class FieldsController extends Controller
         }
 
         return $listData;
+    }
+
+    protected function getRelationListItems(BaseRelationField $field): array
+    {
+        $items = [];
+
+        if ($field instanceof Tags) {
+            $items = $this->getTagsListData($field);
+        } elseif ($field instanceof Users) {
+            $items = $this->getUsersListData($field->sources);
+        } elseif ($field instanceof Entries) {
+            $items = $this->getEntriesListData($field->sources);
+        } elseif ($field instanceof \craft\fields\Assets) {
+            $items = $this->getAssetsListData($field->sources);
+        } elseif ($field instanceof Categories) {
+            $items = $this->getCategoriesListData($field->source);
+        }
+
+        return $items;
+    }
+
+    protected function getTagsListData(Tags $field): array
+    {
+        [, $uid] = explode(':', $field->source);
+        $tagGroup = Craft::$app->tags->getTagGroupByUid($uid);
+
+        return Tag::find()
+            ->select([
+                'elements.id AS value',
+                'title AS label',
+            ])
+            ->anyStatus()
+            ->groupId($tagGroup->id)
+            ->asArray()
+            ->all();
+    }
+
+    protected function getEntriesListData($sources = []): array
+    {
+        $sections = [];
+        if ($sources === '*') {
+            $sections = Craft::$app->volumes->getAllVolumeIds();
+        } elseif (is_array($sources) && count($sources) > 0) {
+            /** @var Section[] $sections */
+            $sections = array_map(function($source) {
+                [, $uid] = explode(':', $source);
+                return Craft::$app->sections->getSectionByUid($uid);
+            }, $sources);
+        }
+
+        $sectionIds = array_map(function(Section $section) {
+            return $section->id;
+        }, $sections);
+
+        return Entry::find()
+            ->select([
+                'elements.id AS value',
+                'title AS label',
+            ])
+            ->sectionId($sectionIds)
+            ->asArray()
+            ->all();
+    }
+
+    protected function getAssetsListData($sources = []): array
+    {
+        $volumeIds = [];
+        if ($sources === '*') {
+            $volumeIds = Craft::$app->volumes->getAllVolumeIds();
+        } elseif (is_array($sources) && count($sources) > 0) {
+            /** @var int[] $volumeIds */
+            $volumeIds = array_map(function($source) {
+                [, $uid] = explode(':', $source);
+                return Craft::$app->volumes->getVolumeByUid($uid)->id;
+            }, $sources);
+        }
+
+        return Asset::find()
+            ->select([
+                'elements.id AS value',
+                'title AS label',
+            ])
+            ->volumeId($volumeIds)
+            ->asArray()
+            ->all();
+    }
+
+    protected function getCategoriesListData($source): array
+    {
+        [, $uid] = explode(':', $source);
+        $catGroup = Craft::$app->categories->getGroupByUid($uid);
+
+        return Category::find()
+            ->select([
+                'elements.id AS value',
+                'title AS label',
+            ])
+            ->group($catGroup)
+            ->asArray()
+            ->all();
     }
 }

@@ -82,18 +82,14 @@ class OmniSearchFilterBehavior extends Behavior
 	{
 		$customFieldMap = [];
 		foreach ($customFields as $customField) {
-		    if ($customField instanceof Matrix) {
-                $customFieldMap[$customField->handle] = $customField;
+            $customFieldMap[$customField->handle] = $customField;
 
+		    if ($customField instanceof Matrix) {
                 foreach ($customField->getBlockTypeFields() as $blockTypeField) {
                     $key = $customField->handle . '.' . $blockTypeField->handle;
                     $customFieldMap[$key] = $blockTypeField;
                 }
             }
-
-			if ($customField->hasContentColumn()) {
-				$customFieldMap[$customField->handle] = $customField;
-			}
 		}
 
 		return $customFieldMap;

@@ -1,12 +1,37 @@
-# OmniSearch plugin for Craft CMS 3.x
+# Omnisearch plugin for Craft CMS 3.x
 
-A powerful control panel search filter replacement for CraftCMS
+Omnisearch is a powerful control panel search filter replacement for the CraftCMS 3 control panel.
 
-![Screenshot](resources/img/plugin-logo.png)
+
+## Overview
+Do you have thousands of entries but no way to filter them? Then this plugin is for you!
+
+Omnisearch is an advanced search filter bar that allows you to perform multi-variate filtering of your content with ease.
+
+![Screenshot](resources/img/plugin-screenshot-1.png)
+
+## Features
+- Minimalist and compact
+- Zero-configuration: just install and use!
+- Supports all built-in data types:
+  - Text
+  - Number
+  - Date Range
+  - List (Checkbox and Radio)
+  - Matrix
+- Full Matrix field support 
+- Supports native + custom fields
+- Supports advanced filtering the following Element types:
+  - Entry
+  - Category
+  - Assets
+  - User
+- Book-markable URLs: Each search query has a unique URL that so that you can bookmark your queries using your browser.
+
 
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 3.0.0 or later.
 
 ## Installation
 
@@ -22,22 +47,12 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for OmniSearch.
 
-## OmniSearch Overview
-
--Insert text here-
-
-## Configuring OmniSearch
-
--Insert text here-
-
-## Using OmniSearch
-
--Insert text here-
 
 ## OmniSearch Roadmap
 
 Some things to do, and ideas for potential features:
-
-* Release it
+* Support for Craft Commerce
+* Support for Super Tables
+* Have suggestions? Post them in Github 'Issues'!
 
 Brought to you by [Bitmatrix Studio](github.com/bitmatrixstudio)
