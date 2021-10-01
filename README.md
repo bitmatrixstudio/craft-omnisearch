@@ -2,13 +2,12 @@
 
 Omnisearch is a powerful control panel search filter replacement for the CraftCMS 3 control panel.
 
+[![Screenshot](resources/img/screenshot.png)](https://www.youtube.com/watch?v=1Az5SSXLFCs)
 
 ## Overview
 Do you have thousands of entries but no way to filter them? Then this plugin is for you!
 
 Omnisearch is an advanced search filter bar that allows you to perform multi-variate filtering of your content with ease.
-
-![Screenshot](resources/img/plugin-screenshot-1.png)
 
 ## Features
 - Minimalist and compact
@@ -64,6 +63,6 @@ To install the plugin, follow these instructions.
 Some things to do, and ideas for potential features:
 * Support for Craft Commerce
 * Support for Super Tables
-* Have suggestions? Post them in Github 'Issues'!
+* Have suggestions? Post them in [Github Issues](https://github.com/bitmatrixstudio/craft-omnisearch/issues)!
 
-Brought to you by [Bitmatrix Studio](github.com/bitmatrixstudio)
+Brought to you by [Bitmatrix Studio](https://github.com/bitmatrixstudio)
