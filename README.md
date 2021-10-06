@@ -36,7 +36,13 @@ Omnisearch is an advanced search filter bar that allows you to perform multi-var
   - Category
   - Assets
   - User
-- Book-markable URLs: Each search query has a unique URL that so that you can bookmark your queries using your browser.
+- Supports Craft Commerce
+  - Products
+  - Orders (coming soon)
+  - Customers (coming soon)
+  - Subscriptions (coming soon)
+  - Promotions (coming soon)
+- Bookmarkable URLs: Each search query has a unique URL that so that you can bookmark your queries using your browser.
 
 
 ## Requirements
@@ -61,7 +67,6 @@ To install the plugin, follow these instructions.
 ## OmniSearch Roadmap
 
 Some things to do, and ideas for potential features:
-* Support for Craft Commerce
 * Support for Super Tables
 * Have suggestions? Post them in [Github Issues](https://github.com/bitmatrixstudio/craft-omnisearch/issues)!
 

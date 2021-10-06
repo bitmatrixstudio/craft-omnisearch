@@ -8,15 +8,12 @@ namespace bitmatrix\omnisearch\filters;
 
 use craft\base\Field;
 use craft\base\FieldInterface;
+use craft\commerce\elements\Variant;
 use craft\db\Query;
-use craft\elements\db\ElementQuery;
-use craft\elements\db\MatrixBlockQuery;
 use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\BaseRelationField;
 use craft\fields\Lightswitch;
-use craft\fields\Matrix;
-use craft\fields\Tags;
 use craft\helpers\ArrayHelper;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
@@ -65,35 +62,53 @@ abstract class OmniSearchFilter extends BaseObject
     ];
 
     protected static $fieldToColumnMap = [
-        'id'          => 'elements.id',
-        'title'       => 'content.title',
-        'slug'        => 'elements_sites.slug',
-        'dateCreated' => 'elements.dateCreated',
-        'dateUpdated' => 'elements.dateUpdated',
+        'id'                           => 'elements.id',
+        'title'                        => 'content.title',
+        'slug'                         => 'elements_sites.slug',
+        'dateCreated'                  => 'elements.dateCreated',
+        'dateUpdated'                  => 'elements.dateUpdated',
+        'enabled'                      => 'elements.enabled',
         // Entries
-        'postDate'    => 'entries.postDate',
-        'authorId'    => 'entries.authorId',
-        'typeId'      => 'entries.typeId',
+        'postDate'                     => 'entries.postDate',
+        'authorId'                     => 'entries.authorId',
+        'typeId'                       => 'entries.typeId',
         // Categories
         // Assets
-        'filename'    => 'assets.filename',
-        'kind'        => 'assets.kind',
-        'width'       => 'assets.width',
-        'height'      => 'assets.height',
-        'size'        => 'assets.size',
+        'filename'                     => 'assets.filename',
+        'kind'                         => 'assets.kind',
+        'width'                        => 'assets.width',
+        'height'                       => 'assets.height',
+        'size'                         => 'assets.size',
         // Users
-        'username'    => 'users.username',
-        'email'       => 'users.email',
-        'firstName'   => 'users.firstName',
-        'lastName'    => 'users.lastName',
-        'fullName'    => 'CONCAT(users.firstName, " ", users.lastName)',
+        'username'                     => 'users.username',
+        'email'                        => 'users.email',
+        'firstName'                    => 'users.firstName',
+        'lastName'                     => 'users.lastName',
+        'fullName'                     => 'CONCAT(users.firstName, " ", users.lastName)',
+        // Commerce: Products
+        'product:freeShipping'         => 'commerce_products.freeShipping',
+        'product:promotable'           => 'commerce_products.promotable',
+        'product:availableForPurchase' => 'commerce_products.availableForPurchase',
+        'product:typeId'               => 'commerce_products.typeId',
+        'product:taxCategoryId'        => 'commerce_products.taxCategoryId',
+        'product:shippingCategoryId'   => 'commerce_products.shippingCategoryId',
+        'variant:sku'                  => 'commerce_variants.sku',
+        'variant:stock'                => 'IF(hasUnlimitedStock = 1, 99999999999, commerce_variants.stock)',
+        'variant:length'               => 'commerce_variants.length',
+        'variant:height'               => 'commerce_variants.height',
+        'variant:price'                => 'commerce_variants.price',
+        'variant:weight'               => 'commerce_variants.weight',
+        // Commerce: Orders
+        // Commerce: Customers
+        // Commerce: Subscriptions
+        // Commerce: Promotions
     ];
 
     protected static $hasJsonSupport;
 
     abstract public function modifyQuery(Query $query): Query;
 
-    public function modifyElementQuery(Query $query): Query
+    public function modifyElementQuery(Query $query)
     {
         if ($this->isMatrixField()) {
             $matrixBlockQuery = MatrixBlock::find()
@@ -106,16 +121,25 @@ abstract class OmniSearchFilter extends BaseObject
                 $this->modifyQuery($matrixBlockQuery);
             }
 
-            return $query->andWhere([
+            $query->andWhere([
                 'in',
                 'elements.id',
                 $matrixBlockQuery
             ]);
-        } elseif ($this->isRelationField()) {
-            return $this->applyRelationQuery($query);
-        }
+        } elseif ($this->isProductVariantField()) {
+            $productVariantSubQuery = Variant::find()->select('commerce_variants.productId');
+            $this->modifyQuery($productVariantSubQuery);
 
-        return $this->modifyQuery($query);
+            $query->andWhere([
+                'in',
+                'elements.id',
+                $productVariantSubQuery
+            ]);
+        } elseif ($this->isRelationField()) {
+            $this->applyRelationQuery($query);
+        } else {
+            $this->modifyQuery($query);
+        }
     }
 
     public function applyRelationQuery(Query $query): Query
@@ -157,7 +181,7 @@ abstract class OmniSearchFilter extends BaseObject
 
     public function isMatrixField(): bool
     {
-        return strpos($this->field, '.') > -1;
+        return strpos($this->field, '.') !== false;
     }
 
     public function isRelationField(): bool
@@ -235,5 +259,12 @@ abstract class OmniSearchFilter extends BaseObject
     {
         /** @var Field $field */
         return ($field->columnPrefix ?: 'field_') . $field->handle;
+    }
+
+    private function isProductVariantField()
+    {
+        [$prefix] = explode(':', $this->field);
+
+        return $prefix === 'variant';
     }
 }

@@ -41,7 +41,7 @@ class OmniSearchFilterBehavior extends Behavior
         }
 
 		/** @var OmniSearchFilter[] $filters */
-		$filters = array_map(function ($config) {
+		$filters = array_map(function ($config) use ($entryQuery) {
 			$field = $config['field'] ?? null;
 
 			if ($field == null) {
@@ -63,7 +63,7 @@ class OmniSearchFilterBehavior extends Behavior
 		}, $this->omnisearchFilters);
 
 		foreach ($filters as $filter) {
-			$filter->modifyElementQuery($entryQuery->subQuery);
+			$filter->modifyElementQuery($entryQuery->query);
 		}
 	}
 

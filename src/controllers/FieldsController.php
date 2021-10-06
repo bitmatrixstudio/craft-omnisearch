@@ -9,6 +9,11 @@ namespace bitmatrix\omnisearch\controllers;
 use Craft;
 use craft\base\Element;
 use craft\base\Field;
+use craft\commerce\elements\Product;
+use craft\commerce\records\ProductType;
+use craft\commerce\records\ProductTypeTaxCategory;
+use craft\commerce\records\ShippingCategory;
+use craft\commerce\records\TaxCategory;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
@@ -63,6 +68,8 @@ class FieldsController extends Controller
             $fields = $this->getAssetFields($element, $source);
         } elseif ($element instanceof User) {
             $fields = $this->getUserFields($element);
+        } elseif ($element instanceof Product) {
+            $fields = $this->getProductFields($element, $source);
         }
 
         usort($fields, function ($a, $b) {
@@ -102,6 +109,11 @@ class FieldsController extends Controller
                 'name'     => Craft::t('app', 'Date Updated'),
                 'handle'   => 'dateUpdated',
                 'dataType' => OmniSearch::DATATYPE_DATE,
+            ],
+            [
+                'name'     => Craft::t('app', 'Enabled'),
+                'handle'   => 'enabled',
+                'dataType' => OmniSearch::DATATYPE_BOOLEAN,
             ],
         ];
 
@@ -194,6 +206,78 @@ class FieldsController extends Controller
                     ],
                 ];
                 break;
+            case 'craft\commerce\elements\Product':
+                $elementNativeFields = [
+                    [
+                        'name'     => Craft::t('commerce', 'Free Shipping'),
+                        'handle'   => 'product:freeShipping',
+                        'dataType' => OmniSearch::DATATYPE_BOOLEAN,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Promotable'),
+                        'handle'   => 'product:promotable',
+                        'dataType' => OmniSearch::DATATYPE_BOOLEAN,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Available for purchase'),
+                        'handle'   => 'product:availableForPurchase',
+                        'dataType' => OmniSearch::DATATYPE_BOOLEAN,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Type'),
+                        'handle'   => 'product:typeId',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getProductTypesListData()
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Tax Category'),
+                        'handle'   => 'product:taxCategoryId',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getProductTaxCategoriesListData()
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Shipping Category'),
+                        'handle'   => 'product:shippingCategoryId',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getProductShippingCategoriesListData()
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'SKU'),
+                        'handle'   => 'variant:sku',
+                        'dataType' => OmniSearch::DATATYPE_TEXT,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Stock'),
+                        'handle'   => 'variant:stock',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Length'),
+                        'handle'   => 'variant:length',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Width'),
+                        'handle'   => 'variant:width',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Height'),
+                        'handle'   => 'variant:height',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Weight'),
+                        'handle'   => 'variant:weight',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('commerce', 'Price'),
+                        'handle'   => 'variant:price',
+                        'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                ];
+                break;
             default:
                 break;
         }
@@ -250,6 +334,16 @@ class FieldsController extends Controller
     private function getUserFields(User $user)
     {
         return $this->getFieldsForElement($user);
+    }
+
+    private function getProductFields(Product $element, string $source)
+    {
+        [, $uid] = explode(':', $source);
+
+        $productType = ProductType::find()->where(['uid' => $uid])->one();
+        $element->typeId = $productType->id;
+
+        return $this->getFieldsForElement($element);
     }
 
     /**
@@ -364,7 +458,7 @@ class FieldsController extends Controller
             ]);
 
         if (is_array($sources) && count($sources) > 0) {
-            $groupIds = array_map(function($source) {
+            $groupIds = array_map(function ($source) {
                 [, $uid] = explode(':', $source);
                 return Craft::$app->userGroups->getGroupByUid($uid)->id;
             }, $sources);
@@ -450,13 +544,13 @@ class FieldsController extends Controller
             $sections = Craft::$app->volumes->getAllVolumeIds();
         } elseif (is_array($sources) && count($sources) > 0) {
             /** @var Section[] $sections */
-            $sections = array_map(function($source) {
+            $sections = array_map(function ($source) {
                 [, $uid] = explode(':', $source);
                 return Craft::$app->sections->getSectionByUid($uid);
             }, $sources);
         }
 
-        $sectionIds = array_map(function(Section $section) {
+        $sectionIds = array_map(function (Section $section) {
             return $section->id;
         }, $sections);
 
@@ -477,7 +571,7 @@ class FieldsController extends Controller
             $volumeIds = Craft::$app->volumes->getAllVolumeIds();
         } elseif (is_array($sources) && count($sources) > 0) {
             /** @var int[] $volumeIds */
-            $volumeIds = array_map(function($source) {
+            $volumeIds = array_map(function ($source) {
                 [, $uid] = explode(':', $source);
                 return Craft::$app->volumes->getVolumeByUid($uid)->id;
             }, $sources);
@@ -504,6 +598,39 @@ class FieldsController extends Controller
                 'title AS label',
             ])
             ->group($catGroup)
+            ->asArray()
+            ->all();
+    }
+
+    private function getProductTypesListData()
+    {
+        return ProductType::find()
+            ->select([
+                'id AS value',
+                'name AS label',
+            ])
+            ->asArray()
+            ->all();
+    }
+
+    private function getProductTaxCategoriesListData()
+    {
+        return TaxCategory::find()
+            ->select([
+                'id AS value',
+                'name AS label',
+            ])
+            ->asArray()
+            ->all();
+    }
+
+    private function getProductShippingCategoriesListData()
+    {
+        return ShippingCategory::find()
+            ->select([
+                'id AS value',
+                'name AS label',
+            ])
             ->asArray()
             ->all();
     }
