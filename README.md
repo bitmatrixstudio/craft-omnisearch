@@ -30,6 +30,7 @@ Omnisearch is an advanced search filter bar that allows you to perform multi-var
   - URLs
   - Users
 - Full Matrix field support (Yes, you can search within matrix fields!)
+- Search entries across multiple sites!
 - Supports native + custom fields
 - Supports advanced filtering the following Element types:
   - Entry

@@ -32,6 +32,7 @@ use craft\fields\Users;
 use craft\helpers\Assets;
 use craft\models\EntryType;
 use craft\models\Section;
+use craft\models\Site;
 use craft\web\Controller;
 use bitmatrix\omnisearch\OmniSearch;
 
@@ -72,11 +73,13 @@ class FieldsController extends Controller
             $fields = $this->getProductFields($element, $source);
         }
 
-        usort($fields, function ($a, $b) {
+        $uniqueFields = $this->getUniqueFields($fields);
+
+        usort($uniqueFields, function ($a, $b) {
             return strcmp($a['name'], $b['name']);
         });
 
-        return array_merge($builtinFields, $fields);
+        return array_merge($builtinFields, $uniqueFields);
     }
 
     /**
@@ -84,6 +87,8 @@ class FieldsController extends Controller
      */
     protected function getBuiltinFields(Element $element, $source): array
     {
+        $elementClass = get_class($element);
+
         $common = [
             [
                 'name'     => Craft::t('app', 'ID'),
@@ -117,13 +122,18 @@ class FieldsController extends Controller
             ],
         ];
 
-        $elementNativeFields = [];
-        $elementClass = get_class($element);
+        if ($elementClass !== User::class) {
+            $common[] = [
+                'name'     => Craft::t('app', 'Site'),
+                'handle'   => 'site',
+                'dataType' => OmniSearch::DATATYPE_LIST,
+                'items'    => $this->getSitesListData(),
+            ];
+        }
 
+        $elementNativeFields = [];
         switch ($elementClass) {
             case Entry::class:
-                [, $uid] = explode(':', $source);
-
                 $elementNativeFields = [
                     [
                         'name'     => Craft::t('app', 'Post Date'),
@@ -140,7 +150,7 @@ class FieldsController extends Controller
                         'name'     => Craft::t('app', 'Entry Type'),
                         'handle'   => 'typeId',
                         'dataType' => OmniSearch::DATATYPE_LIST,
-                        'items'    => $this->getEntryTypesListData($uid),
+                        'items'    => $this->getEntryTypesListData($source),
                     ],
                 ];
                 break;
@@ -454,7 +464,7 @@ class FieldsController extends Controller
         $query = User::find()
             ->select([
                 'users.id AS value',
-                'users.username AS label',
+                'CONCAT(users.firstName, " ", users.lastName) AS label',
             ]);
 
         if (is_array($sources) && count($sources) > 0) {
@@ -471,10 +481,16 @@ class FieldsController extends Controller
             ->all();
     }
 
-    private function getEntryTypesListData($uid)
+    private function getEntryTypesListData($source)
     {
-        $section = Craft::$app->sections->getSectionByUid($uid);
-        $entryTypes = Craft::$app->sections->getEntryTypesBySectionId($section->id);
+        $sectionsAndEntryTypes = $this->getSectionsAndEntryTypes($source);
+        $sectionIds = array_keys($sectionsAndEntryTypes);
+
+        $entryTypes = [];
+        foreach ($sectionIds as $sectionId) {
+            $section = Craft::$app->sections->getSectionById($sectionId);
+            $entryTypes = array_merge($entryTypes, Craft::$app->sections->getEntryTypesBySectionId($section->id));
+        }
 
         return array_map(function (EntryType $entryType) {
             return [
@@ -633,5 +649,31 @@ class FieldsController extends Controller
             ])
             ->asArray()
             ->all();
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     */
+    protected function getUniqueFields(array $fields): array
+    {
+        $uniqueFields = [];
+        foreach ($fields as $field) {
+            $uniqueFields[$field['handle']] = $field;
+        }
+
+        return array_values($uniqueFields);
+    }
+
+    private function getSitesListData()
+    {
+        $sites = \Craft::$app->sites->getAllSites();
+
+        return array_map(function (Site $site) {
+            return [
+                'value' => $site->id,
+                'label' => $site->name,
+            ];
+        }, $sites);
     }
 }
