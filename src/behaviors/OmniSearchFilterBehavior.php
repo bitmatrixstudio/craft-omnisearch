@@ -6,13 +6,12 @@
 
 namespace bitmatrix\omnisearch\behaviors;
 
+use bitmatrix\omnisearch\OmniSearch;
 use Craft;
 use craft\base\Element;
 use craft\base\Field;
-use craft\base\FieldInterface;
 use craft\elements\db\ElementQuery;
 use craft\events\CancelableEvent;
-use craft\fields\Matrix;
 use bitmatrix\omnisearch\filters\OmniSearchFilter;
 use yii\base\Behavior;
 use yii\base\InvalidArgumentException;
@@ -93,7 +92,7 @@ class OmniSearchFilterBehavior extends Behavior
         foreach ($customFields as $customField) {
             $customFieldMap[$customField->handle] = $customField;
 
-            if ($customField instanceof Matrix) {
+            if (OmniSearch::isMatrixField($customField) || OmniSearch::isSuperTableField($customField)) {
                 foreach ($customField->getBlockTypeFields() as $blockTypeField) {
                     $key = $customField->handle . '.' . $blockTypeField->handle;
                     $customFieldMap[$key] = $blockTypeField;

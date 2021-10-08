@@ -6,6 +6,7 @@
 
 namespace bitmatrix\omnisearch\filters;
 
+use bitmatrix\omnisearch\OmniSearch;
 use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\commerce\elements\Variant;
@@ -14,7 +15,9 @@ use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\BaseRelationField;
 use craft\fields\Lightswitch;
+use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
+use verbb\supertable\elements\SuperTableBlockElement;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -110,21 +113,27 @@ abstract class OmniSearchFilter extends BaseObject
 
     public function modifyElementQuery(Query $query)
     {
-        if ($this->isMatrixField()) {
-            $matrixBlockQuery = MatrixBlock::find()
-                ->select('matrixblocks.ownerId')
-                ->fieldId($this->parentField->id);
+        if ($this->parentField != null && (OmniSearch::isMatrixField($this->parentField) || OmniSearch::isSuperTableField($this->parentField))) {
+            if (OmniSearch::isSuperTableField($this->parentField)) {
+                $blockQuery = SuperTableBlockElement::find()
+                    ->select('supertableblocks.ownerId')
+                    ->fieldId($this->parentField->id);
+            } else {
+                $blockQuery = MatrixBlock::find()
+                    ->select('matrixblocks.ownerId')
+                    ->fieldId($this->parentField->id);
+            }
 
             if ($this->isRelationField()) {
-                $matrixBlockQuery = $this->applyRelationQuery($matrixBlockQuery);
+                $blockQuery = $this->applyRelationQuery($blockQuery);
             } else {
-                $this->modifyQuery($matrixBlockQuery);
+                $this->modifyQuery($blockQuery);
             }
 
             $query->andWhere([
                 'in',
                 'elements.id',
-                $matrixBlockQuery
+                $blockQuery
             ]);
         } elseif ($this->isProductVariantField()) {
             $productVariantSubQuery = Variant::find()->select('commerce_variants.productId');
@@ -177,11 +186,6 @@ abstract class OmniSearchFilter extends BaseObject
     protected function isCustomField(): bool
     {
         return $this->customField != null;
-    }
-
-    public function isMatrixField(): bool
-    {
-        return strpos($this->field, '.') !== false;
     }
 
     public function isRelationField(): bool

@@ -66,6 +66,11 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for OmniSearch.
 
+## FAQs
+
+#### Q: My fields are not appearing!
+
+A: Make sure the field is searchable by turning on `Use this field’s values as search keywords`.
 
 ## OmniSearch Roadmap
 

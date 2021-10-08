@@ -7,6 +7,7 @@
 namespace bitmatrix\omnisearch;
 
 use Craft;
+use craft\base\FieldInterface;
 use craft\base\Plugin;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\EntryQuery;
@@ -14,6 +15,7 @@ use craft\events\DefineBehaviorsEvent;
 use bitmatrix\omnisearch\assetbundles\omnisearch\OmniSearchAsset;
 use bitmatrix\omnisearch\behaviors\OmniSearchFilterBehavior;
 use bitmatrix\omnisearch\services\OmniSearchService as OmniSearchServiceService;
+use craft\fields\Matrix;
 use yii\base\Event;
 
 /**
@@ -52,6 +54,15 @@ class OmniSearch extends Plugin
 
     // Public Methods
     // =========================================================================
+    public static function isMatrixField(FieldInterface $field): bool
+    {
+        return $field instanceof Matrix;
+    }
+
+    public static function isSuperTableField(FieldInterface $field): bool
+    {
+        return class_exists('\verbb\supertable\fields\SuperTableField') && $field instanceof \verbb\supertable\fields\SuperTableField;
+    }
 
     /**
      * @inheritdoc

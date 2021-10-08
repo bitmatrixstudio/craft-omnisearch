@@ -370,24 +370,37 @@ class FieldsController extends Controller
 
         /** @var Field $field */
         foreach ($fieldLayout->getFields() as $field) {
-            if ($field->searchable) {
-                if ($field instanceof Matrix) {
-                    $matrixFields = array_map(function ($item) use ($element, $field) {
-                        return $this->createFieldConfig($element, $item, $field->handle . '.');
-                    }, $field->getBlockTypeFields());
+            if (!$field->searchable) {
+                continue;
+            }
 
-                    $fieldConfig = [
-                        'handle'   => $field->handle,
-                        'name'     => $field->name,
-                        'dataType' => OmniSearch::DATATYPE_MATRIX,
-                        'fields'   => $matrixFields,
-                    ];
-                } else {
-                    $fieldConfig = $this->createFieldConfig($element, $field, '');
+            if (OmniSearch::isMatrixField($field) || OmniSearch::isSuperTableField($field)) {
+                $blockTypeFields = $field->getBlockTypeFields();
+                $matrixFields = [];
+                foreach ($blockTypeFields as $blockTypeField) {
+                    if (OmniSearch::isMatrixField($blockTypeField) || OmniSearch::isSuperTableField($blockTypeField)) {
+                        // nested matrix not supported yet
+                        continue;
+                    }
+
+                    if (!$blockTypeField->searchable) {
+                        continue;
+                    }
+
+                    $matrixFields[] = $this->createFieldConfig($element, $blockTypeField, $field->handle . '.');
                 }
 
-                $fields[] = $fieldConfig;
+                $fieldConfig = [
+                    'handle'   => $field->handle,
+                    'name'     => $field->name,
+                    'dataType' => OmniSearch::DATATYPE_MATRIX,
+                    'fields'   => $matrixFields,
+                ];
+            } else {
+                $fieldConfig = $this->createFieldConfig($element, $field, '');
             }
+
+            $fields[] = $fieldConfig;
         }
 
         return $fields;
