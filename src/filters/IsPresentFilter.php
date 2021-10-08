@@ -14,4 +14,18 @@ class IsPresentFilter extends OmniSearchFilter
 	{
 		return $query->andWhere(['not', [$this->getColumn() => null]]);
 	}
+
+    public function applyRelationQuery(Query $query): Query
+    {
+        $relationSubQuery = (new Query())
+            ->select(['sourceId'])
+            ->from('{{%relations}}')
+            ->where(['fieldId' => $this->customField->id])
+            ->andWhere('sourceId = elements.id');
+
+        return $query->andWhere([
+            'exists',
+            $relationSubQuery
+        ]);
+    }
 }
