@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.4 - 2021-10-08
+### Changes
+- Enh: Added support for CraftCMS 3.7.8 columnPrefixes. 
+
 ## 1.0.3 - 2021-10-07
 ### Changes
 - Enh: When filtering by related user, the list data now shows the full name of the user instead of the username ([GH Issue #2](https://github.com/bitmatrixstudio/craft-omnisearch/issues/2)) 

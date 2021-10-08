@@ -252,13 +252,19 @@ abstract class OmniSearchFilter extends BaseObject
     /**
      * Returns a field’s corresponding content column name.
      *
-     * @param FieldInterface $field
+     * @param FieldInterface|Field $field
      * @return string
      */
     private function _getFieldContentColumnName(FieldInterface $field): string
     {
-        /** @var Field $field */
-        return ($field->columnPrefix ?: 'field_') . $field->handle;
+        $prefix = $field->columnPrefix ?: 'field_';
+        $suffix = '';
+
+        if ($field->hasProperty('columnSuffix') && $field->columnSuffix != null) {
+            $suffix = '_' . $field->columnSuffix;
+        }
+
+        return $prefix . $field->handle . $suffix;
     }
 
     private function isProductVariantField()

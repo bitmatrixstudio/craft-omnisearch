@@ -50,6 +50,8 @@ Omnisearch is an advanced search filter bar that allows you to perform multi-var
 
 This plugin requires Craft CMS 3.0.0 or later.
 
+Tested until CraftCMS 3.7.8.
+
 ## Installation
 
 To install the plugin, follow these instructions.
