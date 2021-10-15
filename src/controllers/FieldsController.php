@@ -144,7 +144,7 @@ class FieldsController extends Controller
                         'name'     => Craft::t('app', 'Author'),
                         'handle'   => 'authorId',
                         'dataType' => OmniSearch::DATATYPE_LIST,
-                        'items'    => $this->getUsersListData(),
+                        'items'    => $this->getUsersListData($source),
                     ],
                     [
                         'name'     => Craft::t('app', 'Entry Type'),
@@ -184,6 +184,12 @@ class FieldsController extends Controller
                         'name'     => Craft::t('app', 'File Size'),
                         'handle'   => 'size',
                         'dataType' => OmniSearch::DATATYPE_NUMBER,
+                    ],
+                    [
+                        'name'     => Craft::t('app', 'Uploaded by'),
+                        'handle'   => 'uploaderId',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getUsersListData($source),
                     ],
                 ];
                 break;
@@ -477,7 +483,7 @@ class FieldsController extends Controller
         $query = User::find()
             ->select([
                 'users.id AS value',
-                'CONCAT(users.firstName, " ", users.lastName) AS label',
+                'COALESCE(CONCAT(users.firstName, " ", users.lastName), users.username) AS label',
             ]);
 
         if (is_array($sources) && count($sources) > 0) {

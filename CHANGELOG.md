@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.7 - 2021-10-15
+- Bug fix: fixed an issue where omnisearch is appearing in the field layout page.
+- Bug fix: initial filters are now shown only after fields are fetched.
+- Bug fix: list of users will now show the username instead if user does not have first or last name.
+- Enh: Added ability to filter Assets by uploader ([GH Issue #9](https://github.com/bitmatrixstudio/craft-omnisearch/issues/9))
+
 ## 1.0.6 - 2021-10-08
 ### Changes
 - Enh: Added Super Table support. Note: Nested matrix not yet supported.

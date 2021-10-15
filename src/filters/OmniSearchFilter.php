@@ -82,6 +82,7 @@ abstract class OmniSearchFilter extends BaseObject
         'width'                        => 'assets.width',
         'height'                       => 'assets.height',
         'size'                         => 'assets.size',
+        'uploaderId'                   => 'assets.uploaderId',
         // Users
         'username'                     => 'users.username',
         'email'                        => 'users.email',

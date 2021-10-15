@@ -5,7 +5,7 @@
 
 <template>
   <div class="omnisearch">
-    <template v-if="activeFilters.length > 0">
+    <template v-if="fields.length > 0 && activeFilters.length > 0">
       <filter-button
         v-for="(filter, index) in activeFilters"
         :fields="fields"

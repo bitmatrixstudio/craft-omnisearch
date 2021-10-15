@@ -14,7 +14,7 @@ window.onload = function onLoad() {
   const searchInput = document.querySelector('.search input');
   const contentContainer = document.querySelector('#content');
 
-  if (searchInput != null && contentContainer !== null) {
+  if (searchInput != null && contentContainer !== null && window?.Craft?.elementIndex != null) {
     const omnisearchContainer = document.createElement('div');
 
     contentContainer.before(omnisearchContainer);
@@ -39,7 +39,7 @@ window.onload = function onLoad() {
       mounted() {
         this.loadFields();
         this.parseParams();
-        const elementIndex = window?.Craft?.elementIndex;
+        const { elementIndex } = window.Craft;
 
         if (elementIndex) {
           elementIndex.on('selectSource', () => {

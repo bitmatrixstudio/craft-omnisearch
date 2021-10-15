@@ -41395,12 +41395,12 @@ function _toConsumableArray(arr) {
 // EXTERNAL MODULE: ./node_modules/vue/dist/vue.runtime.esm.js
 var vue_runtime_esm = __webpack_require__("2b0e");
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"0e216079-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/OmniSearch.vue?vue&type=template&id=cb554e16&
-var OmniSearchvue_type_template_id_cb554e16_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch"},[(_vm.activeFilters.length > 0)?_vm._l((_vm.activeFilters),function(filter,index){return _c('filter-button',{key:("filter-" + index),attrs:{"fields":_vm.fields,"filter":filter,"test-id":("active-filter-" + index)},on:{"apply":function($event){return _vm.updateFilter(filter, $event)},"remove":function($event){return _vm.removeFilter(index)}}})}):_vm._e(),_c('filter-button',{key:"add-filter",attrs:{"test-id":"add-filter","fields":_vm.fields},on:{"apply":_vm.addFilter}})],2)}
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"0e216079-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/OmniSearch.vue?vue&type=template&id=2073a080&
+var OmniSearchvue_type_template_id_2073a080_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"omnisearch"},[(_vm.fields.length > 0 && _vm.activeFilters.length > 0)?_vm._l((_vm.activeFilters),function(filter,index){return _c('filter-button',{key:("filter-" + index),attrs:{"fields":_vm.fields,"filter":filter,"test-id":("active-filter-" + index)},on:{"apply":function($event){return _vm.updateFilter(filter, $event)},"remove":function($event){return _vm.removeFilter(index)}}})}):_vm._e(),_c('filter-button',{key:"add-filter",attrs:{"test-id":"add-filter","fields":_vm.fields},on:{"apply":_vm.addFilter}})],2)}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/OmniSearch.vue?vue&type=template&id=cb554e16&
+// CONCATENATED MODULE: ./src/components/OmniSearch.vue?vue&type=template&id=2073a080&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.find.js
 var es_array_find = __webpack_require__("7db0");
@@ -44172,7 +44172,7 @@ var OmniSearchvue_type_style_index_0_lang_scss_ = __webpack_require__("a664");
 
 var OmniSearch_component = normalizeComponent(
   components_OmniSearchvue_type_script_lang_js_,
-  OmniSearchvue_type_template_id_cb554e16_render,
+  OmniSearchvue_type_template_id_2073a080_render,
   staticRenderFns,
   false,
   null,
@@ -44201,11 +44201,13 @@ var OmniSearch_component = normalizeComponent(
 var originalLocation = new URL(window.location);
 
 window.onload = function onLoad() {
+  var _window, _window$Craft;
+
   var $ = window.jQuery;
   var searchInput = document.querySelector('.search input');
   var contentContainer = document.querySelector('#content');
 
-  if (searchInput != null && contentContainer !== null) {
+  if (searchInput != null && contentContainer !== null && ((_window = window) === null || _window === void 0 ? void 0 : (_window$Craft = _window.Craft) === null || _window$Craft === void 0 ? void 0 : _window$Craft.elementIndex) != null) {
     var omnisearchContainer = document.createElement('div');
     contentContainer.before(omnisearchContainer);
     new vue_runtime_esm["default"]({
@@ -44226,13 +44228,11 @@ window.onload = function onLoad() {
         initialFilters: []
       },
       mounted: function mounted() {
-        var _window,
-            _window$Craft,
-            _this = this;
+        var _this = this;
 
         this.loadFields();
         this.parseParams();
-        var elementIndex = (_window = window) === null || _window === void 0 ? void 0 : (_window$Craft = _window.Craft) === null || _window$Craft === void 0 ? void 0 : _window$Craft.elementIndex;
+        var elementIndex = window.Craft.elementIndex;
 
         if (elementIndex) {
           elementIndex.on('selectSource', function () {
