@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.8 - 2021-10-16
+- Enh: Added i18n support ([GH Issue #7](https://github.com/bitmatrixstudio/craft-omnisearch/issues/7))
+- Enh: Reordering will now be disabled when omnisearch filters are active so as to prevent messing up of the structure's orders ([GH Issue #8](https://github.com/bitmatrixstudio/craft-omnisearch/issues/8))
+
 ## 1.0.7 - 2021-10-15
 - Bug fix: fixed an issue where omnisearch is appearing in the field layout page.
 - Bug fix: initial filters are now shown only after fields are fetched.

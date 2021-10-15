@@ -15,8 +15,8 @@
         <template v-if="selectedField != null"><strong>{{
             selectedField.name
           }}</strong>{{ operatorText }} {{ valueText }}</template>
-        <template v-else-if="showFilterPanel">Choose Field</template>
-        <template v-else>+ Add Filter</template>
+        <template v-else-if="showFilterPanel">{{ translate('Choose Field') }}</template>
+        <template v-else>+ {{ translate('Add Filter') }}</template>
       </span>
       <button
         v-if="!isNewFilter"
@@ -47,6 +47,7 @@ import FilterPanel from './FilterPanel.vue';
 
 export default {
   name: 'FilterButton',
+  inject: ['translate'],
   components: {
     FilterPanel,
   },
@@ -76,7 +77,7 @@ export default {
       return this.filter == null;
     },
     operatorText() {
-      return this.selectedFilterMethod != null ? ` ${this.selectedFilterMethod.label}` : '';
+      return this.selectedFilterMethod != null ? ` ${this.translate(this.selectedFilterMethod.label)}` : '';
     },
     valueText() {
       const { selectedField, compareValue, selectedFilterMethod } = this;

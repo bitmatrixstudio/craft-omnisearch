@@ -16,7 +16,7 @@
             class="text"
             type="text"
             v-model="keyword"
-            placeholder="Search attributes..."
+            :placeholder="translate('Search attributes...')"
             ref="searchInput"
             data-testid="field-search-input"
           />
@@ -68,7 +68,7 @@
           :key="filterMethod.operator"
           @click="selectFilterMethod(filterMethod)"
         >
-          {{ filterMethod.label }}
+          {{ translate(filterMethod.label) }}
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@
       <div class="omnisearch__filter-panel-body" data-testid="compare-value">
         <div class="btn menubtn omnisearch__filter-method-dropdown"
              @click.stop="changeFilterMethod">
-          {{ selectedFilterMethod.label }}
+          {{ translate(selectedFilterMethod.label) }}
         </div>
         <component
           v-if="requiresValue"
@@ -97,7 +97,7 @@
           :disabled="compareValue == null"
           @click="applyFilter"
           data-testid="apply-filter-btn">
-          Apply Filter
+          {{ translate('Apply Filter') }}
         </button>
       </div>
     </div>
@@ -115,6 +115,7 @@ import operators from '../operators';
 
 export default {
   name: 'FilterPanel',
+  inject: ['translate'],
   components: {
     ListFilter,
     BooleanFilter,

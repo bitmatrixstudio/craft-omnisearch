@@ -5,6 +5,7 @@
 
 <template>
   <date-picker
+    :locale="language"
     :value="pickerValue"
     @input="onChange"
     :is-range="isRange"
@@ -19,6 +20,7 @@ import { parseDateRange } from '../utils';
 
 export default {
   name: 'DateFilter',
+  inject: ['language'],
   components: {
     DatePicker,
   },

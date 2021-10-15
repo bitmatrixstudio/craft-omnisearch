@@ -4,7 +4,7 @@
   -->
 
 <template>
-  <div class="select">
+  <div >
     <div v-for="option in options" :key="option.value">
       <label data-testid="compare-value-radio">
         <input
@@ -22,6 +22,7 @@ import FilterMethodMixin from './FilterMethodMixin';
 
 export default {
   name: 'BooleanFilter',
+  inject: ['translate'],
   mixins: [FilterMethodMixin],
   model: {
     prop: 'value',
@@ -32,7 +33,10 @@ export default {
   },
   data() {
     return {
-      options: [{ value: true, label: 'True' }, { value: false, label: 'False' }],
+      options: [
+        { value: true, label: this.translate('True') },
+        { value: false, label: this.translate('False') },
+      ],
     };
   },
 };

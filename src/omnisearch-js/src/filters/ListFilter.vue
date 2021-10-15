@@ -9,7 +9,7 @@
       <input class="text"
              type="text"
              v-model="keyword"
-             placeholder="Search..."
+             :placeholder="translate('Search...')"
              ref="keywordInput"
              data-testid="list-options-filter-input"
       />
@@ -39,6 +39,7 @@ import FilterMethodMixin from './FilterMethodMixin';
 
 export default {
   name: 'ListFilter',
+  inject: ['translate'],
   mixins: [FilterMethodMixin],
   model: {
     prop: 'value',

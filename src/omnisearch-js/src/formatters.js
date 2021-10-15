@@ -10,6 +10,16 @@ import DATATYPES from './datatypes';
 
 dayjs.extend(localizedFormat);
 
+let translateFn = (text) => text;
+
+export function setTranslateFn(fn) {
+  translateFn = fn;
+}
+
+export function translate(text, params) {
+  return translateFn(text, params);
+}
+
 export function formatDate(value) {
   return dayjs(value).format('ll');
 }
@@ -17,7 +27,10 @@ export function formatDate(value) {
 export function formatDateRange(value) {
   const { start, end } = parseDateRange(value);
 
-  return `${formatDate(start)} to ${formatDate(end)}`;
+  return translate('{start} to {end}', {
+    start: formatDate(start),
+    end: formatDate(end),
+  });
 }
 
 export function formatListItem(value, items = []) {

@@ -48,6 +48,10 @@ class FieldsController extends Controller
      */
     public function actionIndex($elementType, $source)
     {
+        if (!Craft::$app->user->isGuest) {
+            Craft::$app->language = Craft::$app->user->identity->getPreferredLanguage();
+        }
+
         /** @var Element $element */
         $element = new $elementType;
 

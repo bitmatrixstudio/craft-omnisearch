@@ -19,6 +19,8 @@ window.onload = function onLoad() {
 
     contentContainer.before(omnisearchContainer);
 
+    const translateFn = (text, params) => window?.Craft.t('omnisearch', text, params);
+
     new Vue({
       render(createElement) {
         return createElement(OmniSearch, {
@@ -26,6 +28,8 @@ window.onload = function onLoad() {
           props: {
             fields: this.fields,
             initialFilters: this.initialFilters,
+            translateFn,
+            language: window?.Craft?.language,
           },
           on: {
             change: this.onFilterChange,
@@ -34,6 +38,7 @@ window.onload = function onLoad() {
       },
       data: {
         fields: [],
+        activeFilters: [],
         initialFilters: [],
       },
       mounted() {
@@ -45,6 +50,12 @@ window.onload = function onLoad() {
           elementIndex.on('selectSource', () => {
             this.reset();
             this.loadFields();
+          });
+          elementIndex.on('updateElements', () => {
+            const hasActiveFilters = this.activeFilters.length > 0;
+            const $reorderDragHandles = $(contentContainer).find('.tableview .move.icon');
+
+            $reorderDragHandles.toggle(!hasActiveFilters);
           });
         }
       },
@@ -77,8 +88,10 @@ window.onload = function onLoad() {
           });
         },
         onFilterChange(activeFilters) {
+          this.activeFilters = activeFilters;
           const elementIndex = window?.Craft?.elementIndex;
           const criteria = elementIndex?.settings?.criteria;
+          const hasFilters = activeFilters.length > 0;
 
           if (criteria == null) {
             return;
@@ -90,7 +103,7 @@ window.onload = function onLoad() {
           if (typeof window.history !== 'undefined') {
             let uri = window.Craft.path;
 
-            if (activeFilters.length > 0) {
+            if (hasFilters) {
               uri += `?${createQueryParams(activeFilters)}`;
             }
 

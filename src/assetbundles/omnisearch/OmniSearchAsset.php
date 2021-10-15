@@ -6,9 +6,9 @@
 
 namespace bitmatrix\omnisearch\assetbundles\omnisearch;
 
-use Craft;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
+use craft\web\View;
 
 /**
  * @author    Tai Poh Nean
@@ -40,5 +40,38 @@ class OmniSearchAsset extends AssetBundle
         ];
 
         parent::init();
+    }
+
+    public function registerAssetFiles($view)
+    {
+        parent::registerAssetFiles($view);
+
+        if ($view instanceof View) {
+            $view->registerTranslations('omnisearch', [
+                'Add Filter',
+                'Choose Field',
+                'Search attributes...',
+                'Search...',
+                'True',
+                'False',
+                'contains',
+                'does not contain',
+                'includes',
+                'does not include',
+                'starts with',
+                'equals',
+                'does not equal',
+                'greater than',
+                'greater than or equal',
+                'less than',
+                'less than or equal',
+                'is present',
+                'is not present',
+                'is between',
+                'is before',
+                'is after',
+                '{start} to {end}',
+            ]);
+        }
     }
 }

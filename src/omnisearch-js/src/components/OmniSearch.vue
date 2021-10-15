@@ -26,8 +26,14 @@
 </template>
 
 <script>
+import dayjs from 'dayjs';
 import FilterButton from './FilterButton.vue';
 import DATATYPES from '../datatypes';
+import { translate, setTranslateFn } from '../formatters';
+
+// Additional locales
+import 'dayjs/locale/de';
+import 'dayjs/locale/zh';
 
 export default {
   name: 'OmniSearch',
@@ -41,6 +47,13 @@ export default {
     initialFilters: {
       type: Array,
       default: () => ([]),
+    },
+    translateFn: {
+      type: Function,
+    },
+    language: {
+      type: String,
+      default: 'en',
     },
   },
   data() {
@@ -58,6 +71,12 @@ export default {
         return fieldMap;
       }, {});
     },
+  },
+  provide() {
+    return {
+      translate,
+      language: this.language,
+    };
   },
   watch: {
     initialFilters(newValue) {
@@ -119,6 +138,13 @@ export default {
         }
       }
     },
+  },
+  created() {
+    dayjs.locale(this.language);
+
+    if (this.translateFn) {
+      setTranslateFn(this.translateFn);
+    }
   },
 };
 </script>
