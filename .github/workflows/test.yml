@@ -1,0 +1,15 @@
+name: Test
+on:
+  - push
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install NPM dependencies
+        working-directory: src/omnisearch-js
+        run: npm ci
+      - name: Listing
+        working-directory: src/omnisearch-js
+        run: npm run lint
