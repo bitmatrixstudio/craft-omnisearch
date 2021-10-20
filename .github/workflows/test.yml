@@ -10,6 +10,6 @@ jobs:
       - name: Install NPM dependencies
         working-directory: src/omnisearch-js
         run: npm ci
-      - name: Listing
+      - name: Linting
         working-directory: src/omnisearch-js
         run: npm run lint

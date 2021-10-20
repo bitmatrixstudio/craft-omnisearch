@@ -11,11 +11,12 @@
 // as explained in the cypress docs
 // https://docs.cypress.io/api/plugins/preprocessors-api.html#Examples
 
-// /* eslint-disable import/no-extraneous-dependencies, global-require */
+// eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('@cypress/webpack-preprocessor');
 
 module.exports = (on, config) => {
   on('file:preprocessor', webpack({
+    // eslint-disable-next-line global-require,import/no-extraneous-dependencies
     webpackOptions: require('@vue/cli-service/webpack.config'),
     watchOptions: {},
   }));

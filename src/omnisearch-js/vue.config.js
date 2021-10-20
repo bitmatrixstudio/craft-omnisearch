@@ -4,5 +4,5 @@
  */
 
 module.exports = {
-  outputDir: '../assetbundles/omnisearch/dist'
+  outputDir: '../assetbundles/omnisearch/dist',
 };
