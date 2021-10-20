@@ -45,18 +45,19 @@ describe('Add Filters', () => {
       cy.get('[data-testid^=field-list-group]').should('have.length', 1);
       cy.get('[data-testid^=field-list-group]').eq(0).contains('Blocks');
 
-      cy.get('[data-testid^=field-list-item]').should('have.length', 9);
+      cy.get('[data-testid^=field-list-item]').should('have.length', 10);
 
       const expectedItems = [
-        'City',
-        'Is Featured',
+        'Title',
         'Post Date',
         'Rating',
-        'Title',
+        'Is Featured',
+        'City',
         'Feature Title',
         'Feature Date',
-        'Is Recommended',
         'Votes',
+        'Is Recommended',
+        'Spells',
       ];
 
       expectedItems.forEach((item, i) => {

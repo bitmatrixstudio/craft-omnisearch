@@ -4,6 +4,9 @@ on:
 jobs:
   test-frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/omnisearch-js
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -20,8 +23,8 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Install NPM dependencies
-        working-directory: src/omnisearch-js
         run: npm ci
       - name: Linting
-        working-directory: src/omnisearch-js
         run: npm run lint
+      - name: Run cypress tests
+        run: npm run test:ci

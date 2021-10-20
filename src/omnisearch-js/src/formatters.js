@@ -10,7 +10,11 @@ import DATATYPES from './datatypes';
 
 dayjs.extend(localizedFormat);
 
-let translateFn = (text) => text;
+let translateFn = (text, params) => {
+  const tokens = params || {};
+
+  return Object.keys(tokens).reduce((str, token) => str.replaceAll(`{${token}}`, tokens[token] || ''), text);
+};
 
 export function setTranslateFn(fn) {
   translateFn = fn;
