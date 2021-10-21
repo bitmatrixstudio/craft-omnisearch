@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.9 - 2021-10-21
+- Bugfix: Fixed a bug retrieving field list when related entry's source is "All entries" ([GH Issue #11](https://github.com/bitmatrixstudio/craft-omnisearch/issues/11)).
+- Ehn: German translation added ([GH Issue #7](https://github.com/bitmatrixstudio/craft-omnisearch/issues/7)). Kudos to [@outline4](https://github.com/outline4) for helping with the translation
+
 ## 1.0.8 - 2021-10-16
 - Enh: Added i18n support ([GH Issue #7](https://github.com/bitmatrixstudio/craft-omnisearch/issues/7))
 - Enh: Reordering will now be disabled when omnisearch filters are active so as to prevent messing up of the structure's orders ([GH Issue #8](https://github.com/bitmatrixstudio/craft-omnisearch/issues/8))

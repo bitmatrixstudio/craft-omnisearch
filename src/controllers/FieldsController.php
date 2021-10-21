@@ -491,10 +491,11 @@ class FieldsController extends Controller
             ]);
 
         if (is_array($sources) && count($sources) > 0) {
-            $groupIds = array_map(function ($source) {
+            $groupIds = array_filter(array_map(function ($source) {
                 [, $uid] = explode(':', $source);
-                return Craft::$app->userGroups->getGroupByUid($uid)->id;
-            }, $sources);
+                $group = Craft::$app->userGroups->getGroupByUid($uid);
+                return $group != null ? $group->id : null;
+            }, $sources));
 
             $query->groupId($groupIds);
         }
@@ -580,13 +581,13 @@ class FieldsController extends Controller
     {
         $sections = [];
         if ($sources === '*') {
-            $sections = Craft::$app->volumes->getAllVolumeIds();
+            $sections = Craft::$app->sections->getAllSections();
         } elseif (is_array($sources) && count($sources) > 0) {
             /** @var Section[] $sections */
-            $sections = array_map(function ($source) {
+            $sections = array_filter(array_map(function ($source) {
                 [, $uid] = explode(':', $source);
                 return Craft::$app->sections->getSectionByUid($uid);
-            }, $sources);
+            }, $sources));
         }
 
         $sectionIds = array_map(function (Section $section) {
