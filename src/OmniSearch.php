@@ -16,6 +16,7 @@ use bitmatrix\omnisearch\assetbundles\omnisearch\OmniSearchAsset;
 use bitmatrix\omnisearch\behaviors\OmniSearchFilterBehavior;
 use bitmatrix\omnisearch\services\OmniSearchService as OmniSearchServiceService;
 use craft\fields\Matrix;
+use craft\web\View;
 use yii\base\Event;
 
 /**

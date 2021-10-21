@@ -53,3 +53,24 @@ export function parseQueryParams(url) {
     };
   });
 }
+
+export function waitFor(fn, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const startTime = new Date().getTime();
+
+    const intervalID = setInterval(() => {
+      const elapsed = new Date().getTime() - startTime;
+      const done = fn();
+
+      if (done) {
+        clearInterval(intervalID);
+        resolve();
+      }
+
+      if (elapsed > timeout) {
+        clearInterval(intervalID);
+        reject();
+      }
+    }, 100);
+  });
+}

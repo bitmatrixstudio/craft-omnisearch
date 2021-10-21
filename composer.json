@@ -2,7 +2,7 @@
     "name": "bitmatrix/craft-omnisearch",
     "description": "Powerful search filters for the control panel with full Matrix support",
     "type": "craft-plugin",
-    "version": "1.0.9",
+    "version": "1.1",
     "keywords": [
         "craft",
         "cms",

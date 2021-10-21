@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1 - 2021-10-21
+- New Feature: Added omnisearch filtering to the 'entries' selection modal ([GH Issue #10](https://github.com/bitmatrixstudio/craft-omnisearch/issues/10))
+
 ## 1.0.9 - 2021-10-21
 - Bugfix: Fixed a bug retrieving field list when related entry's source is "All entries" ([GH Issue #11](https://github.com/bitmatrixstudio/craft-omnisearch/issues/11)).
 - Ehn: German translation added ([GH Issue #7](https://github.com/bitmatrixstudio/craft-omnisearch/issues/7)). Kudos to [@outline4](https://github.com/outline4) for helping with the translation
