@@ -45903,16 +45903,15 @@ function createOmniSearch(_ref) {
         });
       },
       onFilterChange: function onFilterChange(activeFilters) {
-        var _elementIndex$setting;
+        var settings = elementIndex === null || elementIndex === void 0 ? void 0 : elementIndex.settings;
 
-        this.activeFilters = activeFilters;
-        var criteria = elementIndex === null || elementIndex === void 0 ? void 0 : (_elementIndex$setting = elementIndex.settings) === null || _elementIndex$setting === void 0 ? void 0 : _elementIndex$setting.criteria;
-        var hasFilters = activeFilters.length > 0;
-
-        if (criteria == null) {
-          return;
+        if (settings.criteria == null) {
+          settings.criteria = {};
         }
 
+        this.activeFilters = activeFilters;
+        var criteria = settings.criteria;
+        var hasFilters = activeFilters.length > 0;
         criteria.omnisearchFilters = _toConsumableArray(activeFilters);
         elementIndex.updateElements();
 

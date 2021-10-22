@@ -6,6 +6,7 @@
 
 namespace bitmatrix\omnisearch\filters;
 
+use bitmatrix\omnisearch\fields\DefineFieldColumnMapEvent;
 use bitmatrix\omnisearch\OmniSearch;
 use craft\base\Field;
 use craft\base\FieldInterface;
@@ -14,19 +15,24 @@ use craft\db\Query;
 use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\BaseRelationField;
-use craft\fields\Categories;
 use craft\fields\Lightswitch;
-use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
 use craft\records\StructureElement;
 use verbb\supertable\elements\SuperTableBlockElement;
-use yii\base\BaseObject;
+use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
 
-abstract class OmniSearchFilter extends BaseObject
+abstract class OmniSearchFilter extends Component
 {
+    const EVENT_DEFINE_FIELD_COLUMN_MAP = 'defineFieldColumnMap';
+
+    /**
+     * @var string
+     */
+    public $elementType;
+
     /**
      * @var string
      */
@@ -71,50 +77,7 @@ abstract class OmniSearchFilter extends BaseObject
         'date_after'     => DateAfterFilter::class,
     ];
 
-    protected static $fieldToColumnMap = [
-        'id'                           => 'elements.id',
-        'title'                        => 'content.title',
-        'slug'                         => 'elements_sites.slug',
-        'dateCreated'                  => 'elements.dateCreated',
-        'dateUpdated'                  => 'elements.dateUpdated',
-        'enabled'                      => 'elements.enabled',
-        // Entries
-        'postDate'                     => 'entries.postDate',
-        'authorId'                     => 'entries.authorId',
-        'typeId'                       => 'entries.typeId',
-        // Categories
-        'category:parent'              => 'assets.filename',
-        // Assets
-        'filename'                     => 'assets.filename',
-        'kind'                         => 'assets.kind',
-        'width'                        => 'assets.width',
-        'height'                       => 'assets.height',
-        'size'                         => 'assets.size',
-        'uploaderId'                   => 'assets.uploaderId',
-        // Users
-        'username'                     => 'users.username',
-        'email'                        => 'users.email',
-        'firstName'                    => 'users.firstName',
-        'lastName'                     => 'users.lastName',
-        'fullName'                     => 'CONCAT(users.firstName, " ", users.lastName)',
-        // Commerce: Products
-        'product:freeShipping'         => 'commerce_products.freeShipping',
-        'product:promotable'           => 'commerce_products.promotable',
-        'product:availableForPurchase' => 'commerce_products.availableForPurchase',
-        'product:typeId'               => 'commerce_products.typeId',
-        'product:taxCategoryId'        => 'commerce_products.taxCategoryId',
-        'product:shippingCategoryId'   => 'commerce_products.shippingCategoryId',
-        'variant:sku'                  => 'commerce_variants.sku',
-        'variant:stock'                => 'IF(hasUnlimitedStock = 1, 99999999999, commerce_variants.stock)',
-        'variant:length'               => 'commerce_variants.length',
-        'variant:height'               => 'commerce_variants.height',
-        'variant:price'                => 'commerce_variants.price',
-        'variant:weight'               => 'commerce_variants.weight',
-        // Commerce: Orders
-        // Commerce: Customers
-        // Commerce: Subscriptions
-        // Commerce: Promotions
-    ];
+    public $fieldToColumnMap = [];
 
     protected static $hasJsonSupport;
 
@@ -256,7 +219,8 @@ abstract class OmniSearchFilter extends BaseObject
 
             return $column;
         } else {
-            return self::$fieldToColumnMap[$this->field];
+            $fieldToColumnMap = $this->getFieldToColumnMap();
+            return $fieldToColumnMap[$this->field];
         }
     }
 
@@ -336,5 +300,26 @@ abstract class OmniSearchFilter extends BaseObject
     private function isStructureAncestorField()
     {
         return $this->field === 'structure:ancestor';
+    }
+
+    protected function getFieldToColumnMap()
+    {
+        if (empty($this->fieldToColumnMap)) {
+            $event = new DefineFieldColumnMapEvent();
+            $this->trigger(self::EVENT_DEFINE_FIELD_COLUMN_MAP, $event);
+
+            $common = [
+                'id'          => 'elements.id',
+                'title'       => 'content.title',
+                'slug'        => 'elements_sites.slug',
+                'dateCreated' => 'elements.dateCreated',
+                'dateUpdated' => 'elements.dateUpdated',
+                'enabled'     => 'elements.enabled',
+            ];
+
+            $this->fieldToColumnMap = array_merge($common, $event->fieldToColumnMap);
+        }
+
+        return $this->fieldToColumnMap;
     }
 }

@@ -6,6 +6,7 @@
 
 namespace bitmatrix\omnisearch\behaviors;
 
+use bitmatrix\omnisearch\fields\DefineFieldColumnMapEvent;
 use bitmatrix\omnisearch\OmniSearch;
 use Craft;
 use craft\base\Element;
@@ -18,6 +19,7 @@ use yii\base\InvalidArgumentException;
 
 class OmniSearchFilterBehavior extends Behavior
 {
+    public $elementType;
     /**
      * @var array
      */
@@ -151,6 +153,7 @@ class OmniSearchFilterBehavior extends Behavior
                 }
 
                 return OmniSearchFilter::create(array_merge($config, [
+                    'elementType' => $this->elementType,
                     'customField' => $customField,
                     'parentField' => $parentField,
                     'structureId' => $structureId,

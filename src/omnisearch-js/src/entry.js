@@ -81,13 +81,14 @@ function createOmniSearch({
         });
       },
       onFilterChange(activeFilters) {
-        this.activeFilters = activeFilters;
-        const criteria = elementIndex?.settings?.criteria;
-        const hasFilters = activeFilters.length > 0;
-
-        if (criteria == null) {
-          return;
+        const settings = elementIndex?.settings;
+        if (settings.criteria == null) {
+          settings.criteria = {};
         }
+
+        this.activeFilters = activeFilters;
+        const { criteria } = settings;
+        const hasFilters = activeFilters.length > 0;
 
         criteria.omnisearchFilters = [...activeFilters];
         elementIndex.updateElements();
