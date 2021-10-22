@@ -52,7 +52,7 @@ class OmniSearchFilterBehavior extends Behavior
         if ($this->customFields != null) {
             $this->customFieldMap = $this->mapCustomFields($this->customFields);
         }
-        $this->filters = $this->getFilters();
+        $this->filters = $this->getFilters($event);
 
         foreach ($this->filters as $filter) {
             if ($this->isSiteIdFilter($filter)) {
@@ -128,10 +128,14 @@ class OmniSearchFilterBehavior extends Behavior
      * @return OmniSearchFilter[]
      * @throws \yii\base\InvalidConfigException
      */
-    protected function getFilters(): array
+    protected function getFilters(CancelableEvent $event): array
     {
+        /** @var ElementQuery $entryQuery */
+        $entryQuery = $event->sender;
+        $structureId = $entryQuery->structureId;
+
         if ($this->filters === null) {
-            $this->filters = array_map(function ($config) {
+            $this->filters = array_map(function ($config) use ($structureId) {
                 $field = $config['field'] ?? null;
 
                 if ($field == null) {
@@ -149,6 +153,7 @@ class OmniSearchFilterBehavior extends Behavior
                 return OmniSearchFilter::create(array_merge($config, [
                     'customField' => $customField,
                     'parentField' => $parentField,
+                    'structureId' => $structureId,
                 ]));
             }, $this->omnisearchFilters);
         }

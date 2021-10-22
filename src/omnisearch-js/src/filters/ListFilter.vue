@@ -16,9 +16,12 @@
     </div>
     <div class="filter-list-options">
       <div
-        class="filter-list-option"
-        data-testid="list-option"
         v-for="item in filteredListItems"
+        class="filter-list-option"
+        :style="{
+          '--indent-level': getIndentLevel(item)
+        }"
+        data-testid="list-option"
         :key="item.value">
         <label>
           <input
@@ -72,6 +75,9 @@ export default {
     }
   },
   methods: {
+    getIndentLevel(item) {
+      return item.level ? item.level - 1 : 0;
+    },
     onSelectionChange() {
       this.$emit('input', this.selection);
     },
@@ -90,10 +96,14 @@ export default {
   }
 
   .filter-list-option {
+    --indent-level: 0;
+
     label {
       padding: 0.25rem 0.5rem;
       display: block;
       cursor: pointer;
+
+      padding-left: calc((var(--indent-level) * 1rem) + 0.5rem);
 
       &:hover {
         background-color: #f3f7fc;

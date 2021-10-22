@@ -14,9 +14,11 @@ use craft\db\Query;
 use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\BaseRelationField;
+use craft\fields\Categories;
 use craft\fields\Lightswitch;
 use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
+use craft\records\StructureElement;
 use verbb\supertable\elements\SuperTableBlockElement;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
@@ -29,6 +31,11 @@ abstract class OmniSearchFilter extends BaseObject
      * @var string
      */
     public $field;
+
+    /**
+     * @var int|null
+     */
+    public $structureId;
 
     /**
      * @var int|string|array
@@ -76,6 +83,7 @@ abstract class OmniSearchFilter extends BaseObject
         'authorId'                     => 'entries.authorId',
         'typeId'                       => 'entries.typeId',
         // Categories
+        'category:parent'              => 'assets.filename',
         // Assets
         'filename'                     => 'assets.filename',
         'kind'                         => 'assets.kind',
@@ -145,6 +153,10 @@ abstract class OmniSearchFilter extends BaseObject
                 'elements.id',
                 $productVariantSubQuery
             ]);
+        } elseif ($this->isStructureAncestorField()) {
+            $this->applyAncestorQuery($query);
+        } elseif ($this->isStructureParentField()) {
+            $this->applyParentQuery($query);
         } elseif ($this->isRelationField()) {
             $this->applyRelationQuery($query);
         } else {
@@ -165,6 +177,43 @@ abstract class OmniSearchFilter extends BaseObject
             'in',
             'elements.id',
             $relationSubQuery
+        ]);
+    }
+
+    private function applyParentQuery(Query $query)
+    {
+        return $this->applyStructureQuery($query, 1);
+    }
+
+    private function applyAncestorQuery(Query $query)
+    {
+        return $this->applyStructureQuery($query, -1);
+    }
+
+    private function applyStructureQuery(Query $query, $dist = -1)
+    {
+        $subQuery = StructureElement::find();
+
+        $onCondition = 'children.lft >= parent.lft AND children.rgt <= parent.rgt';
+        if ($dist > 0) {
+            $onCondition .= ' AND ABS(children.level - parent.level) <= :dist';
+            $subQuery->addParams([':dist' => $dist]);
+        }
+
+        $subQuery
+            ->select(['children.elementId'])
+            ->alias('parent')
+            ->innerJoin('{{%structureelements}} children', $onCondition)
+            ->where(['in', 'parent.elementId', $this->value])
+            ->andWhere([
+                'parent.structureId'   => $this->structureId,
+                'children.structureId' => $this->structureId,
+            ]);
+
+        return $query->andWhere([
+            'in',
+            'elements.id',
+            $subQuery
         ]);
     }
 
@@ -277,5 +326,15 @@ abstract class OmniSearchFilter extends BaseObject
         [$prefix] = explode(':', $this->field);
 
         return $prefix === 'variant';
+    }
+
+    private function isStructureParentField()
+    {
+        return $this->field === 'structure:parent';
+    }
+
+    private function isStructureAncestorField()
+    {
+        return $this->field === 'structure:ancestor';
     }
 }

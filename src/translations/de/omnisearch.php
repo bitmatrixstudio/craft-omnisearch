@@ -28,4 +28,5 @@ return [
     'is before'             => 'ist vor',
     'is after'              => 'ist nach',
     '{start} to {end}'      => '{start} bis {end}',
+    'Ancestor'              => 'Vorfahr',
 ];

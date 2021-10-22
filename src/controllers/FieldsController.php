@@ -11,7 +11,6 @@ use craft\base\Element;
 use craft\base\Field;
 use craft\commerce\elements\Product;
 use craft\commerce\records\ProductType;
-use craft\commerce\records\ProductTypeTaxCategory;
 use craft\commerce\records\ShippingCategory;
 use craft\commerce\records\TaxCategory;
 use craft\elements\Asset;
@@ -25,7 +24,6 @@ use craft\fields\Categories;
 use craft\fields\Date;
 use craft\fields\Entries;
 use craft\fields\Lightswitch;
-use craft\fields\Matrix;
 use craft\fields\Number;
 use craft\fields\Tags;
 use craft\fields\Users;
@@ -138,28 +136,23 @@ class FieldsController extends Controller
         $elementNativeFields = [];
         switch ($elementClass) {
             case Entry::class:
-                $elementNativeFields = [
-                    [
-                        'name'     => Craft::t('app', 'Post Date'),
-                        'handle'   => 'postDate',
-                        'dataType' => OmniSearch::DATATYPE_DATE,
-                    ],
-                    [
-                        'name'     => Craft::t('app', 'Author'),
-                        'handle'   => 'authorId',
-                        'dataType' => OmniSearch::DATATYPE_LIST,
-                        'items'    => $this->getUsersListData($source),
-                    ],
-                    [
-                        'name'     => Craft::t('app', 'Entry Type'),
-                        'handle'   => 'typeId',
-                        'dataType' => OmniSearch::DATATYPE_LIST,
-                        'items'    => $this->getEntryTypesListData($source),
-                    ],
-                ];
+                $elementNativeFields = $this->getEntryNativeFields($source);
                 break;
             case Category::class:
-                // Parent
+                $elementNativeFields = [
+                    [
+                        'name'     => Craft::t('app', 'Parent'),
+                        'handle'   => 'structure:parent',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getCategoriesListData($source),
+                    ],
+                    [
+                        'name'     => Craft::t('omnisearch', 'Ancestor'),
+                        'handle'   => 'structure:ancestor',
+                        'dataType' => OmniSearch::DATATYPE_LIST,
+                        'items'    => $this->getCategoriesListData($source),
+                    ],
+                ];
                 break;
             case Asset::class:
                 $elementNativeFields = [
@@ -579,16 +572,7 @@ class FieldsController extends Controller
 
     protected function getEntriesListData($sources = []): array
     {
-        $sections = [];
-        if ($sources === '*') {
-            $sections = Craft::$app->sections->getAllSections();
-        } elseif (is_array($sources) && count($sources) > 0) {
-            /** @var Section[] $sections */
-            $sections = array_filter(array_map(function ($source) {
-                [, $uid] = explode(':', $source);
-                return Craft::$app->sections->getSectionByUid($uid);
-            }, $sources));
-        }
+        $sections = $this->getSections($sources);
 
         $sectionIds = array_map(function (Section $section) {
             return $section->id;
@@ -598,6 +582,7 @@ class FieldsController extends Controller
             ->select([
                 'elements.id AS value',
                 'title AS label',
+                'COALESCE(level, 1) AS level',
             ])
             ->sectionId($sectionIds)
             ->asArray()
@@ -636,6 +621,7 @@ class FieldsController extends Controller
             ->select([
                 'elements.id AS value',
                 'title AS label',
+                'level',
             ])
             ->group($catGroup)
             ->asArray()
@@ -699,5 +685,83 @@ class FieldsController extends Controller
                 'label' => $site->name,
             ];
         }, $sites);
+    }
+
+    /**
+     * @param $source
+     * @return array[]
+     */
+    protected function getEntryNativeFields($source)
+    {
+        $nativeFields = [
+            [
+                'name'     => Craft::t('app', 'Post Date'),
+                'handle'   => 'postDate',
+                'dataType' => OmniSearch::DATATYPE_DATE,
+            ],
+            [
+                'name'     => Craft::t('app', 'Author'),
+                'handle'   => 'authorId',
+                'dataType' => OmniSearch::DATATYPE_LIST,
+                'items'    => $this->getUsersListData($source),
+            ],
+            [
+                'name'     => Craft::t('app', 'Entry Type'),
+                'handle'   => 'typeId',
+                'dataType' => OmniSearch::DATATYPE_LIST,
+                'items'    => $this->getEntryTypesListData($source),
+            ],
+        ];
+
+        if (strpos($source, ':') !== false) {
+            $section = $this->getSectionBySource($source);
+
+            if ($section != null && $section->structureId != null) {
+                $nativeFields[] = [
+                    'name'     => Craft::t('app', 'Parent'),
+                    'handle'   => 'structure:parent',
+                    'dataType' => OmniSearch::DATATYPE_LIST,
+                    'items'    => $this->getEntriesListData([$source]),
+                ];
+
+                $nativeFields[] = [
+                    'name'     => Craft::t('app', 'Ancestor'),
+                    'handle'   => 'structure:ancestor',
+                    'dataType' => OmniSearch::DATATYPE_LIST,
+                    'items'    => $this->getEntriesListData([$source]),
+                ];
+            }
+        }
+
+        return $nativeFields;
+    }
+
+    /**
+     * @param $sources
+     * @return array|Section[]
+     */
+    protected function getSections($sources)
+    {
+        $sections = [];
+        if ($sources === '*') {
+            $sections = Craft::$app->sections->getAllSections();
+        } elseif (is_array($sources) && count($sources) > 0) {
+            /** @var Section[] $sections */
+            $sections = array_filter(array_map(function ($source) {
+                return $this->getSectionBySource($source);
+            }, $sources));
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @param $source
+     * @return Section|null
+     */
+    protected function getSectionBySource($source)
+    {
+        [, $uid] = explode(':', $source);
+        return Craft::$app->sections->getSectionByUid($uid);
     }
 }

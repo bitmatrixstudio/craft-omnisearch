@@ -50,12 +50,6 @@ function createOmniSearch({
           this.reset();
           this.loadFields();
         });
-        elementIndex.on('updateElements', () => {
-          const hasActiveFilters = this.activeFilters.length > 0;
-          const $reorderDragHandles = $(container).find('.tableview .move.icon');
-
-          $reorderDragHandles.toggle(!hasActiveFilters);
-        });
       }
     },
     methods: {
