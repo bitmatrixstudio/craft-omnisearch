@@ -18,7 +18,7 @@ class AssetFields extends BaseFields
         return Asset::class;
     }
 
-    public function nativeFields($source)
+    public function builtInFields($source)
     {
         return [
             [

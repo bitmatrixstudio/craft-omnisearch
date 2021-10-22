@@ -18,7 +18,7 @@ class EntryFields extends BaseFields
         return Entry::class;
     }
 
-    public function nativeFields($source)
+    public function builtInFields($source)
     {
         $nativeFields = [
             [

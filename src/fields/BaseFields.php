@@ -6,7 +6,6 @@
 
 namespace bitmatrix\omnisearch\fields;
 
-use bitmatrix\omnisearch\controllers\FieldsController;
 use bitmatrix\omnisearch\OmniSearch;
 use Craft;
 use craft\base\Element;
@@ -26,9 +25,7 @@ use craft\fields\Number;
 use craft\fields\Tags;
 use craft\fields\Users;
 use craft\helpers\Assets;
-use craft\models\EntryType;
 use craft\models\Section;
-use yii\base\Event;
 
 abstract class BaseFields
 {
@@ -68,7 +65,12 @@ abstract class BaseFields
         ];
     }
 
-    abstract public function nativeFields($source);
+    abstract public function builtInFields($source);
+
+    public function extraBuiltInFields($source)
+    {
+        return [];
+    }
 
     abstract public function customFields(Element $element, $source);
 
@@ -93,18 +95,20 @@ abstract class BaseFields
         $elementType = static::elementType();
         $element = $this->createElement();
 
-        $builtInFields = [
+        [$customFields, $matrixFields] = $this->groupCustomFields($this->customFields($element, $source));
+
+        $builtInFieldGroup = [
             [
                 'name'     => $elementType::displayName(),
                 'handle'   => 'craft',
                 'dataType' => OmniSearch::DATATYPE_MATRIX,
-                'fields'   => array_merge($this->commonFields(), $this->nativeFields($source)),
+                'fields'   => array_merge($this->commonFields(), $this->builtInFields($source), $customFields),
             ]
         ];
 
-        $customFields = $this->customFields($element, $source);
+        $otherFieldGroups = $this->extraBuiltInFields($source);
 
-        return array_merge($builtInFields, $customFields);
+        return array_merge($builtInFieldGroup, $otherFieldGroups, $matrixFields);
     }
 
     /**
@@ -300,12 +304,7 @@ abstract class BaseFields
             $entryTypes = array_merge($entryTypes, Craft::$app->sections->getEntryTypesBySectionId($section->id));
         }
 
-        return array_map(function (EntryType $entryType) {
-            return [
-                'value' => $entryType->id,
-                'label' => $entryType->name,
-            ];
-        }, $entryTypes);
+        return self::mapListData($entryTypes, 'id', 'name');
     }
 
     /**
@@ -417,5 +416,30 @@ abstract class BaseFields
             ->group($catGroup)
             ->asArray()
             ->all();
+    }
+
+    protected static function mapListData($models, $valueAttribute, $labelAttribute)
+    {
+        return array_values(array_map(function ($model) use ($valueAttribute, $labelAttribute) {
+            return [
+                'value' => $model->{$valueAttribute},
+                'label' => $model->{$labelAttribute},
+            ];
+        }, $models));
+    }
+
+    private function groupCustomFields($customFields)
+    {
+        $regularFields = [];
+        $matrixFields = [];
+        foreach ($customFields as $customField) {
+            if (array_key_exists('fields', $customField)) {
+                $matrixFields[] = $customField;
+            } else {
+                $regularFields[] = $customField;
+            }
+        }
+
+        return [$regularFields, $matrixFields];
     }
 }

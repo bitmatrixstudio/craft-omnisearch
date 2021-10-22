@@ -20,7 +20,7 @@ class UserFields extends BaseFields
         return User::class;
     }
 
-    public function nativeFields($source)
+    public function builtInFields($source)
     {
         return [
             [

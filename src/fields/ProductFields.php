@@ -21,7 +21,7 @@ class ProductFields extends BaseFields
         return Product::class;
     }
 
-    public function nativeFields($source)
+    public function builtInFields($source)
     {
         return [
             [

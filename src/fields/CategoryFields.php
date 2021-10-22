@@ -18,7 +18,7 @@ class CategoryFields extends BaseFields
         return Category::class;
     }
 
-    public function nativeFields($source)
+    public function builtInFields($source)
     {
         return [
             [
