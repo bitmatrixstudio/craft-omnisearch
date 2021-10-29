@@ -9,8 +9,6 @@ namespace bitmatrix\omnisearch\fields;
 use bitmatrix\omnisearch\OmniSearch;
 use Craft;
 use craft\base\Element;
-use craft\elements\Asset;
-use craft\elements\Category;
 use craft\elements\User;
 
 class UserFields extends BaseFields
@@ -68,7 +66,7 @@ class UserFields extends BaseFields
             'email'     => 'users.email',
             'firstName' => 'users.firstName',
             'lastName'  => 'users.lastName',
-            'fullName'  => 'CONCAT(users.firstName, " ", users.lastName)',
+            'fullName'  => "CONCAT(users.[[firstName]], ' ', users.[[lastName]])",
         ];
     }
 }

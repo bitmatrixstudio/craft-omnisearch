@@ -275,7 +275,7 @@ abstract class BaseFields
         $query = User::find()
             ->select([
                 'users.id AS value',
-                '(IF(LENGTH(TRIM(CONCAT(users.firstName, " ", users.lastName))), TRIM(CONCAT(users.firstName, " ", users.lastName)), username)) AS label',
+                '(CASE WHEN LENGTH(TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]]))) > 0 THEN TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]])) ELSE users.[[username]] END) AS label',
             ]);
 
         if (is_array($sources) && count($sources) > 0) {
