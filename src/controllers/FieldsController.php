@@ -28,8 +28,8 @@ class FieldsController extends Controller
      */
     public function actionIndex($elementType, $source)
     {
-        if (!Craft::$app->user->isGuest) {
-            Craft::$app->language = Craft::$app->user->identity->getPreferredLanguage();
+        if (!Craft::$app->user->isGuest && Craft::$app->user->identity->preferredLanguage != null) {
+            Craft::$app->language = Craft::$app->user->identity->preferredLanguage;
         }
 
         $event = new DefineFieldsEvent([
