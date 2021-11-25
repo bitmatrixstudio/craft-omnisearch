@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.3 - 2021-11-25
+- Bugfix: Fixed a bug where filters are not working on channels in Craft CMS v3.7.22 ([GH Issue #15](https://github.com/bitmatrixstudio/craft-omnisearch/issues/15))
+- Bugfix: Duplicate fields are now removed. ([GH Issue #17](https://github.com/bitmatrixstudio/craft-omnisearch/issues/17))
+
 ## 1.2.2 - 2021-11-19
 - Bugfix: Fixed an error 500 when user's language is null ([GH Issue #13](https://github.com/bitmatrixstudio/craft-omnisearch/issues/13))
 

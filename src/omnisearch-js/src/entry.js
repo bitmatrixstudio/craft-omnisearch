@@ -94,7 +94,8 @@ function createOmniSearch({
         elementIndex.updateElements();
 
         if (typeof window.history !== 'undefined' && updateHistory) {
-          let uri = window.Craft.path;
+          const baseUrl = new URL(window.Craft.baseCpUrl).pathname;
+          let uri = window.location.pathname.replace(`${baseUrl}/`, '');
 
           if (hasFilters) {
             uri += `?${createQueryParams(activeFilters)}`;

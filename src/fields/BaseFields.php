@@ -108,7 +108,9 @@ abstract class BaseFields
 
         $otherFieldGroups = $this->extraBuiltInFields($source);
 
-        return array_merge($builtInFieldGroup, $otherFieldGroups, $matrixFields);
+        $fieldGroups = array_merge($builtInFieldGroup, $otherFieldGroups, $matrixFields);
+
+        return $this->removeDuplicateFields($fieldGroups);
     }
 
     /**
@@ -364,19 +366,27 @@ abstract class BaseFields
     {
         $sections = $this->getSections($sources);
 
-        $sectionIds = array_map(function (Section $section) {
-            return $section->id;
-        }, $sections);
+        $hasStructure = false;
+        $sectionIds = [];
+        foreach ($sections as $section) {
+            $sectionIds[] = $section->id;
+            if ($section->structureId) {
+                $hasStructure = true;
+            }
+        }
 
-        return Entry::find()
-            ->select([
-                'elements.id AS value',
-                'title AS label',
-                'COALESCE(level, 1) AS level',
-            ])
+        $select = [
+            'elements.id AS value',
+            'title AS label',
+            $hasStructure ? 'COALESCE(level, 1) AS level' : '(1) AS level',
+        ];
+
+        $entryQuery = Entry::find()
+            ->select($select)
             ->sectionId($sectionIds)
-            ->asArray()
-            ->all();
+            ->asArray();
+
+        return $entryQuery->all();
     }
 
     protected function getAssetsListData($sources = [])
@@ -441,5 +451,25 @@ abstract class BaseFields
         }
 
         return [$regularFields, $matrixFields];
+    }
+
+    private function removeDuplicateFields(array $fieldGroups)
+    {
+        $fieldIds = [];
+        foreach ($fieldGroups as &$fieldGroup) {
+            $uniqueFields = [];
+            $fields = $fieldGroup['fields'];
+
+            foreach ($fields as $field) {
+                if (!array_key_exists($field['handle'], $fieldIds)) {
+                    $fieldIds[$field['handle']] = true;
+                    $uniqueFields[] = $field;
+                }
+            }
+
+            $fieldGroup['fields'] = $uniqueFields;
+        }
+
+        return $fieldGroups;
     }
 }
