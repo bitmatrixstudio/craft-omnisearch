@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.4 - 2021-11-30
+- Bugfix: Prevent attaching omnisearch behaviour until all other CraftCMS plugins are loaded ([GH Issue #18](https://github.com/bitmatrixstudio/craft-omnisearch/issues/18))
+
 ## 1.2.3 - 2021-11-25
 - Bugfix: Fixed a bug where filters are not working on channels in Craft CMS v3.7.22 ([GH Issue #15](https://github.com/bitmatrixstudio/craft-omnisearch/issues/15))
 - Bugfix: Duplicate fields are now removed. ([GH Issue #17](https://github.com/bitmatrixstudio/craft-omnisearch/issues/17))

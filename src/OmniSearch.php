@@ -33,6 +33,7 @@ use bitmatrix\omnisearch\assetbundles\omnisearch\OmniSearchAsset;
 use bitmatrix\omnisearch\behaviors\OmniSearchFilterBehavior;
 use bitmatrix\omnisearch\services\OmniSearchService as OmniSearchServiceService;
 use craft\fields\Matrix;
+use verbb\supertable\SuperTable;
 use yii\base\Event;
 
 /**
@@ -90,7 +91,11 @@ class OmniSearch extends Plugin
 
     public static function isSuperTableField(FieldInterface $field): bool
     {
-        return class_exists('\verbb\supertable\fields\SuperTableField') && $field instanceof \verbb\supertable\fields\SuperTableField;
+        $pluginIsInitialized = Craft::$app->plugins->isPluginEnabled('super-table') && SuperTable::$plugin != null;
+        $classExists = class_exists('\verbb\supertable\fields\SuperTableField');
+        $isSuperTableField = $field instanceof \verbb\supertable\fields\SuperTableField;
+
+        return $pluginIsInitialized && $classExists && $isSuperTableField;
     }
 
     /**
@@ -106,6 +111,10 @@ class OmniSearch extends Plugin
         }
 
         Event::on(ElementQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
+            if (!Craft::$app->plugins->arePluginsLoaded()) {
+                return;
+            }
+
             /** @var ElementQuery $sender */
             $sender = $event->sender;
             $sender->attachBehavior('omnisearch', new OmniSearchFilterBehavior([
@@ -114,6 +123,10 @@ class OmniSearch extends Plugin
         });
 
         Event::on(FieldsController::class, FieldsController::EVENT_DEFINE_FIELDS, function (DefineFieldsEvent $event) {
+            if (!Craft::$app->plugins->arePluginsLoaded()) {
+                return;
+            }
+
             if (!array_key_exists($event->elementType, static::$fieldTypes)) {
                 return;
             }
@@ -127,6 +140,10 @@ class OmniSearch extends Plugin
         });
 
         Event::on(OmniSearchFilter::class, OmniSearchFilter::EVENT_DEFINE_FIELD_COLUMN_MAP, function (DefineFieldColumnMapEvent $event) {
+            if (!Craft::$app->plugins->arePluginsLoaded()) {
+                return;
+            }
+
             $elementType = $event->sender->elementType;
             if (!array_key_exists($elementType, static::$fieldTypes)) {
                 return;
