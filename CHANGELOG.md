@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.5 - 2021-12-08
+- Bugfix: Fixed an issue where custom fields are not translated ([GH Issue #19](https://github.com/bitmatrixstudio/craft-omnisearch/issues/19))
+
 ## 1.2.4 - 2021-11-30
 - Bugfix: Prevent attaching omnisearch behaviour until all other CraftCMS plugins are loaded ([GH Issue #18](https://github.com/bitmatrixstudio/craft-omnisearch/issues/18))
 

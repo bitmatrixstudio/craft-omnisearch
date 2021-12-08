@@ -149,7 +149,7 @@ abstract class BaseFields
 
                 $fieldConfig = [
                     'handle'   => $field->handle,
-                    'name'     => $field->name,
+                    'name'     => $field->__toString(),
                     'dataType' => OmniSearch::DATATYPE_MATRIX,
                     'fields'   => $matrixFields,
                 ];
@@ -167,7 +167,7 @@ abstract class BaseFields
     {
         $fieldConfig = [
             'handle'   => $prefix . $field->handle,
-            'name'     => $field->name,
+            'name'     => $field->__toString(),
             'dataType' => $this->mapDataType($field),
         ];
 
