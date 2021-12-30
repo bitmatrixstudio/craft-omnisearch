@@ -7,7 +7,6 @@
 namespace bitmatrix\omnisearch\filters;
 
 use Carbon\Carbon;
-use craft\db\Query;
 
 abstract class BaseDateFilter extends OmniSearchFilter
 {

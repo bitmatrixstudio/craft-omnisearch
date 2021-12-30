@@ -31,7 +31,8 @@ export function parseDateRange(value = '') {
 
 export function createQueryParams(filters) {
   return filters.map((filter) => {
-    const values = ['in', 'not_in'].includes(filter.operator) ? filter.value.join(',') : filter.value;
+    let values = ['in', 'not_in'].includes(filter.operator) ? filter.value.join(',') : filter.value;
+    values = values === undefined ? '' : values;
 
     return `${filter.field}[${filter.operator}]=${values}`;
   }).join('&');
@@ -44,7 +45,8 @@ export function parseQueryParams(url) {
   return Array.from(queryParams.entries()).map(([key, val]) => {
     const [, field, operator] = key.match(/([\w/.:]+)\[(\w+)]/);
 
-    const value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
+    let value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
+    value = value === '' ? undefined : value;
 
     return {
       field,

@@ -81,8 +81,9 @@ export default {
     },
     valueText() {
       const { selectedField, compareValue, selectedFilterMethod } = this;
+      const { requiresValue = true } = selectedFilterMethod || {};
 
-      if (selectedField == null || selectedFilterMethod == null || !this.hasValue) {
+      if (selectedField == null || selectedFilterMethod == null || !requiresValue || !this.hasValue) {
         return '';
       }
 
@@ -155,11 +156,16 @@ export default {
       const { requiresValue = true } = this.selectedFilterMethod;
 
       if (!requiresValue || this.hasValue) {
-        this.$emit('apply', {
+        const params = {
           field: this.selectedField.handle,
           operator: this.selectedFilterMethod.operator,
-          value: this.compareValue,
-        });
+        };
+
+        if (requiresValue) {
+          params.value = this.compareValue;
+        }
+
+        this.$emit('apply', params);
       }
 
       this.closePanel(this.isNewFilter);

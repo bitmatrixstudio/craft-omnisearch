@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.7 - 2021-12-30
+- Bugfix: Related elements of anyStatus are now shown instead of just the active ones ([GH Issue #24](https://github.com/bitmatrixstudio/craft-omnisearch/issues/24))
+- Bugfix: Fixed "not present" filter in matrix/supertable fields returning incorrect results ([GH Issue #23](https://github.com/bitmatrixstudio/craft-omnisearch/issues/23))
+- Bugfix: Fixed filter by parent error 500 ([GH Issue #22](https://github.com/bitmatrixstudio/craft-omnisearch/issues/22))
+
 ## 1.2.6 - 2021-12-09
 - Bugfix: Regenerate missing css ([GH Issue #20](https://github.com/bitmatrixstudio/craft-omnisearch/issues/20))
 

@@ -6,7 +6,8 @@
 
 namespace bitmatrix\omnisearch\filters;
 
-use craft\db\Query;
+use craft\elements\db\ElementQuery;
+use yii\db\Query;
 
 class IsNotPresentFilter extends OmniSearchFilter
 {
@@ -26,6 +27,22 @@ class IsNotPresentFilter extends OmniSearchFilter
         return $query->andWhere([
             'not exists',
             $relationSubQuery
+        ]);
+    }
+
+    public function applyMatrixQuery(ElementQuery $blockQuery, Query $query): void
+    {
+        $isPresentFilter = new IsPresentFilter($this->getConfig());
+        if ($this->isRelationField()) {
+            $blockQuery = $isPresentFilter->applyRelationQuery($blockQuery);
+        } else {
+            $isPresentFilter->modifyQuery($blockQuery);
+        }
+
+        $query->andWhere([
+            'not in',
+            'elements.id',
+            $blockQuery->column()
         ]);
     }
 }

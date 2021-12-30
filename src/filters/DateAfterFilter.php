@@ -7,7 +7,7 @@
 namespace bitmatrix\omnisearch\filters;
 
 use Carbon\Carbon;
-use craft\db\Query;
+use yii\db\Query;
 
 class DateAfterFilter extends BaseDateFilter
 {

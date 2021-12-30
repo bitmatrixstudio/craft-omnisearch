@@ -278,7 +278,8 @@ abstract class BaseFields
             ->select([
                 'users.id AS value',
                 '(CASE WHEN LENGTH(TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]]))) > 0 THEN TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]])) ELSE users.[[username]] END) AS label',
-            ]);
+            ])
+            ->anyStatus();
 
         if (is_array($sources) && count($sources) > 0) {
             $groupIds = array_filter(array_map(function ($source) {
@@ -384,6 +385,7 @@ abstract class BaseFields
         $entryQuery = Entry::find()
             ->select($select)
             ->sectionId($sectionIds)
+            ->anyStatus()
             ->asArray();
 
         return $entryQuery->all();
@@ -408,6 +410,7 @@ abstract class BaseFields
                 'title AS label',
             ])
             ->volumeId($volumeIds)
+            ->anyStatus()
             ->asArray()
             ->all();
     }
@@ -424,6 +427,7 @@ abstract class BaseFields
                 'level',
             ])
             ->group($catGroup)
+            ->anyStatus()
             ->asArray()
             ->all();
     }

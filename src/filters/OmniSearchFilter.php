@@ -11,7 +11,8 @@ use bitmatrix\omnisearch\OmniSearch;
 use craft\base\Field;
 use craft\base\FieldInterface;
 use craft\commerce\elements\Variant;
-use craft\db\Query;
+use craft\elements\db\ElementQuery;
+use yii\db\Query;
 use craft\elements\MatrixBlock;
 use craft\fields\BaseOptionsField;
 use craft\fields\BaseRelationField;
@@ -96,17 +97,7 @@ abstract class OmniSearchFilter extends Component
                     ->fieldId($this->parentField->id);
             }
 
-            if ($this->isRelationField()) {
-                $blockQuery = $this->applyRelationQuery($blockQuery);
-            } else {
-                $this->modifyQuery($blockQuery);
-            }
-
-            $query->andWhere([
-                'in',
-                'elements.id',
-                $blockQuery
-            ]);
+            $this->applyMatrixQuery($blockQuery, $query);
         } elseif ($this->isProductVariantField()) {
             $productVariantSubQuery = Variant::find()->select('commerce_variants.productId');
             $this->modifyQuery($productVariantSubQuery);
@@ -114,7 +105,7 @@ abstract class OmniSearchFilter extends Component
             $query->andWhere([
                 'in',
                 'elements.id',
-                $productVariantSubQuery
+                $productVariantSubQuery->column(),
             ]);
         } elseif ($this->isStructureAncestorField()) {
             $this->applyAncestorQuery($query);
@@ -125,6 +116,25 @@ abstract class OmniSearchFilter extends Component
         } else {
             $this->modifyQuery($query);
         }
+    }
+
+    /**
+     * @param $blockQuery
+     * @param Query $query
+     */
+    public function applyMatrixQuery(ElementQuery $blockQuery, Query $query): void
+    {
+        if ($this->isRelationField()) {
+            $blockQuery = $this->applyRelationQuery($blockQuery);
+        } else {
+            $this->modifyQuery($blockQuery);
+        }
+
+        $query->andWhere([
+            'in',
+            'elements.id',
+            $blockQuery->column(),
+        ]);
     }
 
     public function applyRelationQuery(Query $query): Query
@@ -139,7 +149,7 @@ abstract class OmniSearchFilter extends Component
         return $query->andWhere([
             'in',
             'elements.id',
-            $relationSubQuery
+            $relationSubQuery->column()
         ]);
     }
 
@@ -167,16 +177,17 @@ abstract class OmniSearchFilter extends Component
             ->select(['children.elementId'])
             ->alias('parent')
             ->innerJoin('{{%structureelements}} children', $onCondition)
-            ->where(['in', 'parent.elementId', $this->value])
             ->andWhere([
                 'parent.structureId'   => $this->structureId,
                 'children.structureId' => $this->structureId,
             ]);
 
+        $this->modifyQuery($subQuery);
+
         return $query->andWhere([
             'in',
             'elements.id',
-            $subQuery
+            $subQuery->column()
         ]);
     }
 
@@ -210,6 +221,8 @@ abstract class OmniSearchFilter extends Component
     {
         if ($this->isRelationField()) {
             return 'targetId';
+        } elseif ($this->isStructureParentField()) {
+            return 'parent.elementId';
         } elseif ($this->isCustomField()) {
             $column = 'content.' . $this->_getFieldContentColumnName($this->customField);
 
@@ -321,5 +334,15 @@ abstract class OmniSearchFilter extends Component
         }
 
         return $this->fieldToColumnMap;
+    }
+
+    protected function getConfig()
+    {
+        return [
+            'elementType' => $this->elementType,
+            'customField' => $this->customField,
+            'parentField' => $this->parentField,
+            'structureId' => $this->structureId,
+        ];
     }
 }

@@ -6,7 +6,7 @@
 
 namespace bitmatrix\omnisearch\filters;
 
-use craft\db\Query;
+use yii\db\Query;
 
 class NotContainFilter extends OmniSearchFilter
 {
