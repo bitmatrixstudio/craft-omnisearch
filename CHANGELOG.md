@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.8 - 2022-01-12
+- Bugfix: Fixed field controller URL wrong when website install in subdirectory ([GH Issue #25](https://github.com/bitmatrixstudio/craft-omnisearch/issues/25))
+
 ## 1.2.7 - 2021-12-30
 - Bugfix: Related elements of anyStatus are now shown instead of just the active ones ([GH Issue #24](https://github.com/bitmatrixstudio/craft-omnisearch/issues/24))
 - Bugfix: Fixed "not present" filter in matrix/supertable fields returning incorrect results ([GH Issue #23](https://github.com/bitmatrixstudio/craft-omnisearch/issues/23))

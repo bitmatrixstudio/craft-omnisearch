@@ -42813,9 +42813,6 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.concat.js
-var es_array_concat = __webpack_require__("99af");
-
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.find.js
 var es_array_find = __webpack_require__("7db0");
 
@@ -43045,6 +43042,9 @@ var FilterButtonvue_type_template_id_eaeafe00_staticRenderFns = []
 
 
 // CONCATENATED MODULE: ./src/components/FilterButton.vue?vue&type=template&id=eaeafe00&
+
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.concat.js
+var es_array_concat = __webpack_require__("99af");
 
 // EXTERNAL MODULE: ./node_modules/@popperjs/core/lib/index.js
 var lib = __webpack_require__("1235");
@@ -45823,7 +45823,6 @@ var OmniSearch_component = normalizeComponent(
 
 
 
-
 /*
  * @copyright Copyright (c) 2021 Bitmatrix Studio
  * @license https://craftcms.github.io/license/
@@ -45910,7 +45909,10 @@ function createOmniSearch(_ref) {
 
         $.ajax({
           method: 'get',
-          url: "/actions/omnisearch/fields?elementType=".concat(elementType, "&source=").concat(source)
+          url: window.Craft.getCpUrl('actions/omnisearch/fields', {
+            elementType: elementType,
+            source: source
+          })
         }).done(function (data) {
           _this2.fields = data;
         });

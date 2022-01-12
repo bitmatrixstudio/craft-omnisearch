@@ -75,7 +75,7 @@ function createOmniSearch({
 
         $.ajax({
           method: 'get',
-          url: `/actions/omnisearch/fields?elementType=${elementType}&source=${source}`,
+          url: window.Craft.getCpUrl('actions/omnisearch/fields', { elementType, source }),
         }).done((data) => {
           this.fields = data;
         });
