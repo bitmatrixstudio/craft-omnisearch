@@ -106,9 +106,11 @@ class OmniSearch extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        if (Craft::$app->getRequest()->isCpRequest) {
-            Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
+        if (!Craft::$app->getRequest()->isCpRequest) {
+            return;
         }
+
+        Craft::$app->getView()->registerAssetBundle(OmniSearchAsset::class);
 
         Event::on(ElementQuery::class, EntryQuery::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
             if (!Craft::$app->plugins->arePluginsLoaded()) {
