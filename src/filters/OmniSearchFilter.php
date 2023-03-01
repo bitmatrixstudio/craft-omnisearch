@@ -345,4 +345,14 @@ abstract class OmniSearchFilter extends Component
             'structureId' => $this->structureId,
         ];
     }
+
+    protected function isPostgres(): bool
+    {
+        return \Craft::$app->getDb()->getIsPgsql();
+    }
+
+    protected function likeOperator(): string
+    {
+        return $this->isPostgres() ? 'ILIKE' : 'LIKE';
+    }
 }

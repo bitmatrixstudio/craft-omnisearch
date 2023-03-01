@@ -12,6 +12,6 @@ class NotContainFilter extends OmniSearchFilter
 {
 	public function modifyQuery(Query $query): Query
 	{
-		return $query->andWhere(['not like', $this->getColumn(), $this->value]);
+		return $query->andWhere(['not ' . $this->likeOperator(), $this->getColumn(), $this->value]);
 	}
 }

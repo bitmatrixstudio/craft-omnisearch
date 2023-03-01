@@ -28,7 +28,7 @@ class InFilter extends OmniSearchFilter
 			} else {
 				// Use LIKE condition
 				foreach ($values as $value) {
-					$conditions[] = ['like', $this->getColumn(), "\"{$value}\""];
+					$conditions[] = [$this->likeOperator(), $this->getColumn(), "\"{$value}\""];
 				}
 			}
 

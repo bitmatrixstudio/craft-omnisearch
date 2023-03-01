@@ -67,7 +67,7 @@ abstract class BaseFields
 
     abstract public function builtInFields($source);
 
-    public function extraBuiltInFields($source)
+    public function extraBuiltInFields($source): array
     {
         return [];
     }
@@ -84,13 +84,13 @@ abstract class BaseFields
     /**
      * @return Element
      */
-    public function createElement()
+    public function createElement(): Element
     {
         $elementType = static::elementType();
         return new $elementType();
     }
 
-    public function getFields($source)
+    public function getFields($source): array
     {
         $elementType = static::elementType();
         $element = $this->createElement();
@@ -114,9 +114,10 @@ abstract class BaseFields
     }
 
     /**
+     * @param Element $element
      * @return array
      */
-    protected function getCustomFieldsForElement(Element $element)
+    protected function getCustomFieldsForElement(Element $element): array
     {
         $fieldLayout = $element->getFieldLayout();
         if (!$element::hasContent() || $fieldLayout === null) {
@@ -125,12 +126,9 @@ abstract class BaseFields
 
         $fields = [];
 
-        /** @var Field $field */
-        foreach ($fieldLayout->getFields() as $field) {
-            if (!$field->searchable) {
-                continue;
-            }
-
+        /** @var Field[] $customFields */
+        $customFields = $fieldLayout->getCustomFields();
+        foreach ($customFields as $field) {
             if (OmniSearch::isMatrixField($field) || OmniSearch::isSuperTableField($field)) {
                 $blockTypeFields = $field->getBlockTypeFields();
                 $matrixFields = [];

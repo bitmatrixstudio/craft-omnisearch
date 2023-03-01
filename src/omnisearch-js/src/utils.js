@@ -42,18 +42,25 @@ export function parseQueryParams(url) {
   const location = new URL(url);
   const queryParams = new URLSearchParams(location.search);
 
-  return Array.from(queryParams.entries()).map(([key, val]) => {
-    const [, field, operator] = key.match(/([\w/.:]+)\[(\w+)]/);
+  return Array.from(queryParams.entries()).reduce((acc, [key, val]) => {
+    const pattern = /([\w/.:]+)\[(\w+)]/;
+    const result = key.match(pattern);
 
-    let value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
-    value = value === '' ? undefined : value;
+    if (result !== null) {
+      const [, field, operator] = result;
 
-    return {
-      field,
-      operator,
-      value,
-    };
-  });
+      let value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
+      value = value === '' ? undefined : value;
+
+      acc.push({
+        field,
+        operator,
+        value,
+      });
+    }
+
+    return acc;
+  }, []);
 }
 
 export function waitFor(fn, timeout = 5000) {

@@ -110,7 +110,7 @@ class OmniSearchFilterBehavior extends Behavior
         /** @var Element $class */
         $class = $query->elementType;
         if ($class::hasContent() && $query->contentTable !== null) {
-            if (Craft::$app->getUpdates()->getIsCraftDbMigrationNeeded()) {
+            if (Craft::$app->getUpdates()->getAreMigrationsPending()) {
                 return [];
             }
 

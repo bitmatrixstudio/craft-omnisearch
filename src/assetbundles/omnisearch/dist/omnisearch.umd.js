@@ -44408,6 +44408,7 @@ function _slicedToArray(arr, i) {
 
 
 
+
 /*
  * @copyright Copyright (c) 2021 Bitmatrix Studio
  * @license https://craftcms.github.io/license/
@@ -44452,24 +44453,30 @@ function createQueryParams(filters) {
 function parseQueryParams(url) {
   var location = new URL(url);
   var queryParams = new URLSearchParams(location.search);
-  return Array.from(queryParams.entries()).map(function (_ref) {
+  return Array.from(queryParams.entries()).reduce(function (acc, _ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         key = _ref2[0],
         val = _ref2[1];
 
-    var _key$match = key.match(/([\w/.:]+)\[(\w+)]/),
-        _key$match2 = _slicedToArray(_key$match, 3),
-        field = _key$match2[1],
-        operator = _key$match2[2];
+    var pattern = /([\w/.:]+)\[(\w+)]/;
+    var result = key.match(pattern);
 
-    var value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
-    value = value === '' ? undefined : value;
-    return {
-      field: field,
-      operator: operator,
-      value: value
-    };
-  });
+    if (result !== null) {
+      var _result = _slicedToArray(result, 3),
+          field = _result[1],
+          operator = _result[2];
+
+      var value = ['in', 'not_in'].includes(operator) ? val.split(',') : val;
+      value = value === '' ? undefined : value;
+      acc.push({
+        field: field,
+        operator: operator,
+        value: value
+      });
+    }
+
+    return acc;
+  }, []);
 }
 function waitFor(fn) {
   var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5000;

@@ -12,6 +12,6 @@ class ContainFilter extends OmniSearchFilter
 {
 	public function modifyQuery(Query $query): Query
 	{
-		return $query->andWhere(['like', $this->getColumn(), $this->value]);
+		return $query->andWhere([$this->likeOperator(), $this->getColumn(), $this->value]);
 	}
 }

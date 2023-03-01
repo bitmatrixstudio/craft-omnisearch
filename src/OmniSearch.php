@@ -60,7 +60,7 @@ class OmniSearch extends Plugin
     /**
      * @var OmniSearch
      */
-    public static $plugin;
+    public static OmniSearch $plugin;
 
     // Public Properties
     // =========================================================================
@@ -68,12 +68,12 @@ class OmniSearch extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     /**
      * @var array
      */
-    public static $fieldTypes = [
+    public static array $fieldTypes = [
         Entry::class    => EntryFields::class,
         Category::class => CategoryFields::class,
         Asset::class    => AssetFields::class,

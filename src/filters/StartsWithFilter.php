@@ -12,6 +12,6 @@ class StartsWithFilter extends OmniSearchFilter
 {
 	public function modifyQuery(Query $query): Query
 	{
-		return $query->andWhere(['like', $this->getColumn(), $this->value . '%', false]);
+		return $query->andWhere([$this->likeOperator(), $this->getColumn(), $this->value . '%', false]);
 	}
 }
