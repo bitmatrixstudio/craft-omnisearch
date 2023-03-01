@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## 2.0.1 - 2023-03-01
 - Enh: Added support for CraftCMS 4.0
+- Bugfix: Filter doesn't take selected site into account
 
 ## 1.2.9 - 2022-06-28
 - Bugfix: Fixed a crash when creating an order in CraftCommerce ([GH Issue #29](https://github.com/bitmatrixstudio/craft-omnisearch/issues/29))
