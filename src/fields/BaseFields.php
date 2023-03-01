@@ -272,12 +272,13 @@ abstract class BaseFields
      */
     protected function getUsersListData($sources = [])
     {
+        $site = Craft::$app->request->get('site');
         $query = User::find()
             ->select([
                 'users.id AS value',
                 '(CASE WHEN LENGTH(TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]]))) > 0 THEN TRIM(CONCAT(users.[[firstName]], \' \', users.[[lastName]])) ELSE users.[[username]] END) AS label',
             ])
-            ->anyStatus();
+            ->status(null);
 
         if (is_array($sources) && count($sources) > 0) {
             $groupIds = array_filter(array_map(function ($source) {
@@ -287,6 +288,10 @@ abstract class BaseFields
             }, $sources));
 
             $query->groupId($groupIds);
+        }
+
+        if ($site) {
+            $query->site($site);
         }
 
         return $query
@@ -347,22 +352,29 @@ abstract class BaseFields
 
     protected function getTagsListData(Tags $field)
     {
+        $site = Craft::$app->request->get('site');
         $uid = $this->extractUidFromSource($field->source);
         $tagGroup = Craft::$app->tags->getTagGroupByUid($uid);
 
-        return Tag::find()
+        $query = Tag::find()
             ->select([
                 'elements.id AS value',
                 'title AS label',
             ])
-            ->anyStatus()
+            ->status(null)
             ->groupId($tagGroup->id)
-            ->asArray()
-            ->all();
+            ->asArray();
+
+        if ($site) {
+            $query->site($site);
+        }
+
+        return $query->all();
     }
 
     protected function getEntriesListData($sources = [])
     {
+        $site = Craft::$app->request->get('site');
         $sections = $this->getSections($sources);
 
         $hasStructure = false;
@@ -383,14 +395,19 @@ abstract class BaseFields
         $entryQuery = Entry::find()
             ->select($select)
             ->sectionId($sectionIds)
-            ->anyStatus()
+            ->status(null)
             ->asArray();
+
+        if ($site) {
+            $entryQuery->site($site);
+        }
 
         return $entryQuery->all();
     }
 
     protected function getAssetsListData($sources = [])
     {
+        $site = Craft::$app->request->get('site');
         $volumeIds = [];
         if ($sources === '*') {
             $volumeIds = Craft::$app->volumes->getAllVolumeIds();
@@ -402,32 +419,44 @@ abstract class BaseFields
             }, $sources);
         }
 
-        return Asset::find()
+        $query = Asset::find()
             ->select([
                 'elements.id AS value',
                 'title AS label',
             ])
             ->volumeId($volumeIds)
-            ->anyStatus()
-            ->asArray()
+            ->status(null)
+            ->asArray();
+
+        if ($site) {
+            $query->site($site);
+        }
+
+        return $query
             ->all();
     }
 
     protected function getCategoriesListData($source)
     {
+        $site = Craft::$app->request->get('site');
         $uid = $this->extractUidFromSource($source);
         $catGroup = Craft::$app->categories->getGroupByUid($uid);
 
-        return Category::find()
+        $query = Category::find()
             ->select([
                 'elements.id AS value',
                 'title AS label',
                 'level',
             ])
             ->group($catGroup)
-            ->anyStatus()
-            ->asArray()
-            ->all();
+            ->status(null)
+            ->asArray();
+
+        if ($site) {
+            $query->site($site);
+        }
+
+        return $query->all();
     }
 
     protected static function mapListData($models, $valueAttribute, $labelAttribute)
